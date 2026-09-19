@@ -55,32 +55,55 @@ export async function GET(request: Request) {
   const range = resolveRange(params.get("range") ?? undefined);
   const events = await store.read(range.from, range.to);
   const stamp = new Date().toISOString().slice(0, 10);
+  const json = params.get("format") === "json";
 
-  if (params.get("format") === "json") {
-    return new Response(JSON.stringify(events, null, 2), {
-      headers: {
-        "content-type": "application/json; charset=utf-8",
-        "content-disposition": `attachment; filename="mychurch-analytics-${range.id}-${stamp}.json"`,
-        "cache-control": "no-store",
+  const name = `mychurch-analytics-${range.id}-${stamp}.${json ? "json" : "csv"}`;
+  return streamed(json ? jsonChunks(events) : csvChunks(events), {
+    "content-type": json ? "application/json; charset=utf-8" : "text/csv; charset=utf-8",
+    "content-disposition": `attachment; filename="${name}"`,
+    "cache-control": "no-store",
+  });
+}
+
+/* «Увесь час» — це 400 діб подій. Сам масив ми вже тримаємо в пам'яті
+   (сховище віддає його цілим), але складати з нього ще й один суцільний
+   рядок — це другий такий самий шматок пам'яті, а для JSON з відступами
+   ще й у кілька разів більший. Тож віддаємо потоком, рядок за рядком. */
+function streamed(chunks: Iterable<string>, headers: Record<string, string>) {
+  const encoder = new TextEncoder();
+  const iterator = chunks[Symbol.iterator]();
+  return new Response(
+    new ReadableStream({
+      pull(controller) {
+        const next = iterator.next();
+        if (next.done) controller.close();
+        else controller.enqueue(encoder.encode(next.value));
       },
-    });
-  }
+    }),
+    { headers }
+  );
+}
 
-  const lines = [COLUMNS.join(";")];
+function* csvChunks(events: Awaited<ReturnType<typeof store.read>>) {
+  /* BOM — щоб Excel не зіпсував українські літери. */
+  yield "\ufeff" + COLUMNS.join(";") + "\n";
   for (const e of events) {
-    lines.push(
+    yield (
       COLUMNS.map((column) =>
         csvCell(column === "date" ? new Date(e.ts).toISOString() : (e as unknown as Record<string, unknown>)[column])
-      ).join(";")
+      ).join(";") + "\n"
     );
   }
+}
 
-  /* BOM — щоб Excel не зіпсував українські літери. */
-  return new Response("﻿" + lines.join("\n"), {
-    headers: {
-      "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="mychurch-analytics-${range.id}-${stamp}.csv"`,
-      "cache-control": "no-store",
-    },
-  });
+/* По об'єкту на рядок: це той самий валідний JSON-масив, тільки без
+   відступів — і його не треба збирати цілим, щоб віддати. */
+function* jsonChunks(events: Awaited<ReturnType<typeof store.read>>) {
+  yield "[\n";
+  let first = true;
+  for (const e of events) {
+    yield (first ? "" : ",\n") + JSON.stringify(e);
+    first = false;
+  }
+  yield "\n]\n";
 }

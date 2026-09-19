@@ -29,7 +29,14 @@ export default async function AdminPerson({
   const last = sessions[0];
   const leads = sessions.filter((s) => s.lead).length;
   const seconds = sessions.reduce((sum, s) => sum + s.seconds, 0);
-  const byId = new Map(sessions.map((s) => [s.id, events.filter((e) => e.session === s.id)]));
+  /* Розкладаємо події за візитами одним проходом: фільтрувати весь масив
+     на кожен візит — це його довжина, помножена на кількість візитів. */
+  const byId = new Map<string, typeof events>();
+  for (const e of events) {
+    const bucket = byId.get(e.session);
+    if (bucket) bucket.push(e);
+    else byId.set(e.session, [e]);
+  }
 
   return (
     <div className="space-y-5">

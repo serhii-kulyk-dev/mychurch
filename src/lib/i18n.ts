@@ -2097,6 +2097,27 @@ const ua = {
     text: "Можливо, її було переміщено або вона ніколи не існувала.",
     reload: "Оновити сторінку",
   },
+
+  /* Сторінка /offline: показуємо її, коли пристрій втратив мережу. */
+  offline: {
+    label: "Немає мережі",
+    title: "Зв'язок втрачено",
+    text: "Сторінка не завантажилась: пристрій не бачить інтернету. Щойно мережа повернеться, ми помітимо це самі.",
+    restoredLabel: "Зв'язок є",
+    restoredTitle: "Зв'язок відновлено",
+    restoredText: "Мережа знову працює. Поверніться на сторінку, з якої ви прийшли, або почніть з головної.",
+    retry: "Перевірити зв'язок",
+    checking: "Перевіряємо…",
+    failed: "Сервер досі недосяжний. Спробуйте ще раз за кілька секунд.",
+    back: "Повернутись назад",
+    checklistTitle: "Що варто перевірити",
+    checklist: [
+      "Увімкнено Wi-Fi або мобільний інтернет.",
+      "Роутер увімкнений і відповідає іншим пристроям.",
+      "Вимкнено режим польоту.",
+      "Вимкнено VPN чи проксі — вони часто обривають з'єднання.",
+    ],
+  },
 };
 
 export type Dict = typeof ua;
@@ -4133,6 +4154,26 @@ const en: Dict = {
     title: "Page not found",
     text: "It may have been moved, or it may never have existed.",
     reload: "Reload the page",
+  },
+
+  offline: {
+    label: "No network",
+    title: "Connection lost",
+    text: "The page did not load: your device cannot see the internet. As soon as the network is back, we will notice it ourselves.",
+    restoredLabel: "Back online",
+    restoredTitle: "Connection restored",
+    restoredText: "The network is working again. Go back to the page you came from, or start from the home page.",
+    retry: "Check the connection",
+    checking: "Checking…",
+    failed: "The server is still unreachable. Try again in a few seconds.",
+    back: "Go back",
+    checklistTitle: "Worth checking",
+    checklist: [
+      "Wi-Fi or mobile data is turned on.",
+      "The router is on and responding to other devices.",
+      "Airplane mode is off.",
+      "VPN or proxy is off — they often drop the connection.",
+    ],
   },
 };
 

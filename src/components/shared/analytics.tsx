@@ -26,6 +26,15 @@ interface PageState {
 const DEPTH_MARKS = [25, 50, 75, 90];
 const LABEL_MAX = 60;
 
+function isExternal(href: string) {
+  try {
+    return new URL(href, location.href).host !== location.host;
+  } catch {
+    /* Не адреса (тільки якір, javascript: тощо) — точно не перехід назовні. */
+    return false;
+  }
+}
+
 function label(el: Element) {
   const text = (el as HTMLElement).innerText || el.getAttribute("aria-label") || "";
   return text.replace(/\s+/g, " ").trim().slice(0, LABEL_MAX);
@@ -55,7 +64,11 @@ export default function Analytics() {
       });
     };
 
-    const onScroll = () => {
+    /* Через requestAnimationFrame, як у навбарі: подія прокрутки може
+       прилітати частіше за кадр, а глибину досить рахувати раз на кадр. */
+    let ticking = false;
+    const update = () => {
+      ticking = false;
       const doc = document.documentElement;
       const total = Math.max(doc.scrollHeight - window.innerHeight, 1);
       const depth = Math.min(100, Math.round(((window.scrollY || doc.scrollTop) / total) * 100));
@@ -68,6 +81,11 @@ export default function Analytics() {
           track("scroll", { depth: mark });
         }
       }
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
     };
 
     const onClick = (event: MouseEvent) => {
@@ -92,7 +110,9 @@ export default function Analytics() {
           track("copy", { kind: href.startsWith("tel:") ? "телефон" : "пошта", label: label(link) });
           return;
         }
-        const external = /^https?:\/\//.test(href) && !href.includes(location.host);
+        /* Саме host, а не пошук підрядка: інакше "notmychurch.com.ua" і
+           "evil.example/?ref=mychurch.com.ua" рахувались би своїми. */
+        const external = isExternal(href);
         track(external ? "outbound" : "link_click", {
           href: href.slice(0, 200),
           label: label(link),

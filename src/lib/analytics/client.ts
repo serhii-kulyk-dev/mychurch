@@ -127,11 +127,6 @@ function session(): { state: SessionState; fresh: boolean } {
   return { state: next, fresh: true };
 }
 
-/** Скільки всього візитів зробив цей браузер (для підпису «ви тут вдруге»). */
-export function visitNumber() {
-  return session().state.visit;
-}
-
 function send(useBeacon: boolean) {
   if (!queue.length) return;
   const { state } = session();

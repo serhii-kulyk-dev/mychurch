@@ -6,7 +6,8 @@
 
    ENV:
      ANALYTICS_PASSWORD — пароль до /admin (без нього кабінет закритий)
-     ANALYTICS_SECRET   — ключ для підпису куки (типово — сам пароль)  */
+     ANALYTICS_SECRET   — ключ для підпису куки (типово — сам пароль)
+     ANALYTICS_SESSION_EPOCH — версія сесій; зміна вивільняє всі видані куки  */
 
 export const ADMIN_COOKIE = "mychurch-admin";
 export const SESSION_DAYS = 30;
@@ -37,17 +38,28 @@ async function sign(payload: string) {
   return base64url(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload)));
 }
 
+/* Версія сесій. Бази сесій тут немає, тож «вийти на всіх пристроях» —
+   це зміна ANALYTICS_SESSION_EPOCH: версія входить у підпис, і всі раніше
+   видані куки одразу перестають підходити. Знадобиться, якщо ноутбук із
+   відкритим кабінетом загубився, а міняти пароль не на часі. Вихід кнопкою
+   лише прибирає куку з браузера — вкрадену він не відкликає. */
+function epoch() {
+  return process.env.ANALYTICS_SESSION_EPOCH || "1";
+}
+
 export async function createToken() {
   const exp = Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000;
-  return `${exp}.${await sign(String(exp))}`;
+  return `${exp}.${await sign(`${exp}:${epoch()}`)}`;
 }
 
 export async function verifyToken(token: string | undefined | null) {
   if (!token || !isConfigured()) return false;
   const [exp, signature] = token.split(".");
   if (!exp || !signature) return false;
-  if (Number(exp) < Date.now()) return false;
-  return (await sign(exp)) === signature;
+  /* NaN у порівняннях завжди false, тож нечислову дату відсікаємо окремо. */
+  const until = Number(exp);
+  if (!Number.isFinite(until) || until < Date.now()) return false;
+  return (await sign(`${exp}:${epoch()}`)) === signature;
 }
 
 /** Порівняння паролів через підписи — щоб час відповіді не підказував префікс. */

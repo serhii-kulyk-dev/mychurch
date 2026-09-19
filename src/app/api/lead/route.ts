@@ -41,8 +41,24 @@ interface LeadPayload {
 
 const MAX = { name: 80, phone: 32, about: 2000, size: 60, page: 200 };
 
+/* Усе, що прийшло з форми, чистимо перед тим, як кудись покласти.
+   Керівні символи викидаємо (крім переносу рядка — він потрібен у
+   «Побажаннях»), CRLF зводимо до \n. */
 function clean(value: unknown, max: number) {
-  return typeof value === "string" ? value.trim().slice(0, max) : "";
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/\r\n?/g, "\n")
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+    .trim()
+    .slice(0, max);
+}
+
+/* Поля, які в інтерфейсі займають один рядок: ім'я, телефон, розмір,
+   сторінка. Перенос усередині такого значення — або випадковість, або
+   спроба дописати щось у тему листа (ім'я їде в Subject), тож будь-який
+   пробільний набір зводимо до одного пробілу. */
+function line(value: unknown, max: number) {
+  return clean(value, max).replace(/\s+/g, " ").trim();
 }
 
 /* Telegram розбирає повідомлення як HTML, тож усе, що надрукував
@@ -146,8 +162,8 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
   }
 
-  const name = clean(body.name, MAX.name);
-  const phone = clean(body.phone, MAX.phone);
+  const name = line(body.name, MAX.name);
+  const phone = line(body.phone, MAX.phone);
   if (name.length < 2 || phone.replace(/\D/g, "").length < 9) {
     return Response.json({ ok: false, error: "invalid" }, { status: 422 });
   }
@@ -166,11 +182,11 @@ export async function POST(request: Request) {
   const lines = [
     `Ім'я: ${name}`,
     `Телефон: ${phone}`,
-    clean(body.size, MAX.size) && `Розмір: ${clean(body.size, MAX.size)}`,
-    Array.isArray(body.tools) && body.tools.length && `Інструменти: ${body.tools.slice(0, 12).map((s) => clean(s, 40)).join(", ")}`,
+    line(body.size, MAX.size) && `Розмір: ${line(body.size, MAX.size)}`,
+    Array.isArray(body.tools) && body.tools.length && `Інструменти: ${body.tools.slice(0, 12).map((s) => line(s, 40)).join(", ")}`,
     goalLabels(body.goals).length && `Хочуть покращити: ${goalLabels(body.goals).join(", ")}`,
     clean(body.about, MAX.about) && `Побажання: ${clean(body.about, MAX.about)}`,
-    clean(body.page, MAX.page) && `Сторінка: ${clean(body.page, MAX.page)}`,
+    line(body.page, MAX.page) && `Сторінка: ${line(body.page, MAX.page)}`,
     `Мова: ${body.lang === "en" ? "en" : "ua"}`,
     `Час: ${new Date().toISOString()}`,
   ].filter(Boolean) as string[];
