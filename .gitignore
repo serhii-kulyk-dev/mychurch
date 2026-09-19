@@ -20,6 +20,9 @@
 # production
 /build
 
+# analytics (свої події — не в репозиторій)
+/.data
+
 # misc
 .DS_Store
 *.pem
@@ -32,6 +35,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code
+/.claude/worktrees

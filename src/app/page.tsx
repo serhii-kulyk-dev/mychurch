@@ -1,27 +1,56 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/sections/navbar";
 import Hero from "@/components/sections/hero";
-import Trust from "@/components/sections/trust";
+import Capabilities from "@/components/sections/capabilities";
+import Journey from "@/components/sections/journey";
 import Problems from "@/components/sections/problems";
 import Features from "@/components/sections/features";
-import Workflow from "@/components/sections/workflow";
+import ServicePlanning from "@/components/sections/service-planning";
+import Automations from "@/components/sections/automations";
+import ForWhom from "@/components/sections/for-whom";
 import Integrations from "@/components/sections/integrations";
-import Testimonials from "@/components/sections/testimonials";
+import Proof from "@/components/sections/proof";
+import Consulting from "@/components/sections/consulting";
 import Cta from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
+import JsonLd from "@/components/shared/json-ld";
+import { graph, softwareSchema } from "@/lib/schema";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata: Metadata = pageMeta({
+  title: "Система управління церквою «Моя Церква» — облік людей і служінь",
+  description:
+    "Досягай людей. Українська система обліку та управління церквою: люди, сім'ї, малі групи, служіння, події, відвідуваність, заявки й аналітика в одному просторі.",
+  path: "/",
+  keywords: [
+    "система управління церквою",
+    "програма для церкви",
+    "облік членів церкви",
+    "облік відвідуваності в церкві",
+    "малі групи облік",
+  ],
+});
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center bg-[#fcfcfc]">
+    <>
       <Navbar />
-      <Hero />
-      {/* <Trust /> */}
-      <Problems />
-      <Features />
-      <Workflow />
-      <Integrations />
-      <Testimonials />
-      <Cta />
+      <main id="main" tabIndex={-1} className="flex flex-col items-center bg-page">
+        <JsonLd data={graph(softwareSchema())} />
+        <Hero />
+        <Capabilities />
+        <Journey />
+        <Problems />
+        <Features />
+        <ServicePlanning />
+        <Automations />
+        <ForWhom />
+        <Integrations />
+        <Proof />
+        <Consulting />
+        <Cta />
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }

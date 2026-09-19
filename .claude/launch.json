@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mychurch-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "church-api",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-lc",
+        "cd /private/tmp/claude-501/-Users-serhiikulyk-StudioProjects-mychurch/9f76b44f-f926-4da7-a805-d341edb37d51/scratchpad/mcb-head && NODE_ENV=local node -r ts-node/register/transpile-only -r tsconfig-paths/register src/main.ts"
+      ],
+      "port": 8080,
+      "autoPort": false
+    },
+    {
+      "name": "church-admin",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-lc",
+        "cd /Users/serhiikulyk/StudioProjects/my-church-admin && REACT_APP_TYPE_SERVER=local PORT=3001 BROWSER=none DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true NODE_OPTIONS=--max-old-space-size=6144 npm start"
+      ],
+      "port": 3001,
+      "autoPort": false
+    }
+  ]
+}

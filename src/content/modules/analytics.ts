@@ -1,0 +1,150 @@
+import type { ModuleDetail } from "./types";
+
+/* Group "analytics": analytics */
+export const analyticsModules: ModuleDetail[] = [
+  {
+    id: "analytics",
+    group: "analytics",
+    related: ["goals", "people", "groups", "assistant"],
+    copy: {
+      ua: {
+        seoTitle: "Аналітика та звіти — модуль «Моя Церква»",
+        seoDescription: "Відвідуваність, ріст церкви, активність груп і служінь — дашборди й звіти за будь-який період. Рішення на основі цифр, а не відчуттів.",
+        title: "Реальна картина церкви — у цифрах, а не відчуттях",
+        lead: "Хто прийшов, хто повернувся, хто зник; які групи ростуть, а які згасають — модуль збирає це з явки, карток і подій у дашборди, які оновлюються самі. Звіт для ради — за п'ять хвилин, а не за вечір із таблицями.",
+        highlights: [
+          "Відвідуваність служінь і груп по тижнях",
+          "Ріст церкви: приєднались, повернулись, зникли",
+          "Активність кожної групи й служіння",
+          "Експорт у PDF та Excel одним кліком",
+        ],
+        features: [
+          { icon: "BarChart3", title: "Дашборд церкви", text: "Люди, явка, групи, служіння, новенькі — головні цифри церкви на одному екрані, з порівнянням до минулого місяця й сезону." },
+          { icon: "LineChart", title: "Відвідуваність по тижнях", text: "Служіння, малі групи й команди — окремо і разом. Видно спад ще тоді, коли він тільки починається." },
+          { icon: "TrendingUp", title: "Ріст і відтік", text: "Скільки приєдналось, скільки повернулось, скільки перестало приходити — за місяць, сезон чи рік. І хто саме за кожною цифрою." },
+          { icon: "Users", title: "Активність груп і служінь", text: "Які групи ростуть, які згасають, де лідер перевантажений і кому потрібна допомога — за даними явки, а не за враженнями." },
+          { icon: "AlertTriangle", title: "Потребують уваги", text: "Не був три тижні, новенький без групи, лідер без помічника — список оновлюється сам і йде до тих, хто може подзвонити." },
+          { icon: "Download", title: "Звіти та експорт", text: "Готові звіти для ради, зборів членів і кемпусів. PDF чи Excel — одним кліком, за будь-який період." },
+        ],
+        steps: [
+          { title: "Ведіть явку", text: "Лідери відмічають зустрічі, рецепція — прихід на служінні. Це єдине, що потрібно від людей." },
+          { title: "Дивіться дашборд", text: "Цифри збираються самі з карток, груп, служінь і подій — щотижня нова картина без ручної роботи." },
+          { title: "Дійте по списку уваги", text: "Система показує, кому подзвонити, які групи підтримати, де потрібне рішення пастора." },
+          { title: "Звітуйте раді", text: "Один клік — і звіт за квартал у PDF. Порівняння з минулим періодом уже всередині." },
+        ],
+        audience: [
+          { role: "pastor", text: "Бачить усю церкву в цифрах: ріст, явку, групи — і знає, кому потрібна увага цього тижня." },
+          { role: "leader", text: "Бачить динаміку своєї групи чи служіння: явка по тижнях, хто пропускає, чи росте команда." },
+          { role: "accountant", text: "Отримує цифри для звітів поруч із фінансами: скільки людей, подій і служінь стоїть за витратами." },
+        ],
+        faq: [
+          { q: "Звідки беруться дані для аналітики?", a: "З того, що вже є в системі: явка на служіннях і в групах, картки людей, реєстрації на події, статуси новеньких. Окремо нічого вносити не потрібно — важливо лише регулярно відмічати явку." },
+          { q: "Чи можна порівняти два кемпуси або два періоди?", a: "Так. Будь-який показник можна розбити за кемпусом, групою чи служінням і порівняти з минулим місяцем, сезоном або тим самим періодом минулого року." },
+          { q: "Хто бачить аналітику?", a: "Пастор і адміністратор — усю церкву. Лідер — лише свою групу чи служіння. Кому і які дашборди показувати, ви налаштовуєте самі." },
+          { q: "Чи можна зробити свій звіт?", a: "Так. Оберіть показники, період і розріз — збережіть як звіт і отримуйте його щопонеділка на пошту чи в Telegram." },
+        ],
+        mock: {
+          kind: "stats",
+          title: "Аналітика",
+          subtitle: "Вересень · порівняно з серпнем",
+          kpis: [
+            { label: "Явка на служіннях", value: "312", trend: "+6%" },
+            { label: "Приєдналось", value: "18", trend: "+4" },
+            { label: "Потребують уваги", value: "7", trend: "−3" },
+          ],
+          barsTitle: "Відвідуваність служінь · 8 тижнів",
+          bars: [
+            { label: "26 лип", value: 68 },
+            { label: "2 сер", value: 71 },
+            { label: "9 сер", value: 66 },
+            { label: "16 сер", value: 74 },
+            { label: "23 сер", value: 79 },
+            { label: "30 сер", value: 83 },
+            { label: "6 вер", value: 86 },
+            { label: "13 вер", value: 90 },
+          ],
+        },
+        pipeline: {
+          title: "Шлях однієї цифри — від відмітки до рішення",
+          text: "Приклад: явка на недільному служінні. Зліва — що роблять люди, справа — що система робить сама.",
+          stages: [
+            { title: "Відмітка", tone: "neutral", text: "Рецепція відмічає людей на вході, лідер — зустріч групи з телефона.", auto: "Записує явку в картку кожної людини та у звіт групи того ж вечора." },
+            { title: "Дашборд", tone: "brand", text: "У понеділок цифри вже зведені: явка по тижнях, новенькі, ріст і відтік.", auto: "Рахує порівняння з минулим місяцем, сезоном і тим самим тижнем торік." },
+            { title: "Список уваги", tone: "amber", text: "Видно, хто не був три тижні, хто з новеньких досі без групи, де лідер сам.", auto: "Надсилає лідеру список його людей, а зведення по церкві — пастору." },
+            { title: "Дія", tone: "green", text: "Лідер дзвонить, пастор планує зустріч, керівник дає групі помічника.", auto: "Прибирає людину зі списку уваги, щойно з'являється явка або записаний дзвінок." },
+            { title: "Звіт раді", tone: "violet", text: "Ті самі цифри йдуть у квартальний звіт для ради чи зборів членів.", auto: "Збирає PDF із порівнянням до попереднього періоду й надсилає щопонеділка." },
+          ],
+        },
+      },
+      en: {
+        seoTitle: "Analytics and reports — MyChurch module",
+        seoDescription: "Attendance, church growth, group and ministry activity — dashboards and reports for any period. Decisions based on numbers, not gut feeling.",
+        title: "The real picture of the church, in numbers",
+        lead: "Who came, who came back, who drifted away; which groups are growing and which are fading — the module gathers it from attendance, profiles and events into dashboards that update themselves. A board report takes five minutes, not an evening with spreadsheets.",
+        highlights: [
+          "Service and group attendance by week",
+          "Church growth: joined, returned, drifted away",
+          "Activity of every group and ministry",
+          "One-click export to PDF and Excel",
+        ],
+        features: [
+          { icon: "BarChart3", title: "Church dashboard", text: "People, attendance, groups, ministries, newcomers — the church's key numbers on one screen, compared with last month and last season." },
+          { icon: "LineChart", title: "Attendance by week", text: "Services, small groups and teams — separately and together. A dip is visible while it is only just beginning." },
+          { icon: "TrendingUp", title: "Growth and drift", text: "How many joined, how many returned, how many stopped coming — by month, season or year. And exactly who is behind each number." },
+          { icon: "Users", title: "Group and ministry activity", text: "Which groups are growing, which are fading, where a leader is overloaded and who needs help — from attendance data, not impressions." },
+          { icon: "AlertTriangle", title: "Needs attention", text: "Absent three weeks, a newcomer without a group, a leader without an assistant — the list updates itself and reaches the people who can call." },
+          { icon: "Download", title: "Reports and export", text: "Ready reports for the board, the members' meeting and campuses. PDF or Excel — one click, any period." },
+        ],
+        steps: [
+          { title: "Record attendance", text: "Leaders mark meetings, reception checks people in at the service. That is all that's asked of people." },
+          { title: "Open the dashboard", text: "The numbers gather themselves from profiles, groups, ministries and events — a fresh picture every week with no manual work." },
+          { title: "Act on the attention list", text: "The system shows who to call, which groups to support and where the pastor's decision is needed." },
+          { title: "Report to the board", text: "One click — and the quarter's report is a PDF. The comparison with the previous period is already inside." },
+        ],
+        audience: [
+          { role: "pastor", text: "Sees the whole church in numbers: growth, attendance, groups — and knows who needs attention this week." },
+          { role: "leader", text: "Sees their group's or ministry's trend: attendance by week, who is missing, whether the team is growing." },
+          { role: "accountant", text: "Gets the numbers for reports alongside the finances: how many people, events and ministries stand behind the spending." },
+        ],
+        faq: [
+          { q: "Where does the analytics data come from?", a: "From what is already in the system: attendance at services and groups, people's profiles, event registrations, newcomer statuses. Nothing extra to enter — what matters is marking attendance regularly." },
+          { q: "Can I compare two campuses or two periods?", a: "Yes. Any metric can be broken down by campus, group or ministry and compared with last month, last season or the same period last year." },
+          { q: "Who can see the analytics?", a: "The pastor and the administrator see the whole church. A leader sees only their own group or ministry. Which dashboards each role sees is up to you." },
+          { q: "Can I build my own report?", a: "Yes. Choose the metrics, the period and the breakdown, save it as a report and receive it every Monday by email or in Telegram." },
+        ],
+        mock: {
+          kind: "stats",
+          title: "Analytics",
+          subtitle: "September · compared with August",
+          kpis: [
+            { label: "Service attendance", value: "312", trend: "+6%" },
+            { label: "Joined", value: "18", trend: "+4" },
+            { label: "Need attention", value: "7", trend: "−3" },
+          ],
+          barsTitle: "Service attendance · 8 weeks",
+          bars: [
+            { label: "26 Jul", value: 68 },
+            { label: "2 Aug", value: 71 },
+            { label: "9 Aug", value: 66 },
+            { label: "16 Aug", value: 74 },
+            { label: "23 Aug", value: 79 },
+            { label: "30 Aug", value: 83 },
+            { label: "6 Sep", value: 86 },
+            { label: "13 Sep", value: 90 },
+          ],
+        },
+        pipeline: {
+          title: "The path of one number — from a check-in to a decision",
+          text: "Example: attendance at the Sunday service. On the left, what people do; on the right, what the system does by itself.",
+          stages: [
+            { title: "Check-in", tone: "neutral", text: "Reception checks people in at the door, the leader marks the group meeting from a phone.", auto: "Writes the attendance into each person's profile and the group's report the same evening." },
+            { title: "Dashboard", tone: "brand", text: "By Monday the numbers are already in: attendance by week, newcomers, growth and drift.", auto: "Works out the comparison with last month, last season and the same week a year ago." },
+            { title: "Attention list", tone: "amber", text: "You can see who has been absent three weeks, which newcomer still has no group, where a leader is alone.", auto: "Sends the leader the list of their own people and the church-wide summary to the pastor." },
+            { title: "Action", tone: "green", text: "The leader calls, the pastor books a meeting, the ministry lead gives the group an assistant.", auto: "Drops the person from the attention list as soon as attendance or a logged call appears." },
+            { title: "Board report", tone: "violet", text: "The same numbers go into the quarterly report for the board or the members' meeting.", auto: "Builds the PDF with the previous period alongside and sends it every Monday." },
+          ],
+        },
+      },
+    },
+  },
+];

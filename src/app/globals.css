@@ -7,9 +7,24 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Semantic surface/text tokens — defined per theme below */
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+  --font-brand: var(--font-manrope), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,6 +64,22 @@
 }
 
 :root {
+  /* ── Light theme ─────────────────────────────── */
+  --page: #fcfcfc;
+  --surface: #ffffff;
+  --surface-2: #fafafb;
+  --surface-3: #f4f5f7;
+  --hairline: rgba(0, 0, 0, 0.07);
+  --hairline-strong: rgba(0, 0, 0, 0.12);
+  --ink: #0b0b0f;
+  --ink-2: rgba(11, 11, 15, 0.70);
+  --ink-3: rgba(11, 11, 15, 0.60);
+  --brand: #0069e0;
+  --brand-deep: #00509e;
+  --brand-soft: #eaf3ff;
+  --glow: rgba(0, 122, 255, 0.18);
+  --grid-line: rgba(0, 0, 0, 0.045);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -84,6 +115,22 @@
 }
 
 .dark {
+  /* ── Dark theme ──────────────────────────────── */
+  --page: #080a0f;
+  --surface: #11151d;
+  --surface-2: #151a23;
+  --surface-3: #1b212c;
+  --hairline: rgba(255, 255, 255, 0.09);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+  --ink: #f3f6fb;
+  --ink-2: rgba(233, 239, 249, 0.76);
+  --ink-3: rgba(233, 239, 249, 0.60);
+  --brand: #3d9bff;
+  --brand-deep: #0a63cc;
+  --brand-soft: rgba(61, 155, 255, 0.14);
+  --glow: rgba(61, 155, 255, 0.22);
+  --grid-line: rgba(255, 255, 255, 0.05);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -123,79 +170,870 @@
   }
   html {
     scroll-behavior: auto;
+    /* Decorative glows, reveal offsets and wide mocks must never hand a phone a
+       sideways scrollbar. `clip` (not `hidden`) keeps position: sticky working. */
+    overflow-x: clip;
   }
   body {
-    @apply bg-[#fcfcfc] text-foreground font-sans;
+    @apply bg-page text-ink font-sans;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overscroll-behavior: none;
+    overflow-x: clip;
+    /* A long unbroken word (a URL, a long Ukrainian compound) breaks rather
+       than pushing the layout wider than the screen. */
+    overflow-wrap: break-word;
+  }
+  /* Theme swap should feel deliberate, not instant */
+  html.theme-ready body,
+  html.theme-ready body * {
+    transition: background-color 0.25s ease, border-color 0.25s ease,
+      color 0.25s ease, fill 0.25s ease;
+  }
+  html.theme-ready .no-theme-transition,
+  html.theme-ready .no-theme-transition * {
+    transition: none;
+  }
+  ::selection {
+    background: var(--brand);
+    color: #fff;
   }
   a, button {
     cursor: pointer;
   }
 }
 
+/* ============================================================
+   REDUCED MOTION — глобально
+   Окремі правила нижче гасять свої анімації точково, але цього мало:
+   фон-аврори, обертання градієнта, пульсація, поява слів і секцій
+   продовжували рухатись. Тут усе зупиняється одним місцем, а контент
+   лишається в кінцевому стані (opacity/transform не «зависають»).
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
-/* Scroll-triggered fade-in */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
+/* ============================================================
+   BRAND TOKENS
+   ============================================================ */
+:root {
+  --cta-default: #0069e0;
+  --cta-hover: #0a70e8;
+  --cta-shadow-effect: #005fc6;
+  --cta-highlight: #8cc2ff;
+
+  /* Заливка під білим текстом. --brand лишається кольором бренду для
+     іконок і тексту на світлому, а це — його «несучий» варіант. */
+  --brand-on-white-text: #0069e0;
+
+  /* Theme colours (--brand/--ink/--surface/…) are defined once per theme above —
+     never redeclare them here or they stop reacting to .dark */
+  --ease-out-soft: cubic-bezier(0.16, 0.84, 0.44, 1);
+  --ease-pop: cubic-bezier(0.3, 1.34, 0.38, 1);
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+@keyframes revealUp {
+  from { opacity: 0; transform: translate3d(0, 26px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes revealScale {
+  from { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.965); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes revealLeft {
+  from { opacity: 0; transform: translate3d(-28px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes revealRight {
+  from { opacity: 0; transform: translate3d(28px, 0, 0); }
   to   { opacity: 1; transform: none; }
 }
 
-/* animation-fill-mode: both (backwards) keeps the element at opacity:0
-   while animation-play-state: paused — prevents any flash on load */
+/* animation-fill-mode: both keeps the element hidden while
+   animation-play-state is paused — no flash before the observer fires */
+.reveal,
 .fade-in {
-  animation: fadeInUp 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: revealUp 0.72s var(--ease-out-soft) both;
   animation-play-state: paused;
 }
-.fade-in.is-visible {
-  animation-play-state: running;
+.reveal.is-visible,
+.fade-in.is-visible { animation-play-state: running; }
+
+.reveal-scale { animation-name: revealScale; }
+.reveal-left  { animation-name: revealLeft; }
+.reveal-right { animation-name: revealRight; }
+
+/* On a phone a block already spans the full width, so a sideways entrance has
+   nowhere to come from — it only widens the document. Come up instead. */
+@media (max-width: 767px) {
+  .reveal-left,
+  .reveal-right { animation-name: revealUp; }
 }
+
 .fade-in-delay-1 { animation-delay: 0.08s; }
 .fade-in-delay-2 { animation-delay: 0.16s; }
 .fade-in-delay-3 { animation-delay: 0.24s; }
 
-/* Custom CTA colors */
-:root {
-  --cta-default: #007aff;
-  --cta-hover: #2f93ff;
-  --cta-shadow-effect: #005fc6;
-  --cta-highlight: #8cc2ff;
+/* ============================================================
+   HERO — word-by-word headline entrance
+   ============================================================ */
+@keyframes wordIn {
+  0%   { opacity: 0; transform: translateY(0.5em) rotateX(-38deg); }
+  100% { opacity: 1; transform: translateY(0) rotateX(0deg); }
 }
 
-/* Button micro-interactions */
-.btn-primary {
-  transition: filter 0.15s ease;
+.hero-word {
+  display: inline-block;
+  vertical-align: top;
+  perspective: 600px;
+  /* Пробіл між словами стоїть усередині цього inline-block, а кінцевий
+     пробіл браузер зрізає — без pre-wrap заголовок злипається в одне слово. */
+  white-space: pre-wrap;
 }
-.btn-primary:active {
-  filter: brightness(0.94);
+.hero-word > span {
+  display: inline-block;
+  opacity: 0;
+  animation: wordIn 0.78s var(--ease-pop) both;
+  animation-play-state: paused;
+  will-change: opacity, transform;
 }
+.hero-lit .hero-word > span { animation-play-state: running; }
+
+/* Headline rotator — the tail of the h1 swaps itself out.
+   Width is set in JS from a measured sizer, so the box eases between phrases
+   instead of jumping; content-box keeps that width equal to the text width. */
+.hero-rotator {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: content-box;
+  white-space: nowrap;
+  perspective: 700px;
+  /* Room for descenders and for the gradient's own overhang, pulled back so
+     the phrase still sits on the headline baseline. */
+  /* Generous side room (pulled back by the margin) so a phrase that is briefly
+     wider than the easing box is never cut, even where mask-clip is ignored. */
+  padding: 0.16em 1.1em 0.4em;
+  margin: -0.16em -1.1em -0.4em;
+  /* Words are hidden above and below the line, but never cut off at the sides:
+     a mask that repeats sideways fades them out vertically only, so a long
+     phrase stays whole while the box is still easing to its width. */
+  --rotator-band: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 0.04em,
+    #000 calc(100% - 0.12em),
+    transparent 100%
+  );
+  -webkit-mask-image: var(--rotator-band);
+  mask-image: var(--rotator-band);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-clip: no-clip;
+  mask-clip: no-clip;
+  /* The box resizes after the old phrase has left and before the new one
+     lands, so neither is ever caught by the edge. */
+  transition: width 0.45s var(--ease-out-soft) 0.3s;
+}
+.hero-rotator-word {
+  display: inline-block;
+  white-space: nowrap;
+  opacity: 0;
+  backface-visibility: hidden;
+}
+/* Before the first swap the live word stays in flow, so the box sizes itself
+   even without JS (and during SSR). */
+.hero-rotator-word[data-state="rest"] { position: relative; opacity: 1; }
+.hero-rotator-word[data-state="in"],
+.hero-rotator-word[data-state="out"],
+.hero-rotator-word[data-state="idle"] { position: absolute; top: 0.16em; left: 1.1em; }
+/* The incoming phrase waits for the outgoing one to clear the box, so the two
+   never read as one blurred double-exposure. */
+.hero-rotator-word[data-state="in"] {
+  animation: rotWordIn 0.66s cubic-bezier(0.16, 0.9, 0.3, 1) 0.5s both;
+  will-change: transform, opacity, filter;
+}
+.hero-rotator-word[data-state="out"] {
+  animation: rotWordOut 0.42s cubic-bezier(0.55, 0, 0.85, 0.2) both;
+  will-change: transform, opacity, filter;
+}
+/* Роль у заголовку носить свій колір із палітри ролей (/for-whom) — суцільною
+   заливкою, без градієнта: на великому кеглі перехід читався брудно, а плаский
+   колір лишає слово чистим. У темній темі база світлішає для контрасту. */
+.hero-rotator-word.is-tinted {
+  color: var(--role-accent);
+}
+.dark .hero-rotator-word.is-tinted { color: color-mix(in oklab, var(--role-accent) 74%, white); }
+
+/* Phone fallback for a phrase that carries part of the sentence («вашого
+   клубу»): it breaks onto two lines instead of losing a word. Every phrase
+   wears the same measured box, so the pair of lines stays still. */
+.hero-rotator.is-stacked { display: block; white-space: normal; }
+.hero-rotator.is-stacked .hero-rotator-word[data-state="in"],
+.hero-rotator.is-stacked .hero-rotator-word[data-state="out"],
+.hero-rotator.is-stacked .hero-rotator-word[data-state="idle"] { right: 1.1em; }
+.hero-rotator-line { display: block; }
+
+.hero-rotator-sizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hero-rotator-sizer > span { display: inline-block; }
+.hero-rotator-strut { display: inline-block; width: 0; }
+
+@keyframes rotWordIn {
+  0%   { opacity: 0; transform: translate3d(0, 0.6em, 0) rotateX(-60deg); filter: blur(6px); }
+  50%  { opacity: 1; }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0deg); filter: blur(0); }
+}
+@keyframes rotWordOut {
+  0%   { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0deg); filter: blur(0); }
+  70%  { opacity: 0; }
+  100% { opacity: 0; transform: translate3d(0, -0.6em, 0) rotateX(56deg); filter: blur(6px); }
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND
+   ============================================================ */
+@keyframes auroraDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(4%, -3%, 0) scale(1.12); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes auroraDriftAlt {
+  0%   { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%  { transform: translate3d(-5%, 4%, 0) scale(0.95); }
+  100% { transform: translate3d(0, 0, 0) scale(1.05); }
+}
+.aurora-a { animation: auroraDrift 18s ease-in-out infinite; }
+.aurora-b { animation: auroraDriftAlt 22s ease-in-out infinite; }
+
+@keyframes gradientSpin {
+  from { transform: rotate3d(0, 0, 1, 0deg); }
+  to   { transform: rotate3d(0, 0, 1, 360deg); }
+}
+.gradient-spin { animation: gradientSpin 7s linear infinite; }
+
+@keyframes floatY {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -8px, 0); }
+}
+.float-y { animation: floatY 6s ease-in-out infinite; }
+
+@keyframes pulseRing {
+  0%   { opacity: 0.55; transform: scale(1); }
+  70%  { opacity: 0;    transform: scale(2.4); }
+  100% { opacity: 0;    transform: scale(2.4); }
+}
+.pulse-ring { animation: pulseRing 2.4s ease-out infinite; }
+
+/* the walker on the journey road is redrawn at every step — the portrait pops as it changes */
+@keyframes journeyMorph {
+  0%   { opacity: 0.25; transform: scale(0.7) rotate(-8deg); }
+  55%  { opacity: 1;    transform: scale(1.1) rotate(2deg); }
+  100% { opacity: 1;    transform: scale(1) rotate(0); }
+}
+.journey-morph { animation: journeyMorph 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes journeyDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.journey-draw { animation: journeyDraw 900ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .journey-draw { animation: none; stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .journey-morph { animation: none; } }
+
+
+
+/* ============================================================
+   PRODUCT PREVIEW — in-mock micro animations
+   ============================================================ */
+@keyframes barGrow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes rowIn {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes ringDraw {
+  from { stroke-dashoffset: var(--ring-len); }
+  to   { stroke-dashoffset: var(--ring-off); }
+}
+@keyframes sparkleIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.mock-on .mock-bar  { animation: barGrow 0.9s var(--ease-out-soft) both; }
+.mock-on .mock-row  { animation: rowIn 0.6s var(--ease-out-soft) both; }
+.mock-on .mock-ring { animation: ringDraw 1.4s var(--ease-out-soft) both; }
+.mock-on .mock-pop  { animation: sparkleIn 0.5s var(--ease-pop) both; }
+
+/* A screen that swaps its content in place (analytics views) — the new one
+   rises as it comes in. */
+@keyframes viewIn {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.view-in { animation: viewIn 0.42s var(--ease-out-soft) both; }
+
+/* ============================================================
+   MICRO-INTERACTIONS
+   ============================================================ */
+.hover-lift {
+  transition: transform 0.28s var(--ease-out-soft),
+              box-shadow 0.28s var(--ease-out-soft),
+              border-color 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 34px -20px rgba(0, 0, 0, 0.32);
+  border-color: rgba(0, 122, 255, 0.28);
+}
+
+/* Primary (brand) button — flat brand fill, no gradient.
+   Depth comes from the signature light inner rim (#8cc2ff) over a
+   deep-blue hairline, plus a soft coloured drop shadow. */
+.btn-brand {
+  color: #fff;
+  background: var(--cta-default);
+  box-shadow:
+    inset 0 1px 0 1px var(--cta-highlight),
+    0 0 0 1px var(--cta-shadow-effect),
+    0 8px 20px -10px rgba(0, 122, 255, 0.45);
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s var(--ease-out-soft),
+    box-shadow 0.18s ease;
+}
+.btn-brand:hover {
+  background: var(--cta-hover);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 1px var(--cta-highlight),
+    0 0 0 1px var(--cta-shadow-effect),
+    0 12px 26px -10px rgba(0, 122, 255, 0.5);
+}
+.btn-brand:active {
+  background: #005cc4;
+  transform: translateY(0);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 30, 80, 0.28),
+    0 0 0 1px var(--cta-shadow-effect);
+}
+.dark .btn-brand {
+  background: #1a6ed6;
+  box-shadow:
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.28),
+    0 0 0 1px var(--brand-deep),
+    0 10px 24px -10px rgba(61, 155, 255, 0.4);
+}
+.dark .btn-brand:hover {
+  background: #2a7ee6;
+  box-shadow:
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.32),
+    0 0 0 1px var(--brand-deep),
+    0 14px 30px -10px rgba(61, 155, 255, 0.5);
+}
+.dark .btn-brand:active {
+  background: #155fbb;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.35),
+    0 0 0 1px var(--brand-deep);
+}
+.btn-brand:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+.btn-primary { transition: filter 0.15s ease, transform 0.15s ease; }
 
 .btn-secondary {
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
-.btn-secondary:hover .btn-secondary-bg {
-  background-color: #f1f1f1;
-}
-.btn-secondary:active .btn-secondary-bg {
-  background-color: #e8e8e8;
-}
+.btn-secondary:hover .btn-secondary-bg { background-color: var(--surface-3); }
+.btn-secondary:active .btn-secondary-bg { background-color: var(--surface-2); }
+.btn-secondary:active { transform: translateY(1px); }
 
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s var(--ease-out-soft);
+}
+.link-underline:hover { background-size: 100% 1.5px; }
+
+/* ============================================================
+   LEGACY (logo transition / reload button)
+   ============================================================ */
 @keyframes spin-once {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
-
 @keyframes fade-in-out {
   0%   { opacity: 0; }
   40%  { opacity: 0.6; }
   100% { opacity: 0; }
 }
+.animate-spin-once { animation: spin-once 0.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.animate-fade-in-out { animation: fade-in-out 0.35s ease-in-out both; }
 
-.animate-spin-once {
-  animation: spin-once 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal,
+  .fade-in,
+  .hero-word > span { animation-play-state: running !important; opacity: 1 !important; }
+  .hero-rotator-word[data-state="in"] { opacity: 1 !important; filter: none !important; }
 }
 
-.animate-fade-in-out {
-  animation: fade-in-out 0.35s ease-in-out both;
+/* Chat mock — typing indicator */
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%           { transform: translateY(-3px); opacity: 1; }
 }
+.typing-dot { animation: typingDot 1.2s ease-in-out infinite; }
+
+/* Feature mocks — line chart draw + area fade */
+@keyframes lineDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes softFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.mock-on .mock-line { animation: lineDraw 1.5s var(--ease-out-soft) both; }
+.mock-on .mock-area { animation: softFade 0.9s ease-out both; }
+
+/* Profile game — pin celebration */
+@keyframes confettiBurst {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+.confetti-dot { animation: confettiBurst 0.9s var(--ease-out-soft) both; }
+
+@keyframes pinIn {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.6); }
+  60%  { transform: translateY(-2px) scale(1.06); }
+  100% { opacity: 1; transform: none; }
+}
+.pin-in { animation: pinIn 0.45s var(--ease-pop) both; }
+
+@keyframes tapHint {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+.tap-hint { animation: tapHint 1.4s ease-in-out infinite; }
+@keyframes barGrowX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+
+/* ============================================================
+   AI PAGE — chat bubbles, task runs, autoplay tabs
+   ============================================================ */
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+.bubble-in { animation: bubbleIn 0.45s var(--ease-out-soft) both; }
+
+@keyframes progressX {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.autoplay-bar {
+  transform-origin: left;
+  animation: progressX var(--autoplay-ms, 9000ms) linear both;
+}
+
+@keyframes pressPulse {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.press-pulse { animation: pressPulse 0.4s ease-out both; }
+
+/* Horizontal chip rows: scroll without a visible bar */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Telegram-style chat wallpaper: a faint dot grid on the secondary surface */
+.chat-wallpaper {
+  background-color: var(--surface-2);
+  background-image: radial-gradient(var(--hairline) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* ============================================================
+   TELEGRAM — шпалери, бульбашки й кнопки макетів на /telegram.
+   Окремо від .chat-wallpaper: там нейтральний чат асистента,
+   тут має бути видно, що це саме месенджер.
+   ============================================================ */
+.tg-wallpaper {
+  background-color: #b6d4ec;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27148%27%20height%3D%27148%27%20viewBox%3D%270%200%20148%20148%27%20fill%3D%27none%27%20stroke%3D%27rgba%28255%2C255%2C255%2C0.34%29%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M26%2044s-10-6.5-10-13a6%206%200%200%201%2010-4.4A6%206%200%200%201%2036%2031c0%206.5-10%2013-10%2013z%27%2F%3E%3Cpath%20d%3D%27M92%2022h26a6%206%200%200%201%206%206v13a6%206%200%200%201-6%206h-14l-9%207v-7h-3a6%206%200%200%201-6-6V28a6%206%200%200%201%206-6z%27%2F%3E%3Cpath%20d%3D%27M112%2084l4%208.4%209.2%201.2-6.7%206.4%201.7%209-8.2-4.4-8.2%204.4%201.7-9-6.7-6.4%209.2-1.2z%27%2F%3E%3Cpath%20d%3D%27M28%20104l24-9-8%2025-5-9-5.5%204%20.6-8z%27%2F%3E%3Cpath%20d%3D%27M39%20111l13-16%27%2F%3E%3Cpath%20d%3D%27M76%2062v24M67%2070h18%27%2F%3E%3Ccircle%20cx%3D%27130%27%20cy%3D%2734%27%20r%3D%273.5%27%2F%3E%3Ccircle%20cx%3D%2756%27%20cy%3D%2770%27%20r%3D%272.5%27%2F%3E%3Ccircle%20cx%3D%2720%27%20cy%3D%27128%27%20r%3D%273%27%2F%3E%3Cpath%20d%3D%27M96%20124h18M105%20115v18%27%2F%3E%3C%2Fsvg%3E"),
+    radial-gradient(ellipse 60% 55% at 18% 18%, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 65% 60% at 85% 85%, rgba(86, 150, 206, 0.55), transparent 70%),
+    linear-gradient(160deg, #d3e6f9 0%, #a9cbe9 100%);
+  background-size: 148px 148px, auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+}
+.dark .tg-wallpaper {
+  background-color: #0e1621;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27148%27%20height%3D%27148%27%20viewBox%3D%270%200%20148%20148%27%20fill%3D%27none%27%20stroke%3D%27rgba%28255%2C255%2C255%2C0.05%29%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M26%2044s-10-6.5-10-13a6%206%200%200%201%2010-4.4A6%206%200%200%201%2036%2031c0%206.5-10%2013-10%2013z%27%2F%3E%3Cpath%20d%3D%27M92%2022h26a6%206%200%200%201%206%206v13a6%206%200%200%201-6%206h-14l-9%207v-7h-3a6%206%200%200%201-6-6V28a6%206%200%200%201%206-6z%27%2F%3E%3Cpath%20d%3D%27M112%2084l4%208.4%209.2%201.2-6.7%206.4%201.7%209-8.2-4.4-8.2%204.4%201.7-9-6.7-6.4%209.2-1.2z%27%2F%3E%3Cpath%20d%3D%27M28%20104l24-9-8%2025-5-9-5.5%204%20.6-8z%27%2F%3E%3Cpath%20d%3D%27M39%20111l13-16%27%2F%3E%3Cpath%20d%3D%27M76%2062v24M67%2070h18%27%2F%3E%3Ccircle%20cx%3D%27130%27%20cy%3D%2734%27%20r%3D%273.5%27%2F%3E%3Ccircle%20cx%3D%2756%27%20cy%3D%2770%27%20r%3D%272.5%27%2F%3E%3Ccircle%20cx%3D%2720%27%20cy%3D%27128%27%20r%3D%273%27%2F%3E%3Cpath%20d%3D%27M96%20124h18M105%20115v18%27%2F%3E%3C%2Fsvg%3E"),
+    radial-gradient(ellipse 60% 55% at 18% 18%, rgba(61, 155, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 65% 60% at 85% 85%, rgba(0, 105, 224, 0.18), transparent 70%),
+    linear-gradient(160deg, #111d2b 0%, #0b1119 100%);
+  background-size: 148px 148px, auto, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+}
+
+/* Корпус телефона довкола макета: рамка, острівець і статусбар —
+   щоб з першого погляду було видно, що це екран у руці, а не картка. */
+.tg-phone {
+  background: #11151b;
+  box-shadow:
+    0 50px 90px -50px rgba(0, 50, 120, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+.dark .tg-phone {
+  background: #05080d;
+  box-shadow:
+    0 50px 90px -50px rgba(0, 0, 0, 0.8),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Вхідна бульбашка з хвостиком — біла на шпалерах, як у застосунку. */
+.tg-bubble {
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 35, 60, 0.18);
+}
+.dark .tg-bubble {
+  background: #212d3b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.tg-bubble::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  bottom: 0;
+  width: 12px;
+  height: 13px;
+  background: inherit;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  border-bottom-left-radius: 2px;
+}
+
+/* Reply-клавіатура лежить на сірому тлі клавіатури месенджера. */
+.tg-keyboard {
+  background: #eceef1;
+}
+.dark .tg-keyboard {
+  background: #17212b;
+}
+
+/* Inline-кнопки лежать на шпалерах, тому напівпрозорі, а не «картки». */
+.tg-inline-btn {
+  background: rgba(255, 255, 255, 0.92);
+}
+.dark .tg-inline-btn {
+  background: rgba(33, 45, 59, 0.92);
+}
+
+/* Same dot grid, tinted with the brand: the assistant's private channel */
+.chat-wallpaper-brand {
+  background-color: color-mix(in oklab, var(--brand) 6%, var(--surface-2));
+  background-image: radial-gradient(color-mix(in oklab, var(--brand) 18%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* ============================================================
+   MODULE MARQUEE (home → capabilities)
+   ============================================================ */
+@keyframes marqueeLeft {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+.marquee-track {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  padding: 4px 0;
+  animation: marqueeLeft 70s linear infinite;
+  will-change: transform;
+}
+.marquee-track--reverse { animation-direction: reverse; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.chip-module { transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
+a.chip-module:hover {
+  border-color: rgba(0, 122, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -14px rgba(0, 0, 0, 0.35);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
+/* ============================================================
+   AUTOMATION FLOW CANVAS (home → automations)
+   Nodes light in column order, wires draw + pulse, ticks land.
+   ============================================================ */
+@keyframes flowNodeOn {
+  0%   { opacity: 0.55; border-color: var(--hairline); box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent); }
+  40%  { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 5px color-mix(in oklab, var(--accent) 22%, transparent); }
+  100% { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent); }
+}
+@keyframes flowTickIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes flowWireDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes flowStatusIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+.flow-node { opacity: 0.55; border-color: var(--hairline); }
+.flow-node.is-on { animation: flowNodeOn 0.8s var(--ease-out-soft) both; }
+.flow-tick { opacity: 0; }
+.flow-tick.is-on { animation: flowTickIn 0.35s var(--ease-pop) both; }
+.flow-port {
+  width: 10px; height: 10px; border-radius: 9999px;
+  background: var(--surface); border: 2px solid var(--hairline-strong);
+  transition: border-color 0.3s ease;
+}
+.flow-node.is-on .flow-port { border-color: var(--accent); }
+.flow-wire-on {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: flowWireDraw 0.55s ease-in-out both;
+}
+.flow-status { opacity: 0; animation: flowStatusIn 0.4s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .flow-node, .flow-tick, .flow-status { opacity: 1; animation: none !important; }
+  .flow-node.is-on { border-color: var(--accent); }
+  .flow-wire-on { stroke-dashoffset: 0; animation: none; }
+  .flow-pulse-dot { display: none; }
+}
+
+/* ============================================================
+   GHOST POINTER — a screen that shows itself (for-whom)
+   ============================================================ */
+.demo-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+  transition-property: transform, opacity;
+  transition-timing-function: var(--ease-out-soft);
+  will-change: transform;
+}
+.demo-cursor-arrow {
+  display: block;
+  transform-origin: 3px 3px;
+  transition: transform 0.16s var(--ease-pop);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.22));
+}
+.demo-cursor[data-press="1"] .demo-cursor-arrow { transform: scale(0.78); }
+
+@keyframes demoTap {
+  from { opacity: 0.6; transform: scale(0.3); }
+  to   { opacity: 0;   transform: scale(1.6); }
+}
+.demo-tap {
+  position: absolute;
+  top: -21px;
+  left: -21px;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 19;
+}
+.demo-tap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--brand) 60%, transparent), transparent 70%);
+  animation: demoTap 0.62s var(--ease-out-soft) both;
+}
+
+/* The element the ghost pointer is resting on */
+[data-demo-hot] {
+  outline: 2px solid color-mix(in oklab, var(--brand) 50%, transparent);
+  outline-offset: 3px;
+  transition: outline-color 0.2s ease;
+}
+
+/* The same ghost hand, but as a finger on a phone or in Telegram */
+.demo-touch {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 9999px;
+  border: 2px solid var(--ink);
+  box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.35);
+  transition: transform 0.16s var(--ease-pop);
+}
+.demo-cursor[data-press="1"] .demo-touch { transform: scale(0.74); }
+
+/* On touch there is no pointer to draw — only the tap lands */
+@media (pointer: coarse) {
+  .demo-cursor-arrow { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-cursor,
+  .demo-tap { display: none; }
+}
+
+/* Constructor: a module sliding into the assembled workspace */
+@keyframes builderIn {
+  from { opacity: 0; transform: translate3d(-6px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.builder-in { animation: builderIn 0.34s var(--ease-out-soft) both; }
+
+/* ============================================================
+   SERVICE PLAN — each owner fills their own block
+   A value lands in a block, the row flashes once, the slot ticks.
+   ============================================================ */
+@keyframes planValueIn {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes planRowFlash {
+  0%   { background-color: color-mix(in oklab, var(--brand) 11%, transparent); }
+  100% { background-color: transparent; }
+}
+@keyframes planSlotIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: none; }
+}
+.plan-value { animation: planValueIn 0.38s var(--ease-out-soft) both; }
+.plan-row.is-new { animation: planRowFlash 1.2s ease both; }
+.plan-slot-on { animation: planSlotIn 0.34s var(--ease-pop) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-value,
+  .plan-row.is-new,
+  .plan-slot-on { animation: none; }
+}
+
+/* The song search field typing itself out */
+@keyframes planCaret { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } }
+.plan-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 13px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--brand);
+  animation: planCaret 1s steps(1, end) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan-caret { animation: none; opacity: 0; }
+}
+
+/* Dictation: the bars keep moving while the mic is open */
+@keyframes demoWave {
+  0%, 100% { height: 3px; opacity: 0.5; }
+  50% { height: 11px; opacity: 1; }
+}
+.demo-wave {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 11px;
+}
+.demo-wave i {
+  display: block;
+  width: 2px;
+  height: 3px;
+  border-radius: 1px;
+  background: currentColor;
+  animation: demoWave 0.85s ease-in-out infinite;
+}
+.demo-wave i:nth-child(2) { animation-delay: 0.14s; }
+.demo-wave i:nth-child(3) { animation-delay: 0.28s; }
+.demo-wave i:nth-child(4) { animation-delay: 0.42s; }
+@media (prefers-reduced-motion: reduce) {
+  .demo-wave i { animation: none; height: 7px; opacity: 0.8; }
+}
+
+/* Skip-link: видимий лише під фокусом, перший у порядку табуляції. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.65rem 1.1rem;
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
+  font-size: 15px;
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform 0.15s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Ціль skip-link отримує фокус програмно — рамка навколо всієї сторінки
+   тут була б зайвою. */
+main:focus {
+  outline: none;
+}
+
+/* Єдиний помітний фокус для всього, що клікається з клавіатури. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* rebuild ping */
