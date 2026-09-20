@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import { MODULE_ICONS, moduleAccent } from "@/components/shared/module-icons";
-import { hasModulePage } from "@/content/modules";
+import { hasModulePage } from "@/content/modules/ids";
 import { useT } from "@/lib/lang";
 
 /* ────────────────────────────────────────────────────────────────

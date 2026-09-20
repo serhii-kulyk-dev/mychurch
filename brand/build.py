@@ -10,6 +10,7 @@ import io
 import os
 import struct
 from PIL import Image
+import appicon
 import gen
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -24,8 +25,8 @@ BRAND = (0, 105, 224)  # --brand, #0069e0 — той самий синій, що
 WHITE = (255, 255, 255)
 INK = (11, 18, 32)
 
-# Спрощена побудова для 16-32 px: менше кружечків, ширший розрив, товщі
-# перемички — інакше на фавіконі окрема фігура зливається з кільцем.
+# Спрощена побудова знака для малих розмірів: менше кружечків, ширший розрив,
+# товщі перемички — потрібна превʼю бренду (`preview.py`).
 SMALL = dict(N=6, r=0.40, rf=0.12, DIST=1.35)
 
 
@@ -80,8 +81,6 @@ def main():
 
     # ---- растр для застосунку ----------------------------------------
     gen.to_png(512, BRAND, 0.05, path=f"{PUB}/logo.png")
-    gen.to_png(512, BRAND, 0.05, path=f"{APP}/icon.png")
-    gen.to_png(180, BRAND, 0.13, bg=WHITE + (255,), path=f"{APP}/apple-icon.png")
     gen.to_png(1024, BRAND, 0.05, path=f"{OUT}/logo-1024.png")
 
     # ---- аватарка бота: обрізається в коло, тому виворіт із відступом --
@@ -89,12 +88,22 @@ def main():
     tg.alpha_composite(gen.to_png(512, WHITE, 0.20))
     tg.save(f"{PUB}/brand/telegram-avatar.png")
 
-    # ---- фавікон: малі розміри — зі спрощеної побудови ----------------
+    # ---- спрощений знак для превʼю бренду ----------------------------
     old = params(**SMALL)
     open(f"{OUT}/mark-small.svg", "w").write(gen.svg("#0069e0"))
-    icons = {s: gen.to_png(s, BRAND, 0.03) for s in (16, 24, 32)}
     params(**old)
-    icons.update({s: gen.to_png(s, BRAND, 0.04) for s in (48, 64, 128, 256)})
+
+    # ---- іконка застосунку: церква на синьому квадраті (appicon.py) ---
+    # Вкладка, закладки й домашній екран — це вже не знак бренду, а іконка
+    # застосунку, тому вона малюється окремо.
+    open(f"{OUT}/appicon.svg", "w").write(appicon.svg())
+    open(f"{OUT}/appicon-small.svg", "w").write(
+        appicon.svg(band=False, stroke=appicon.SMALL_STROKE, zoom=appicon.SMALL_ZOOM))
+    appicon.to_png(512, path=f"{APP}/icon.png")
+    # apple-touch-icon: без прозорих кутів — iOS скруглює сама.
+    appicon.to_png(180, square=True, path=f"{APP}/apple-icon.png")
+
+    icons = {s: appicon.icon(s) for s in (16, 24, 32, 48, 64, 128, 256)}
     write_ico(f"{APP}/favicon.ico", [icons[s] for s in sorted(icons)])
     for s, im in icons.items():
         im.save(f"{OUT}/icon-{s}.png")

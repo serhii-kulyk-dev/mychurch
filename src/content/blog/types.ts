@@ -71,7 +71,5 @@ export interface BlogPost {
   minutes: number;
   /** 2–3 слуги інших статей. */
   related: string[];
-  /** Головна стаття рубрики — виводиться великим блоком на /blog. */
-  featured?: boolean;
   copy: Record<Lang, BlogCopy>;
 }

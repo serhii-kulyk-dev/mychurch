@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import FadeIn from "@/components/shared/fade-in";
-import { TgHeader, TgInput, TgKeyboard, TgMark, TgMessage, TgPhone } from "@/components/shared/tg-screen";
+import TgPhone from "@/components/shared/tg-phone";
+import { TgMark } from "@/components/shared/tg-screen";
 import { TELEGRAM_COPY } from "@/content/telegram";
 import { useDemoModal } from "@/context/demo-modal-context";
 import { useLang } from "@/lib/lang";
@@ -73,16 +74,8 @@ export default function TelegramHero() {
           </dl>
         </FadeIn>
 
-        <FadeIn variant="scale" delay={2} className="min-w-0 flex flex-col items-center gap-4">
-          <TgPhone>
-            <TgHeader title={t.phone.bot} sub={t.phone.status} />
-            <div className="tg-wallpaper p-4 flex flex-col gap-3 min-h-[230px] justify-end">
-              <TgMessage lines={t.phone.greeting} className="bubble-in" />
-            </div>
-            <TgInput placeholder="…" />
-            <TgKeyboard rows={t.phone.keyboard} className="pb-5" />
-          </TgPhone>
-          <p className="max-w-[340px] text-center text-[13px] text-ink-3 leading-[1.45]">{t.phone.hint}</p>
+        <FadeIn variant="scale" delay={2} className="min-w-0 flex flex-col items-center">
+          <TgPhone phone={t.phone} />
         </FadeIn>
       </div>
     </section>

@@ -63,6 +63,14 @@ export interface TelegramCopy {
       greeting: TgLine[];
       keyboard: string[][];
       hint: string;
+      /** Підпис «бот друкує» між натисканням і відповіддю. */
+      typing: string;
+      /** Підказка, що екран живий: по кнопках можна тиснути. */
+      tapHint: string;
+      /** Підпис кнопки «назад» у шапці — повертає привітання. */
+      back: string;
+      /** Екрани під кнопками клавіатури: id === підпис кнопки. */
+      screens: { id: string; lines: TgLine[]; buttons?: TgButton[][] }[];
     };
   };
 
@@ -86,7 +94,6 @@ export interface TelegramCopy {
       badge: string;
       who: string;
       title: string;
-      text: string;
       screen: {
         header: string;
         sub: string;
@@ -96,7 +103,6 @@ export interface TelegramCopy {
         result: string;
       };
     }[];
-    footnote: string;
   };
 
   speed: {
@@ -104,7 +110,7 @@ export interface TelegramCopy {
     title: string;
     text: string;
     timeline: { at: string; title: string; text: string; tag: string }[];
-    rules: { value: string; label: string; text: string }[];
+    rules: { value: string; label: string }[];
   };
 
   groups: {
@@ -154,8 +160,7 @@ const ua: TelegramCopy = {
   hero: {
     eyebrow: "Телеграм-бот",
     title: "Важливе — під рукою",
-    lead:
-      "Лідер відмічає зустріч із телефону за хвилину, служитель тисне «Буду» під повідомленням, гість подає заявку в групу з одного посилання. Бот не окрема програма — це та сама база, просто в месенджері.",
+    lead: "Та сама база, що й у застосунку, — просто в месенджері.",
     facts: [
       { value: "1 дотик", label: "від заявки до рішення лідера" },
       { value: "45 розділів", label: "групи, служіння, події, форми, явка" },
@@ -175,7 +180,56 @@ const ua: TelegramCopy = {
         ["📌 Мої справи · 3", "🏠 Мої групи (2)"],
         ["🔥 Мої служіння (1)"],
       ],
-      hint: "Клавіатура збирається під людину: у неї стільки кнопок, скільки їй справді потрібно.",
+      hint: "У кожного стільки кнопок, скільки йому справді потрібно.",
+      typing: "друкує…",
+      tapHint: "Натисніть кнопку внизу — це справжні екрани бота.",
+      back: "Назад до привітання",
+      screens: [
+        {
+          id: "📌 Мої справи · 3",
+          lines: [
+            { s: "b", t: "📌 Що чекає на вас" },
+            { t: "🏠 Домашня група — зустріч 12 жовт. не відмічена" },
+            { t: "📥 Заявка в групу — Марія Ткачук, 12 хв тому" },
+            { t: "🙌 Неділя, 12 жовт. — ви ще не відповіли" },
+            { s: "d", t: "Усі групи й служіння — одним екраном" },
+          ],
+          buttons: [
+            [{ t: "✅ Відмітити відвідуваність · 12 жовт.", primary: true }],
+            [{ t: "📥 Заявки · ⏳ 1" }, { t: "🙌 Мій графік" }],
+          ],
+        },
+        {
+          id: "🏠 Мої групи (2)",
+          lines: [
+            { s: "b", t: "🏠 Ваші групи" },
+            { t: "👑 Домашня група — ви лідер · четвер, 19:00" },
+            { t: "🙋 Молодіжна група — ви учасник · субота, 17:00" },
+            { s: "d", t: "У кожній групі свій щабель — і своє, що можна натиснути" },
+          ],
+          buttons: [
+            [{ t: "🏠 Домашня група", primary: true }],
+            [{ t: "🏠 Молодіжна група" }],
+          ],
+        },
+        {
+          id: "🔥 Мої служіння (1)",
+          lines: [
+            { s: "b", t: "🙌 Служіння: неділя, 12 жовт." },
+            { t: "Недільне служіння · 10:00" },
+            { t: "Ваша роль: Звукорежисер" },
+            { t: "📍 Велика зала" },
+            { s: "d", t: "Будете?" },
+          ],
+          buttons: [
+            [
+              { t: "✅ Буду", tone: "green" },
+              { t: "❌ Не зможу", tone: "red" },
+            ],
+            [{ t: "📋 Що зробити" }],
+          ],
+        },
+      ],
     },
   },
 
@@ -183,7 +237,7 @@ const ua: TelegramCopy = {
     eyebrow: "Меню за ролями",
     title: "Одне й те саме меню виглядає по-різному",
     text:
-      "Бот не показує «все, а зайве сховаємо». Клавіатура збирається з того, ким людина є в церкві: у групах, у служіннях, з правами чи без. Перемкніть роль — і побачите рівно той екран, який відкриється їй.",
+      "Клавіатура збирається з того, ким людина є в церкві: перемкніть роль — і побачите її екран.",
     keyboardLabel: "Меню бота",
     seesLabel: "Що за цим відкривається",
     deniedLabel: "А якщо натиснути чуже",
@@ -254,22 +308,20 @@ const ua: TelegramCopy = {
       },
     ],
     note:
-      "Сховати кнопку — не захист. Старе повідомлення з кнопкою живе вічно, тому бот перевіряє право ще раз на кожному натисканні — і на тексті, якщо назву розділу набрали руками.",
+      "Сховати кнопку — не захист: право перевіряється заново на кожному натисканні.",
   },
 
   join: {
     eyebrow: "Прийняти в групу",
     title: "Від посилання до людини в групі — три дотики",
     text:
-      "Раніше це був ланцюжок: людина написала лідеру, лідер переслав адміну, адмін вписав у таблицю. Тепер заявка приходить у бот і закривається з того самого повідомлення, в якому прийшла.",
+      "Заявка приходить у бот і закривається з того самого повідомлення, в якому прийшла.",
     steps: [
       {
         id: "apply",
         badge: "1",
         who: "Марія, гостя",
         title: "Відкрила посилання групи",
-        text:
-          "Посилання або QR з оголошення веде прямо в бот. Картка групи, кнопка «🙋 Подати заявку» — і бот заповнює форму за неї: що знає з картки, підставляє сам, решту питає по одному, кнопками. Номер людина надсилає своєю кнопкою — так бот певен, хто саме подає заявку.",
         screen: {
           header: "Домашня група",
           sub: "четвер, 19:00 · вул. Героїв, 12",
@@ -288,8 +340,6 @@ const ua: TelegramCopy = {
         badge: "2",
         who: "Андрій, лідер",
         title: "Рішення з того ж повідомлення",
-        text:
-          "Заявка падає лідеру в «📌 Мої справи» і на картку групи як «📥 Заявки · ⏳ 2». Відкрив — бачить відповіді, тисне «✅ Прийняти». Бот перепитує один раз, прямо під повідомленням, і не створює нового екрана.",
         screen: {
           header: "📥 Заявка в групу",
           sub: "Очікують рішення (2)",
@@ -314,8 +364,6 @@ const ua: TelegramCopy = {
         badge: "3",
         who: "Обоє",
         title: "Людина в групі, автоматизації пішли",
-        text:
-          "Марія з'являється в «👥 Учасники (13)», картка заявки їде в колонку «Успішно», вітальне повідомлення йде автоматично. Лідеру нічого не треба переносити руками — і нічого не загубиться в переписці.",
         screen: {
           header: "Домашня група",
           sub: "13 учасників · наступна зустріч у четвер",
@@ -330,51 +378,49 @@ const ua: TelegramCopy = {
         },
       },
     ],
-    footnote:
-      "Хто ще не підключений до бота, спершу надсилає свій номер кнопкою — інакше «Прийняти» не знало б, кого саме додавати.",
   },
 
   speed: {
     eyebrow: "Швидкість реакції",
     title: "Між «щось сталось» і «хтось зреагував» — хвилини",
     text:
-      "Бот не чекає, доки лідер зайде в систему. Він сам приносить справу туди, де людина вже є, — і приймає рішення одним дотиком, без переходів між екранами.",
+      "Бот приносить справу туди, де людина вже є, — і закриває її одним дотиком.",
     timeline: [
       {
         at: "19:04",
         title: "У чаті групи: «мене сьогодні не буде»",
-        text: "Асистент чує це в чаті й тихо кладе чернетку явки. Нікому не пише, нічого не зберігає без лідера.",
+        text: "Асистент кладе чернетку явки — нікому не пише й нічого не зберігає без лідера.",
         tag: "чат групи",
       },
       {
         at: "19:05",
         title: "Третя відмова на цю зустріч",
-        text: "Лідер отримує попередження в особисті: людей менше, ніж планувалось. Далі — його рішення.",
+        text: "Лідер отримує попередження в особисті: людей менше, ніж планувалось.",
         tag: "лідеру",
       },
       {
         at: "19:20",
         title: "Питання без відповіді 15 хвилин",
-        text: "Лідер мовчить — асистент відповідає сам: розклад групи, місце, хто вже буде. Живу людину він чекає першою.",
+        text: "Лідер мовчить — асистент відповідає сам: розклад, місце, хто вже буде.",
         tag: "асистент",
       },
       {
         at: "20:58",
         title: "Зустріч закінчилась — явка не відмічена",
-        text: "Кнопка «✅ Відмітити відвідуваність · 12 жовт.» з'являється просто на картці групи й у «Моїх справах».",
+        text: "Кнопка «✅ Відмітити відвідуваність» з'являється на картці групи й у «Моїх справах».",
         tag: "нагадування",
       },
       {
         at: "21:03",
         title: "Відмітка за хвилину",
-        text: "«🗳 Підставити з відповідей (4)» бере тих, хто вже сказав сам, — лідеру лишається доклацати решту.",
+        text: "«🗳 Підставити з відповідей (4)» бере тих, хто вже сказав сам.",
         tag: "готово",
       },
     ],
     rules: [
-      { value: "15 хв", label: "чекаємо живу людину", text: "Стільки асистент мовчить, перш ніж відповісти замість лідера." },
-      { value: "3", label: "«не зможу» поспіль", text: "Стільки відмов на одну зустріч — і лідер уже знає про це." },
-      { value: "за 3 дні", label: "до служіння", text: "Лідер бачить, що не закрито: дірки, мовчуни, відмови без заміни." },
+      { value: "15 хв", label: "асистент мовчить, поки не відповість жива людина" },
+      { value: "3", label: "«не зможу» поспіль — і лідер уже знає" },
+      { value: "за 3 дні", label: "лідер бачить, що в служінні не закрито" },
     ],
   },
 
@@ -382,7 +428,7 @@ const ua: TelegramCopy = {
     eyebrow: "Малі групи",
     title: "Одна картка групи — два різні екрани",
     text:
-      "Лідер і учасник відкривають ту саму групу й бачать різне. Не тому, що щось приховано «про всяк випадок», а тому, що щабель у групі бот бере з простору групи та перевіряє на кожній кнопці.",
+      "Лідер і учасник відкривають ту саму групу й бачать різне — щабель бот бере з простору групи.",
     leaderLabel: "Лідер групи",
     memberLabel: "Учасник тієї ж групи",
     leader: {
@@ -444,7 +490,7 @@ const ua: TelegramCopy = {
         { t: "◀️ Готово" },
       ],
       note:
-        "Натискання на ім'я перемикає статус по колу — рівно ті статуси, які церква собі ввімкнула. Жодного списку в чаті й жодної таблиці після зустрічі.",
+        "Натискання на ім'я перемикає статус по колу — без списку в чаті й таблиці після зустрічі.",
     },
   },
 
@@ -452,7 +498,7 @@ const ua: TelegramCopy = {
     eyebrow: "Служіння і графік",
     title: "Графік, який відповідає сам собі",
     text:
-      "Замість «хто в неділю на звуці?» в чаті — повідомлення кожному, хто в зміні, і графік, що сам збирає відповіді. Лідер бачить не список імен, а те, що ще не закрито.",
+      "Кожному в зміні — питання, лідеру — лише те, що ще не закрито.",
     slotLabel: "Служителю — питання",
     rotaLabel: "Йому ж — «🙌 Мій графік»",
     digestLabel: "Лідеру — за три дні",
@@ -495,14 +541,14 @@ const ua: TelegramCopy = {
         { t: "❌ Не зможуть: Петро К." },
       ],
       note:
-        "Якщо все закрито — звіту немає взагалі. Лідер отримує повідомлення лише тоді, коли є що робити.",
+        "Якщо все закрито — звіту немає взагалі.",
     },
   },
 
   outro: {
     title: "Бот — не щось окреме",
     text:
-      "Це та сама база, ті самі права й та сама історія, що й у застосунку. Відмітка з телефону лягає в аналітику групи, рішення по заявці — в канбан, відповідь про служіння — у графік.",
+      "Та сама база, ті самі права й та сама історія, що й у застосунку.",
     points: [
       "Бот з назвою й логотипом вашої церкви",
       "Кожне натискання перевіряє права заново",
@@ -520,8 +566,7 @@ const en: TelegramCopy = {
   hero: {
     eyebrow: "Telegram bot",
     title: "What matters — at hand",
-    lead:
-      "A leader marks attendance from their phone in a minute, a volunteer taps «I'm in» under the message, a guest applies to a group from one link. The bot is not a separate app — it is the same database, in a messenger.",
+    lead: "The same database as the app — just in a messenger.",
     facts: [
       { value: "1 tap", label: "from application to the leader's decision" },
       { value: "45 sections", label: "groups, serving, events, forms, attendance" },
@@ -541,7 +586,56 @@ const en: TelegramCopy = {
         ["📌 My tasks · 3", "🏠 My groups (2)"],
         ["🔥 My serving (1)"],
       ],
-      hint: "The keyboard is built per person: exactly as many buttons as they actually need.",
+      hint: "Everyone gets exactly as many buttons as they actually need.",
+      typing: "typing…",
+      tapHint: "Tap a button below — these are the bot's real screens.",
+      back: "Back to the greeting",
+      screens: [
+        {
+          id: "📌 My tasks · 3",
+          lines: [
+            { s: "b", t: "📌 What is waiting for you" },
+            { t: "🏠 Obolon group — the 12 Oct meeting is not marked" },
+            { t: "📥 A group application — Maria Tkachuk, 12 min ago" },
+            { t: "🙌 Sunday, 12 Oct — you have not answered yet" },
+            { s: "d", t: "Every group and team on one screen" },
+          ],
+          buttons: [
+            [{ t: "✅ Mark attendance · 12 Oct", primary: true }],
+            [{ t: "📥 Applications · 1" }, { t: "🙌 My rota" }],
+          ],
+        },
+        {
+          id: "🏠 My groups (2)",
+          lines: [
+            { s: "b", t: "🏠 Your groups" },
+            { t: "👑 Obolon group — you lead it · Thursday, 19:00" },
+            { t: "🙋 Youth group — you are a member · Saturday, 17:00" },
+            { s: "d", t: "Every group has its own standing — and its own buttons" },
+          ],
+          buttons: [
+            [{ t: "🏠 Obolon group", primary: true }],
+            [{ t: "🏠 Youth group" }],
+          ],
+        },
+        {
+          id: "🔥 My serving (1)",
+          lines: [
+            { s: "b", t: "🙌 Serving: Sunday, 12 Oct" },
+            { t: "Sunday service · 10:00" },
+            { t: "Your role: Sound engineer" },
+            { t: "📍 Main hall" },
+            { s: "d", t: "Will you be there?" },
+          ],
+          buttons: [
+            [
+              { t: "✅ I'm in", tone: "green" },
+              { t: "❌ Can't", tone: "red" },
+            ],
+            [{ t: "📋 What to do" }],
+          ],
+        },
+      ],
     },
   },
 
@@ -549,7 +643,7 @@ const en: TelegramCopy = {
     eyebrow: "Menus by role",
     title: "The same menu looks different to everyone",
     text:
-      "The bot does not show everything and hide the extras. The keyboard is built from who a person is in the church: in groups, on teams, with permissions or without. Switch the role and you see exactly the screen that opens for them.",
+      "The keyboard is built from who a person is in the church: switch the role and you see their screen.",
     keyboardLabel: "Bot menu",
     seesLabel: "What opens behind it",
     deniedLabel: "And if they tap someone else's",
@@ -620,22 +714,20 @@ const en: TelegramCopy = {
       },
     ],
     note:
-      "Hiding a button is not protection. An old message with a button lives forever, so the bot checks the right again on every tap — and on typed text, if the section name was entered by hand.",
+      "Hiding a button is not protection: the right is checked again on every tap.",
   },
 
   join: {
     eyebrow: "Joining a group",
     title: "From a link to a person in the group — three taps",
     text:
-      "It used to be a chain: the person wrote to the leader, the leader forwarded it to an admin, the admin typed it into a spreadsheet. Now the application arrives in the bot and is closed from the very message it arrived in.",
+      "The application arrives in the bot and is closed from the very message it arrived in.",
     steps: [
       {
         id: "apply",
         badge: "1",
         who: "Maria, a guest",
         title: "Opened the group link",
-        text:
-          "A link or a QR from the announcement leads straight into the bot. The group card, an «Apply» button — and the bot fills the form for her: what it knows from her profile it fills in itself, the rest it asks one question at a time, with buttons. She sends her number with her own button, so the bot knows exactly who is applying.",
         screen: {
           header: "Obolon group",
           sub: "Thursday, 19:00 · 12 Heroiv St.",
@@ -654,8 +746,6 @@ const en: TelegramCopy = {
         badge: "2",
         who: "Andrii, the leader",
         title: "Decided from the same message",
-        text:
-          "The application lands in «My tasks» and on the group card as «Applications · 2». He opens it, reads the answers, taps «Accept». The bot asks once, right under the message, and never opens a new screen.",
         screen: {
           header: "📥 Group application",
           sub: "Awaiting decision (2)",
@@ -680,8 +770,6 @@ const en: TelegramCopy = {
         badge: "3",
         who: "Both",
         title: "She is in, automations have started",
-        text:
-          "Maria appears in «Members (13)», the card moves to the «Accepted» column, the welcome message goes out on its own. Nothing to carry over by hand — and nothing lost in a chat thread.",
         screen: {
           header: "Obolon group",
           sub: "13 members · next meeting on Thursday",
@@ -696,51 +784,49 @@ const en: TelegramCopy = {
         },
       },
     ],
-    footnote:
-      "Someone not yet connected to the bot sends their number first — otherwise «Accept» would not know who exactly to add.",
   },
 
   speed: {
     eyebrow: "Speed of response",
     title: "Between «something happened» and «someone reacted» — minutes",
     text:
-      "The bot does not wait for the leader to log in. It brings the task to where the person already is — and closes it in one tap, with no jumping between screens.",
+      "The bot brings the task to where the person already is — and closes it in one tap.",
     timeline: [
       {
         at: "19:04",
         title: "In the group chat: «I can't make it today»",
-        text: "The assistant hears it and quietly drafts the attendance mark. It writes to nobody and saves nothing without the leader.",
+        text: "The assistant drafts the attendance mark — it writes to nobody and saves nothing without the leader.",
         tag: "group chat",
       },
       {
         at: "19:05",
         title: "The third decline for this meeting",
-        text: "The leader gets a heads-up in their DM: fewer people than planned. What to do with that is theirs.",
+        text: "The leader gets a heads-up in their DM: fewer people than planned.",
         tag: "to the leader",
       },
       {
         at: "19:20",
         title: "A question unanswered for 15 minutes",
-        text: "The leader is silent — the assistant answers: the schedule, the place, who is already coming. A live human always gets the first go.",
+        text: "The leader is silent — the assistant answers: the schedule, the place, who is coming.",
         tag: "assistant",
       },
       {
         at: "20:58",
         title: "Meeting over — attendance not marked",
-        text: "The «Mark attendance · 12 Oct» button appears on the group card itself and in «My tasks».",
+        text: "The «Mark attendance» button appears on the group card and in «My tasks».",
         tag: "reminder",
       },
       {
         at: "21:03",
         title: "Marked in a minute",
-        text: "«Fill from answers (4)» takes those who already said so themselves — the leader taps through the rest.",
+        text: "«Fill from answers (4)» takes those who already said so themselves.",
         tag: "done",
       },
     ],
     rules: [
-      { value: "15 min", label: "waiting for a human", text: "How long the assistant stays quiet before answering instead of the leader." },
-      { value: "3", label: "declines in a row", text: "That many for one meeting — and the leader already knows." },
-      { value: "3 days", label: "before the service", text: "The leader sees what is still open: gaps, silent people, declines without cover." },
+      { value: "15 min", label: "the assistant stays quiet until a human answers" },
+      { value: "3", label: "declines in a row — and the leader already knows" },
+      { value: "3 days", label: "before the service the leader sees what is open" },
     ],
   },
 
@@ -748,7 +834,7 @@ const en: TelegramCopy = {
     eyebrow: "Small groups",
     title: "One group card, two different screens",
     text:
-      "A leader and a member open the same group and see different things. Not because something is hidden just in case, but because the bot takes the tier from the group space and re-checks it on every button.",
+      "A leader and a member open the same group and see different things — the tier comes from the group space.",
     leaderLabel: "Group leader",
     memberLabel: "A member of the same group",
     leader: {
@@ -810,7 +896,7 @@ const en: TelegramCopy = {
         { t: "◀️ Done" },
       ],
       note:
-        "Tapping a name cycles the status — exactly the statuses the church turned on. No list in the chat and no spreadsheet after the meeting.",
+        "Tapping a name cycles the status — no list in the chat, no spreadsheet after the meeting.",
     },
   },
 
@@ -818,7 +904,7 @@ const en: TelegramCopy = {
     eyebrow: "Serving and the rota",
     title: "A rota that answers for itself",
     text:
-      "Instead of «who's on sound this Sunday?» in the chat — a message to everyone on the shift and a rota that collects the answers. The leader sees not a list of names, but what is still open.",
+      "Everyone on the shift gets the question, the leader sees only what is still open.",
     slotLabel: "To the volunteer — a question",
     rotaLabel: "And their «My rota»",
     digestLabel: "To the leader — three days before",
@@ -861,14 +947,14 @@ const en: TelegramCopy = {
         { t: "❌ Can't make it: Petro K." },
       ],
       note:
-        "If everything is covered, there is no report at all. The leader hears from the bot only when there is something to do.",
+        "If everything is covered, there is no report at all.",
     },
   },
 
   outro: {
     title: "The bot is not a separate product",
     text:
-      "It is the same database, the same permissions and the same history as the app. A mark from a phone lands in the group analytics, a decision on an application lands on the kanban, an answer about serving lands in the rota.",
+      "The same database, the same permissions and the same history as the app.",
     points: [
       "A bot with your church's name and logo",
       "Every tap re-checks the permission",

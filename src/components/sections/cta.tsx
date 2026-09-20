@@ -1,43 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, LayoutGrid, Send } from "lucide-react";
+import { ArrowRight, Send } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
-import { findGoal } from "@/content/builder";
 import { useDemoModal } from "@/context/demo-modal-context";
-import { track } from "@/lib/analytics/client";
 import { useT } from "@/lib/lang";
 import { SITE_TELEGRAM } from "@/lib/seo";
-import { cn } from "@/lib/utils";
-
-/* Шість найчастіших болів із конструктора на /modules. Свідомо підмножина:
-   тут не треба зібрати простір — треба з чогось почати розмову на демо.
-   Стан живе в пам'яті: жодних параметрів в адресі, щоб не плодити дублі
-   тієї самої сторінки в пошуку. */
-const PICKS = ["newcomers", "attendance", "requests", "comms", "ministries", "routine"];
 
 /* This panel is intentionally dark in both themes — it is the one high-contrast
-   moment on the page, so the white/blue values here are deliberate. */
-export default function Cta() {
-  const { openWith } = useDemoModal();
+   moment on the page, so the white/blue values here are deliberate.
+   `rollout` folds the consulting steps into the same block: the home page closes
+   with one panel instead of a consulting card followed by the same promise. */
+export default function Cta({ rollout = false }: { rollout?: boolean }) {
+  const { open } = useDemoModal();
   const t = useT();
-  const [picked, setPicked] = useState<string[]>([]);
-  const labels = t.builder.goals as Record<string, { label: string; note: string }>;
-
-  const toggle = (id: string) => {
-    /* Подія — поруч із дією, а не всередині setState: оновлювач стану
-       React викликає двічі в режимі розробки, і крок дублювався. */
-    const on = !picked.includes(id);
-    const next = on ? [...picked, id] : picked.filter((x) => x !== id);
-    track(on ? "cta_goal_on" : "cta_goal_off", { id, picked: next.length });
-    setPicked(next);
-  };
+  const c = t.consulting;
 
   return (
-    <section className="w-full flex flex-col items-center px-5 md:px-8 py-16 md:py-24 bg-page">
+    <section
+      id={rollout ? "consulting" : undefined}
+      className="w-full flex flex-col items-center px-5 md:px-8 py-12 sm:py-16 md:py-24 bg-page scroll-mt-24"
+    >
       <FadeIn variant="scale" className="w-full max-w-[1120px]">
-        <div className="no-theme-transition relative overflow-hidden rounded-[28px] md:rounded-[40px] px-6 py-10 sm:px-8 sm:py-12 md:px-14 md:py-14">
+        <div className="no-theme-transition relative overflow-hidden rounded-[24px] sm:rounded-[28px] md:rounded-[40px] px-5 py-8 sm:px-8 sm:py-12 md:px-14 md:py-14">
           <div
             aria-hidden
             className="absolute inset-0 -z-10"
@@ -65,9 +50,16 @@ export default function Cta() {
             }}
           />
 
-          {/* Pitch — left-weighted, action on the right on wide screens */}
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 lg:gap-12">
-            <div className="flex flex-col gap-5 items-start lg:max-w-[620px]">
+          {/* Pitch — left-weighted; with `rollout` the right side carries the steps,
+              otherwise it carries the buttons. */}
+          <div
+            className={
+              rollout
+                ? "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,390px)] gap-6 sm:gap-9 lg:gap-14 lg:items-center"
+                : "flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 lg:gap-12"
+            }
+          >
+            <div className={["flex flex-col gap-4 sm:gap-5 items-start", rollout ? "" : "lg:max-w-[620px]"].join(" ")}>
               <span className="inline-flex items-center gap-2.5 rounded-full bg-white/10 border border-white/20 backdrop-blur pl-2.5 pr-4 py-2 md:py-1.5">
                 <span className="relative flex w-2 h-2 shrink-0">
                   <span className="pulse-ring absolute inset-0 rounded-full bg-[#8cc2ff]" />
@@ -76,87 +68,112 @@ export default function Cta() {
                 <span className="text-[13px] font-medium text-white/85 leading-[1.35] md:leading-none text-left">{t.cta.badge}</span>
               </span>
 
-              <h2 className="font-semibold text-white text-[30px] md:text-[44px] leading-[1.08] tracking-[-1px] md:tracking-[-1.8px]">
+              <h2 className="font-semibold text-white text-[27px] sm:text-[30px] md:text-[44px] leading-[1.08] tracking-[-0.8px] sm:tracking-[-1px] md:tracking-[-1.8px]">
                 {t.cta.title}
               </h2>
-              <p className="text-[16.5px] md:text-[18px] font-normal text-white/70 leading-[1.55] max-w-[540px]">
+              <p className="text-[15.5px] sm:text-[16.5px] md:text-[18px] font-normal text-white/70 leading-[1.5] sm:leading-[1.55] max-w-[540px]">
                 {t.cta.text}
               </p>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto shrink-0">
-              <button
-                onClick={() => openWith(picked)}
-                data-track="cta"
-                data-place="фінальний блок"
-                className="btn-primary group relative flex items-center justify-center gap-2 h-[52px] w-full sm:w-auto px-8 rounded-full overflow-hidden shadow-[0_12px_30px_-12px_rgba(0,0,0,0.7)]"
-              >
-                <span className="absolute inset-0 bg-white rounded-full" />
-                <span className="relative text-[#06356e] font-semibold text-[16px] tracking-[-0.32px] leading-[1.4] whitespace-nowrap">
-                  {t.common.bookDemo}
-                </span>
-                <ArrowRight className="relative w-[17px] h-[17px] text-[#06356e] transition-transform duration-200 group-hover:translate-x-0.5" />
-              </button>
-
-              <Link
-                href={SITE_TELEGRAM}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative flex items-center justify-center gap-2 h-[52px] w-full sm:w-auto px-8 rounded-full border border-white/25 bg-white/5 backdrop-blur transition-colors duration-200 hover:bg-white/12"
-              >
-                <Send className="w-[16px] h-[16px] text-white/80" />
-                <span className="text-white font-medium text-[16px] tracking-[-0.32px] leading-[1.4] whitespace-nowrap">
-                  {t.common.telegram}
-                </span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Що болить — один крок перед формою, а не ще одна форма */}
-          <div className="mt-10 md:mt-14 pt-8 md:pt-10 border-t border-white/12">
-            <span id="cta-picks-label" className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/45">
-              {t.cta.pickLabel}
-            </span>
-            <div role="group" aria-labelledby="cta-picks-label" className="mt-5 flex flex-wrap gap-2">
-              {PICKS.map((id) => {
-                const Icon = findGoal(id)?.Icon ?? LayoutGrid;
-                const active = picked.includes(id);
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => toggle(id)}
-                    className={cn(
-                      "inline-flex items-center gap-2 h-10 pl-3.5 pr-4 rounded-full border text-[14px] font-medium leading-none transition-colors duration-150",
-                      active
-                        ? "border-white bg-white text-[#06356e]"
-                        : "border-white/25 bg-white/5 text-white/80 hover:bg-white/12 hover:text-white"
-                    )}
-                  >
-                    {active ? (
-                      <Check className="w-4 h-4 shrink-0" strokeWidth={3} />
-                    ) : (
-                      <Icon className="w-4 h-4 shrink-0 text-[#8cc2ff]" strokeWidth={2.1} />
-                    )}
-                    {labels[id]?.label ?? id}
-                  </button>
-                );
-              })}
-            </div>
-            <p
-              aria-live="polite"
-              className={cn(
-                "mt-4 text-[13.5px] text-white/55 leading-[1.5] transition-opacity duration-200",
-                picked.length ? "opacity-100" : "opacity-0"
+              {rollout && (
+                <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center w-full sm:w-auto mt-0.5 sm:mt-1">
+                  <Actions open={open} t={t} />
+                </div>
               )}
-            >
-              {t.cta.pickNote}
-            </p>
-          </div>
+            </div>
 
+            {rollout ? (
+              /* How the rollout goes — the consulting promise, in the same breath.
+                 Header / numbered rail / footer link: three bands in one card, so the
+                 steps read as a path with a start and an end, not as four icon chips. */
+              <div className="rounded-[20px] md:rounded-[24px] border border-white/15 bg-white/[0.05] backdrop-blur overflow-hidden">
+                <div className="px-4 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5 md:px-7 md:pt-7 border-b border-white/10">
+                  <span className="text-[11.5px] font-semibold uppercase tracking-[1.4px] text-white/40">{c.eyebrow}</span>
+                  <h3 className="mt-1.5 sm:mt-2 font-semibold text-white text-[18px] sm:text-[20px] md:text-[21px] leading-[1.22] tracking-[-0.5px]">{c.title}</h3>
+                  <span className="inline-flex items-center gap-2 mt-2.5 sm:mt-3">
+                    <span className="relative flex w-[7px] h-[7px] shrink-0">
+                      <span className="pulse-ring absolute inset-0 rounded-full bg-[#8cc2ff]" />
+                      <span className="relative w-[7px] h-[7px] rounded-full bg-[#8cc2ff]" />
+                    </span>
+                    <span className="text-[13px] font-medium text-[#8cc2ff] leading-[1.35]">{c.free}</span>
+                  </span>
+                </div>
+
+                <ol className="flex flex-col px-4 py-5 sm:px-6 sm:py-6 md:px-7">
+                  {c.steps.map((step, i) => {
+                    const last = i === c.steps.length - 1;
+                    return (
+                      <li key={step.title}>
+                        <FadeIn delay={2 + i} variant="left" className="relative pl-[32px] sm:pl-[42px]">
+                          {!last && (
+                            <span
+                              aria-hidden
+                              className="absolute left-[10px] sm:left-[13px] top-[24px] sm:top-[28px] bottom-0 w-px bg-white/20"
+                            />
+                          )}
+                          <span
+                            aria-hidden
+                            className="absolute left-0 top-0 w-[21px] h-[21px] sm:w-[27px] sm:h-[27px] rounded-full border border-white/20 bg-white/[0.07] flex items-center justify-center text-[11px] sm:text-[11.5px] font-semibold tabular-nums text-[#8cc2ff]"
+                          >
+                            {i + 1}
+                          </span>
+                          <div className={["flex flex-col gap-0.5 sm:gap-1 pt-px sm:pt-[3px]", last ? "" : "pb-3.5 sm:pb-6"].join(" ")}>
+                            <h4 className="font-semibold text-white text-[15px] sm:text-[15.5px] leading-[1.3] tracking-[-0.2px]">{step.title}</h4>
+                            <p className="text-[13.5px] sm:text-[14px] text-white/60 leading-[1.4] sm:leading-[1.45]">{step.text}</p>
+                          </div>
+                        </FadeIn>
+                      </li>
+                    );
+                  })}
+                </ol>
+
+                <Link
+                  href="/consulting"
+                  className="group flex items-center justify-between gap-3 px-4 sm:px-6 md:px-7 py-3.5 sm:py-4 border-t border-white/10 text-white/65 font-medium text-[14.5px] tracking-[-0.2px] transition-colors duration-200 hover:bg-white/[0.06] hover:text-white"
+                >
+                  {c.more}
+                  <ArrowRight className="w-[15px] h-[15px] shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+                </Link>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center w-full sm:w-auto shrink-0">
+                <Actions open={open} t={t} />
+              </div>
+            )}
+          </div>
         </div>
       </FadeIn>
     </section>
+  );
+}
+
+function Actions({ open, t }: { open: () => void; t: ReturnType<typeof useT> }) {
+  return (
+    <>
+      <button
+        onClick={open}
+        data-track="cta"
+        data-place="фінальний блок"
+        className="btn-primary group relative flex items-center justify-center gap-2 h-[48px] sm:h-[52px] w-full sm:w-auto px-8 rounded-full overflow-hidden shadow-[0_12px_30px_-12px_rgba(0,0,0,0.7)]"
+      >
+        <span className="absolute inset-0 bg-white rounded-full" />
+        <span className="relative text-[#06356e] font-semibold text-[16px] tracking-[-0.32px] leading-[1.4] whitespace-nowrap">
+          {t.common.bookDemo}
+        </span>
+        <ArrowRight className="relative w-[17px] h-[17px] text-[#06356e] transition-transform duration-200 group-hover:translate-x-0.5" />
+      </button>
+
+      <Link
+        href={SITE_TELEGRAM}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative flex items-center justify-center gap-2 h-[48px] sm:h-[52px] w-full sm:w-auto px-8 rounded-full border border-white/25 bg-white/5 backdrop-blur transition-colors duration-200 hover:bg-white/12"
+      >
+        <Send className="w-[16px] h-[16px] text-white/80" />
+        <span className="text-white font-medium text-[16px] tracking-[-0.32px] leading-[1.4] whitespace-nowrap">
+          {t.common.telegram}
+        </span>
+      </Link>
+    </>
   );
 }

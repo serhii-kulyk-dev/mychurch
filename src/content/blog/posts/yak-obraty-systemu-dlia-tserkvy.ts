@@ -5,7 +5,7 @@ export const post: BlogPost = {
   category: "choice",
   date: "2026-09-16",
   minutes: 9,
-  related: ["prohrama-dlia-obliku-chleniv-tserkvy", "vasha-tserkva-unikalna", "perenesty-dani-z-excel"],
+  related: ["vasha-tserkva-unikalna", "piat-pytan-pro-systemu", "dani-v-riznykh-mistsiakh"],
   copy: {
     ua: {
       seoTitle: "Як обрати систему для церкви: 12 запитань перед вибором",

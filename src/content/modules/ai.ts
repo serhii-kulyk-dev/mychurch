@@ -1,17 +1,17 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "ai": assistant */
+/* Module pages: assistant — their catalogue group is the `group` field below. */
 export const aiModules: ModuleDetail[] = [
   {
     id: "assistant",
-    group: "ai",
+    group: "insight",
     related: ["analytics", "people", "automations", "telegram-bot"],
     copy: {
       ua: {
         seoTitle: "ШІ-асистенти — модуль «Моя Церква»",
         seoDescription: "ШІ-асистент «Моєї Церкви» відповідає на запитання по базі вашої церкви, помічає, хто перестав приходити, готує зведення тижня й підказує наступний крок.",
         title: "Відповіді про вашу церкву — без таблиць і фільтрів",
-        lead: "ШІ-асистент працює на даних, які вже є в MyChurch: люди, явка, групи, служіння. Запитайте звичайною мовою — і отримайте не звіт, а відповідь і наступний крок.",
+        lead: "ШІ-асистент працює на даних, які вже є в «Моїй Церкві»: люди, явка, групи, служіння. Запитайте звичайною мовою — і отримайте не звіт, а відповідь і наступний крок.",
         highlights: [
           "Відповіді на запитання по вашій базі",
           "Сам помічає, хто перестав приходити",
@@ -40,7 +40,7 @@ export const aiModules: ModuleDetail[] = [
         ],
         faq: [
           { q: "Чи бачить асистент дані, до яких у мене немає доступу?", a: "Ні. Він відповідає в межах вашої ролі. Лідер групи отримує відповіді лише про своїх людей, пастор — про всю церкву." },
-          { q: "Куди йдуть дані церкви?", a: "Асистент працює всередині MyChurch на вашій базі. Дані не використовуються для навчання моделей і не передаються третім сторонам." },
+          { q: "Куди йдуть дані церкви?", a: "Асистент працює всередині «Моєї Церкви» на вашій базі. Дані не використовуються для навчання моделей і не передаються третім сторонам." },
           { q: "Чи може асистент помилятися?", a: "Він відповідає лише на основі записів у системі й показує, звідки взяв цифру. Якщо явку не відмітили — він так і скаже." },
           { q: "Чи замінює він аналітику?", a: "Ні, він доповнює: дашборди показують картину, асистент відповідає на конкретне запитання й пропонує наступний крок." },
         ],
@@ -57,20 +57,6 @@ export const aiModules: ModuleDetail[] = [
             { from: "bot", text: "Готово. Зведення прийде в неділю о 8:00: явка, новенькі, групи, які потребують уваги.", time: "09:43" },
           ],
           input: "Запитайте про вашу церкву…",
-        },
-        day: {
-          title: "Один день із асистентом",
-          text: "Понеділок після служіння. Асистент працює на тих самих даних, що й уся система, і в межах ролі того, хто питає.",
-          items: [
-            { time: "08:00", title: "Зведення тижня", text: "Пастор отримує в Telegram явку, новеньких і групи, які потребують уваги.", count: "1 зведення" },
-            { time: "09:40", title: "Запитання про новеньких", text: "«Хто з квітневих новеньких ще без групи?» Асистент називає п'ятьох і найближчу до них групу.", count: "5 імен" },
-            { time: "09:42", title: "Дія просто з чату", text: "Пастор просить надіслати список лідеру й нагадати в п'ятницю. Асистент робить обидва кроки.", count: "2 дії" },
-            { time: "11:15", title: "Лідер питає про свою групу", text: "Відповідь охоплює лише її людей: хто пропускає, хто прийшов уперше. Чужих груп лідер не бачить." },
-            { time: "13:00", title: "Хто перестав приходити", text: "Асистент піднімає тих, хто пропустив три неділі поспіль, і показує дати останніх відміток.", count: "6 людей" },
-            { time: "15:30", title: "Навантаження команди", text: "Керівник служінь питає, хто служить тричі на тиждень, і бачить, кого варто розвантажити.", count: "3 служителі" },
-            { time: "17:00", title: "Запитання з рецепції", text: "«Коли збирається група на Виноградарі і хто лідер?» — відповідь із розкладу, без дзвінка адміністратору." },
-          ],
-          footer: "Кожна відповідь — із записів системи: асистент показує, звідки взято цифру.",
         },
       },
       en: {
@@ -123,20 +109,6 @@ export const aiModules: ModuleDetail[] = [
             { from: "bot", text: "Done. The digest arrives on Sunday at 8:00: attendance, newcomers, groups that need attention.", time: "09:43" },
           ],
           input: "Ask about your church…",
-        },
-        day: {
-          title: "One day with the assistant",
-          text: "A Monday after the service. The assistant runs on the same data as the rest of the system, within the role of whoever asks.",
-          items: [
-            { time: "08:00", title: "Weekly digest", text: "The pastor gets attendance, newcomers and the groups that need attention in Telegram.", count: "1 digest" },
-            { time: "09:40", title: "A question about newcomers", text: "\"Which April newcomers still have no group?\" The assistant names five and the nearest group.", count: "5 names" },
-            { time: "09:42", title: "Action straight from the chat", text: "The pastor asks it to send the list to the leader and remind him on Friday. Both steps are done.", count: "2 actions" },
-            { time: "11:15", title: "A leader asks about their group", text: "The answer covers only their people: who is missing, who came for the first time. Other groups stay hidden." },
-            { time: "13:00", title: "Who has stopped coming", text: "The assistant raises everyone absent three Sundays running and shows the dates of their last check-ins.", count: "6 people" },
-            { time: "15:30", title: "Team load", text: "The ministry lead asks who serves three times a week and sees who needs a break.", count: "3 volunteers" },
-            { time: "17:00", title: "A question from reception", text: "\"When does the Obolon group meet and who leads it?\" — answered from the schedule, no call to the administrator." },
-          ],
-          footer: "Every answer comes from records in the system — the assistant shows where each number came from.",
         },
       },
     },

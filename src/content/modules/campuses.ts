@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "campuses": campuses */
+/* Module pages: campuses — their catalogue group is the `group` field below. */
 export const campusesModules: ModuleDetail[] = [
   {
     id: "campuses",
-    group: "campuses",
+    group: "property",
     related: ["analytics", "calendar", "ministries", "rooms"],
     copy: {
       ua: {
@@ -57,20 +57,6 @@ export const campusesModules: ModuleDetail[] = [
             { cells: ["Вся церква", "428", "316", "23"], badge: { label: "+10 за тиждень", tone: "neutral" } },
           ],
         },
-        day: {
-          title: "Одна неділя в чотирьох кемпусах",
-          text: "Центр, Виноградар, Лівий берег і Бровари служать у різний час. Кожна локація веде своє, а сума складається сама.",
-          items: [
-            { time: "07:30", title: "Центр готується", text: "Команда відкриває розклад своєї локації: служіння о 10:00, кімнати, хто сьогодні зустрічає гостей.", count: "18 служителів" },
-            { time: "09:45", title: "Відмітка приходу в Центрі", text: "Рецепція відмічає людей на вході. Явка одразу лягає в картки й у дашборд кемпусу.", count: "142 людини" },
-            { time: "11:50", title: "Виноградар відкривається", text: "Друге служіння о 12:00 має власний календар, власну команду й власні малі групи.", count: "91 людина" },
-            { time: "13:10", title: "Гість з іншого кемпусу", text: "Рецепція Виноградаря знаходить картку людини з Лівого берега. Явка записується там, де вона була.", count: "1 картка" },
-            { time: "15:00", title: "Бровари", text: "Найновіший кемпус служить о 15:00. Пастор локації бачить свою явку одразу після благословення.", count: "36 людей" },
-            { time: "17:30", title: "Загальна подія", text: "Вечір молитви позначений як загальноцерковний і стоїть у календарі всіх чотирьох кемпусів.", count: "4 календарі" },
-            { time: "20:00", title: "Картина всієї церкви", text: "Старший пастор дивиться локації поруч: явка, новенькі, групи. На Лівому березі явка просіла.", count: "428 людей" },
-          ],
-          footer: "Ніхто не зводив таблиці з трьох районів: кожен кемпус відмітив своє, решту порахувала система.",
-        },
       },
       en: {
         seoTitle: "Campuses — MyChurch module",
@@ -121,20 +107,6 @@ export const campusesModules: ModuleDetail[] = [
             { cells: ["Brovary", "42", "36", "3"], badge: { label: "New campus", tone: "brand" } },
             { cells: ["Whole church", "428", "316", "23"], badge: { label: "+10 this week", tone: "neutral" } },
           ],
-        },
-        day: {
-          title: "One Sunday across four campuses",
-          text: "The Centre, Obolon, Left Bank and Brovary meet at different times. Each location runs its own day, and the totals add up by themselves.",
-          items: [
-            { time: "07:30", title: "The Centre gets ready", text: "The team opens their location's schedule: service at 10:00, rooms, who is on welcome today.", count: "18 volunteers" },
-            { time: "09:45", title: "Check-in at the Centre", text: "Reception checks people in at the door. Attendance lands in the profiles and the campus dashboard.", count: "142 people" },
-            { time: "11:50", title: "Obolon opens", text: "The second service at 12:00 has its own calendar, its own team and its own small groups.", count: "91 people" },
-            { time: "13:10", title: "A guest from another campus", text: "Obolon's reception finds the profile of a Left Bank member. Attendance is recorded where the person actually was.", count: "1 profile" },
-            { time: "15:00", title: "Brovary", text: "The newest campus meets at 15:00. Its pastor sees the attendance right after the closing blessing.", count: "36 people" },
-            { time: "17:30", title: "A church-wide event", text: "The prayer evening is marked church-wide and stands in all four campus calendars.", count: "4 calendars" },
-            { time: "20:00", title: "The whole church at a glance", text: "The senior pastor views the locations side by side: attendance, newcomers, groups. Left Bank has dipped.", count: "428 people" },
-          ],
-          footer: "Nobody merged spreadsheets from three districts: each campus marked its own, the system counted the rest.",
         },
       },
     },

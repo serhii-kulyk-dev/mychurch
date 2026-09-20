@@ -23,7 +23,7 @@ export default function Proof() {
   const copy = church.copy[lang];
   const accent = church.accent;
   const promo = church.promo;
-  /* "У MyChurch — понад рік, з березня 2025" is the last of the hero facts. */
+  /* "У «Моїй Церкві» — понад рік, з березня 2025" is the last of the hero facts. */
   const since = copy.facts[copy.facts.length - 1];
 
   return (

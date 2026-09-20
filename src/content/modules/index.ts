@@ -1,4 +1,5 @@
 import type { ModuleDetail } from "./types";
+import { MODULE_IDS } from "./ids";
 import { peopleModules } from "./people";
 import { activitiesModules } from "./activities";
 import { planningModules } from "./planning";
@@ -13,6 +14,7 @@ import { platformModules } from "./platform";
 import { aiModules } from "./ai";
 
 export type { ModuleDetail, ModuleCopy, MockSpec, RoleId, Tone } from "./types";
+export { MODULE_IDS, hasModulePage, moduleHrefByName } from "./ids";
 
 /** Every module page, in the same order as the grid on /modules. */
 export const MODULE_DETAILS: ModuleDetail[] = [
@@ -36,19 +38,16 @@ export function getModule(id: string): ModuleDetail | undefined {
   return BY_ID.get(id);
 }
 
-/** Ids that have a dedicated page (used by generateStaticParams and links). */
-export const MODULE_IDS = MODULE_DETAILS.map((m) => m.id);
-
-export function hasModulePage(id: string) {
-  return BY_ID.has(id);
-}
-
-/** Resolve a module *name* (as shown in role pages) to the best link:
-    its own page, else its group on /modules. */
-export function moduleHrefByName(groups: { id: string; items: { id: string; name: string }[] }[], name: string) {
-  for (const g of groups) {
-    const item = g.items.find((i) => i.name === name);
-    if (item) return hasModulePage(item.id) ? `/modules/${item.id}` : `/modules#m-${g.id}`;
+/* Список у ids.ts мусить збігатися з реальними модулями — інакше
+   посилання вели б на неіснуючі сторінки, а нові модулі мовчки
+   випадали б із сітки. Перевіряємо при збірці, не в браузері:
+   цей файл тягнуть тільки серверні сторінки. */
+{
+  const real = MODULE_DETAILS.map((m) => m.id).join(",");
+  const listed = (MODULE_IDS as readonly string[]).join(",");
+  if (real !== listed) {
+    throw new Error(
+      `src/content/modules/ids.ts розійшовся з модулями.\nОчікувалось: ${real}\nУ файлі:    ${listed}`,
+    );
   }
-  return "/modules";
 }

@@ -58,7 +58,7 @@ const privacyUa: LegalCopy = {
     {
       heading: "1. Хто за що відповідає",
       body: [
-        `Послугу надає ${ENTITY_UA} (далі — «ми», «MyChurch»).`,
+        `Послугу надає ${ENTITY_UA} (далі — «ми», «Моя Церква»).`,
         "Щодо даних членів громади розпорядником є церква, а не ми. Церква вирішує, кого внести в систему, які поля заповнити й хто з команди матиме доступ. Ми виступаємо обробником: працюємо з цими даними лише за вказівкою церкви й лише для того, щоб система працювала.",
         "Щодо даних, які ви залишаєте на цьому сайті (форма демо, бриф, звернення в підтримку), розпорядником є ми.",
       ],
@@ -142,10 +142,10 @@ const privacyUa: LegalCopy = {
     {
       heading: "10. Файли cookie, локальне сховище і статистика сайту",
       body: [
-        "Статистику сайту ми ведемо самі, на власному сервері. Щоб відрізнити один візит від іншого, у локальному сховищі браузера зберігається випадковий набір символів. Поруч лежать обрана тема (світла або темна) і мова інтерфейсу. Ні імені, ні пошти, ні телефону, ні вашої IP-адреси ця статистика не містить: IP перетворюється на хеш із щодобовою сіллю і потрібен лише як захист від флуду.",
-        "Ми бачимо знеособлені кроки: які сторінки відкривали, доки прокрутили, які кнопки натискали, з якого джерела прийшли. Те, що ви друкуєте в полях форми, у статистику не потрапляє — тільки факт, що форму почали заповнювати й надіслали.",
-        "Паралельно працює Google Analytics (GA4) — ним ми звіряємо джерела переходів. Він ставить власні файли cookie (_ga та подібні) і передає знеособлені дані про візит компанії Google. Рекламних мереж і піксельних трекерів соцмереж на сайті немає.",
-        "Збір можна вимкнути кнопкою нижче або додавши ?notrack=1 до адреси сторінки — це зупиняє обидва лічильники, і Google Analytics узагалі не завантажується. Очистити збережене — у налаштуваннях браузера.",
+        "Цей сайт — статичні сторінки без власного сервера, тож свого лічильника ми не тримаємо. Єдина статистика — Google Analytics (GA4). Він ставить власні файли cookie (_ga та подібні) і передає знеособлені дані про візит компанії Google; вашу IP-адресу обробляє Google, ми її не бачимо й ніде не зберігаємо.",
+        "У локальному сховищі браузера лежить лише те, що потрібне самому сайту: номер візиту (випадковий лічильник, який нікого не ідентифікує), обрана тема (світла або темна), мова інтерфейсу і позначка про відмову від збору. Ці записи не залишають ваш браузер.",
+        "Ми бачимо знеособлені кроки: які сторінки відкривали, доки прокрутили, які кнопки натискали, з якого джерела прийшли. Те, що ви друкуєте в полях форми, у статистику не потрапляє — тільки факт, що форму почали заповнювати й надіслали. Рекламних мереж і піксельних трекерів соцмереж на сайті немає.",
+        "Збір можна вимкнути кнопкою нижче або додавши ?notrack=1 до адреси сторінки — тоді Google Analytics узагалі не завантажується. Очистити збережене — у налаштуваннях браузера.",
       ],
       optOut: true,
     },
@@ -256,10 +256,10 @@ const privacyEn: LegalCopy = {
     {
       heading: "10. Cookies, local storage and site analytics",
       body: [
-        "We keep our own site statistics, on our own server. To tell one visit from another, a random string is stored in your browser's local storage, next to your chosen theme (light or dark) and interface language. The statistics hold no name, e-mail, phone number or IP address: the IP becomes a hash with a daily salt and is only used as flood protection.",
-        "What we see are anonymous steps: which pages were opened, how far they were scrolled, which buttons were pressed, which source the visit came from. What you type into form fields never enters the statistics — only the fact that a form was started and sent.",
-        "Google Analytics (GA4) runs alongside it, and we use it to cross-check traffic sources. It sets its own cookies (_ga and similar) and sends anonymous visit data to Google. There are no advertising networks and no social-network pixel trackers on this site.",
-        "You can switch collection off with the button below, or by adding ?notrack=1 to the page address — that stops both counters, and Google Analytics is never loaded at all. To clear what is stored, use your browser settings.",
+        "This site is static pages with no server of our own, so we run no counter of our own. The only analytics is Google Analytics (GA4). It sets its own cookies (_ga and similar) and sends anonymous visit data to Google; your IP address is processed by Google — we never see it and never store it.",
+        "Your browser's local storage holds only what the site itself needs: a visit number (a random counter that identifies nobody), your chosen theme (light or dark), the interface language and the opt-out flag. None of it leaves your browser.",
+        "What we see are anonymous steps: which pages were opened, how far they were scrolled, which buttons were pressed, which source the visit came from. What you type into form fields never enters the statistics — only the fact that a form was started and sent. There are no advertising networks and no social-network pixel trackers on this site.",
+        "You can switch collection off with the button below, or by adding ?notrack=1 to the page address — Google Analytics is then never loaded at all. To clear what is stored, use your browser settings.",
       ],
       optOut: true,
     },
@@ -288,11 +288,11 @@ const termsUa: LegalCopy = {
     {
       heading: "1. Хто надає послугу",
       body: [
-        `Систему MyChurch надає ${ENTITY_UA}. Користуючись системою або залишаючи заявку на сайті, ви погоджуєтесь із цими умовами.`,
+        `Систему «Моя Церква» надає ${ENTITY_UA}. Користуючись системою або залишаючи заявку на сайті, ви погоджуєтесь із цими умовами.`,
       ],
     },
     {
-      heading: "2. Що таке MyChurch",
+      heading: "2. Що таке «Моя Церква»",
       body: [
         "Це вебсистема для обліку та організації церковних процесів: люди, сім'ї, малі групи, служіння, події, відвідуваність, заявки й аналітика. Склад модулів для конкретної церкви погоджується окремо на етапі впровадження.",
         "Систему адаптовано під роботу з телефона через браузер. Окремий застосунок для iOS та Android перебуває в розробці; його наявність не є частиною цих умов, поки ми не повідомимо про запуск.",

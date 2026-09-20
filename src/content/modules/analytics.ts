@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "analytics": analytics */
+/* Module pages: analytics — their catalogue group is the `group` field below. */
 export const analyticsModules: ModuleDetail[] = [
   {
     id: "analytics",
-    group: "analytics",
+    group: "insight",
     related: ["goals", "people", "groups", "assistant"],
     copy: {
       ua: {

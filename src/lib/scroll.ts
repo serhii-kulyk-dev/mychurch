@@ -15,3 +15,25 @@ export function centerInRail(rail: HTMLElement | null, index: number, smooth = t
   const target = rail.scrollLeft + offset - (rail.clientWidth - item.offsetWidth) / 2;
   rail.scrollTo({ left: Math.max(0, Math.min(max, target)), behavior: smooth ? "smooth" : "auto" });
 }
+
+/* Якорі на секції головної («Головна», «Контакти» в меню й у підвалі) гортають
+   сторінку, але не лишають #hash в адресі: інакше наступне відкриття сайту
+   починалося б посеред сторінки, а не згори. З інших сторінок це звичайний
+   перехід — там якоря ще нема, його треба спершу завантажити, а вже на місці
+   адресу чистить <AnchorGuard />. */
+
+/** Прокрутити до секції з таким id. */
+export function scrollToSection(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/** Обробник кліку для посилання «/#секція»: на своїй сторінці гортаємо самі. */
+export function sectionClick(href: string) {
+  return (e: { preventDefault: () => void }) => {
+    if (!href.startsWith("/#")) return;
+    const id = href.slice(2);
+    if (!document.getElementById(id)) return;
+    e.preventDefault();
+    scrollToSection(id);
+  };
+}

@@ -45,10 +45,19 @@ export default function OfflineState() {
     }
   }, []);
 
-  /* Мережа повернулась сама — перевіряємо сервер без участі людини. */
+  /* Мережа повернулась сама — перевіряємо сервер без участі людини.
+     Слухаємо подію напряму, а не похідне `online`: інакше перший
+     `setProbe` спрацював би синхронно в тілі ефекту, а це каскадний
+     рендер. Перша перевірка — окремою задачею, вже після кадру. */
   useEffect(() => {
-    if (online) void check();
-  }, [online, check]);
+    const recheck = () => void check();
+    window.addEventListener("online", recheck);
+    const first = window.setTimeout(recheck, 0);
+    return () => {
+      window.clearTimeout(first);
+      window.removeEventListener("online", recheck);
+    };
+  }, [check]);
 
   const connected = online && probe !== "failed";
   const Icon = connected ? Wifi : WifiOff;

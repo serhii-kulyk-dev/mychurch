@@ -2,35 +2,46 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
-  Activity, BarChart3, CalendarCheck, Check, FileBarChart, FileDown,
-  Loader2, MousePointerClick, Target, TrendingDown, TrendingUp,
+  BarChart3, CalendarCheck, Check, FileBarChart, FileDown,
+  Loader2, MousePointerClick, TrendingDown, TrendingUp,
 } from "lucide-react";
 import { useT } from "@/lib/lang";
+import ClickHere from "@/components/shared/click-here";
 import { prefersReducedMotion } from "@/components/shared/fade-in";
 import { useCountUp } from "@/components/shared/use-count-up";
 import { cn } from "@/lib/utils";
 import { centerInRail } from "@/lib/scroll";
 import type { Dict } from "@/lib/i18n";
 
-/* The analytics block is one screen whose chart keeps changing. Every view
-   also plays itself out — the weeks are walked through, the growth line is
-   drawn while the number climbs with it, the report reads its own slices —
-   so the motion shows how the numbers are read, not just that they moved. */
+/* The analytics block is one screen whose chart keeps changing. Three views,
+   three shapes, three colours — bars, a line, a donut — and each one also
+   plays itself out, so the motion shows how the numbers are read. */
 
 type Block = Dict["features"]["blocks"][number];
 type Tone = "up" | "warn";
 
-const CYCLE_MS = 5200;
-const ACCENT = "#8b5bf0";
-const VIEW_ICONS = [CalendarCheck, TrendingUp, Activity, FileBarChart, Target];
-const SERIES_COLORS = ["var(--brand)", ACCENT];
-const SLICE_COLORS = [ACCENT, "var(--brand)", "#0ea5e9", "#f59e0b"];
-const RING_COLORS = [ACCENT, "var(--brand)", "#12a150"];
+const CYCLE_MS = 3600;
+const BLUE = "var(--brand)";
+const GREEN = "#12a150";
+const VIOLET = "#8b5bf0";
+const SKY = "#0ea5e9";
+const AMBER = "#f59e0b";
+const PINK = "#e0559b";
+
+/* Every view owns a colour: the chip, the card icon and the progress bar follow it. */
+const VIEWS = [
+  { icon: CalendarCheck, color: BLUE },
+  { icon: TrendingUp, color: GREEN },
+  { icon: FileBarChart, color: VIOLET },
+];
+const SERIES_COLORS = [BLUE, VIOLET];
+const KPI_COLORS = [BLUE, GREEN, AMBER];
+const SLICE_COLORS = [VIOLET, BLUE, SKY, PINK];
+const STAT_COLORS = [GREEN, SKY, AMBER];
 const TONE_TEXT: Record<Tone, string> = {
   up: "text-[#0e7a3c] dark:text-[#3ddc97]",
   warn: "text-[#d97a00] dark:text-[#ffb340]",
 };
-const TONE_HEX: Record<Tone, string> = { up: "#12a150", warn: "#f59e0b" };
 const EASE = "cubic-bezier(0.16,0.84,0.44,1)";
 
 /* Numbers live here; every label comes from the dictionary (same index). */
@@ -47,19 +58,7 @@ const GROWTH = {
   stats: [24, 9, 7],
   tones: ["up", "up", "warn"] as Tone[],
 };
-const GROUP_ROWS: { pct: number; delta: string; tone: Tone; spark: number[] }[] = [
-  { pct: 92, delta: "+2", tone: "up", spark: [78, 82, 80, 86, 89, 92] },
-  { pct: 86, delta: "+6", tone: "up", spark: [64, 70, 68, 75, 81, 86] },
-  { pct: 74, delta: "+3", tone: "up", spark: [62, 66, 63, 68, 71, 74] },
-  { pct: 61, delta: "−2", tone: "warn", spark: [72, 70, 67, 66, 63, 61] },
-  { pct: 45, delta: "−9", tone: "warn", spark: [68, 64, 58, 54, 49, 45] },
-];
 const REPORT = { total: 312, slices: [42, 27, 18, 13] };
-const GOALS = [
-  { fact: 27, plan: 40, delta: 4 },
-  { fact: 68, plan: 80, delta: 9 },
-  { fact: 12, plan: 25, delta: 3 },
-];
 
 function useInView<T extends HTMLElement>(threshold = 0.3) {
   const ref = useRef<T>(null);
@@ -112,13 +111,16 @@ function smoothPath(pts: { x: number; y: number }[]) {
 }
 
 /* ── View 1: attendance — the weeks read themselves out ──────── */
-function Kpi({ label, value, delta, tone, delay }: { label: string; value: number; delta: string; tone: Tone; delay: number }) {
-  const shown = useCountUp(value, true, 900);
+function Kpi({ label, value, delta, tone, color, delay }: { label: string; value: number; delta: string; tone: Tone; color: string; delay: number }) {
+  const shown = useCountUp(value, true, 650);
   return (
-    <div className="mock-pop min-w-0 rounded-xl bg-surface-2 border border-hairline px-2 sm:px-3 py-2.5 flex flex-col gap-1.5" style={{ animationDelay: `${delay}ms` }}>
+    <div
+      className="mock-pop min-w-0 rounded-xl bg-surface-2 border border-hairline px-2 sm:px-3 py-2.5 flex flex-col gap-1.5"
+      style={{ animationDelay: `${delay}ms`, borderTop: `2px solid ${color}` }}
+    >
       <span className="text-[10.5px] sm:text-[11px] text-ink-3 leading-none truncate">{label}</span>
       <span className="flex items-baseline gap-1.5">
-        <span className="text-[22px] font-semibold text-ink leading-none tracking-[-0.5px] tabular-nums">{shown}</span>
+        <span className="text-[22px] font-semibold leading-none tracking-[-0.5px] tabular-nums" style={{ color }}>{shown}</span>
         <span className={cn("text-[11px] font-medium leading-none", TONE_TEXT[tone])}>{delta}</span>
       </span>
     </div>
@@ -127,7 +129,7 @@ function Kpi({ label, value, delta, tone, delay }: { label: string; value: numbe
 
 function AttendanceView({ t }: { t: Dict["features"]["mocks"]["analytics"]["attendance"] }) {
   const d = ATTENDANCE;
-  const auto = useStep(d.services.length, 850, 700, true);
+  const auto = useStep(d.services.length, 520, 350, true);
   const [manual, setManual] = useState<number | null>(null);
   const active = manual ?? (auto >= 0 ? auto : null);
 
@@ -135,7 +137,7 @@ function AttendanceView({ t }: { t: Dict["features"]["mocks"]["analytics"]["atte
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-2">
         {t.kpis.map((label, i) => (
-          <Kpi key={label} label={label} value={d.kpis[i]} delta={t.deltas[i]} tone={d.tones[i]} delay={80 + i * 80} />
+          <Kpi key={label} label={label} value={d.kpis[i]} delta={t.deltas[i]} tone={d.tones[i]} color={KPI_COLORS[i]} delay={60 + i * 60} />
         ))}
       </div>
 
@@ -161,7 +163,7 @@ function AttendanceView({ t }: { t: Dict["features"]["mocks"]["analytics"]["atte
           ))}
           <span
             className="mock-area absolute left-0 right-0 border-t border-dashed z-[1] pointer-events-none"
-            style={{ bottom: `${(d.prevAvg / d.max) * 100}%`, borderColor: "color-mix(in oklab, var(--ink) 45%, transparent)", animationDelay: "900ms" }}
+            style={{ bottom: `${(d.prevAvg / d.max) * 100}%`, borderColor: "color-mix(in oklab, var(--ink) 45%, transparent)", animationDelay: "600ms" }}
           >
             <span className="absolute right-0 -top-[13px] text-[9.5px] text-ink-3 leading-none tabular-nums">{d.prevAvg}</span>
           </span>
@@ -184,8 +186,8 @@ function AttendanceView({ t }: { t: Dict["features"]["mocks"]["analytics"]["atte
                 className="relative flex-1 h-full flex items-end justify-center gap-[3px] cursor-pointer outline-none transition-opacity duration-300"
                 style={{ opacity: active !== null && !on ? 0.5 : 1 }}
               >
-                <span className="mock-bar w-full max-w-[18px] rounded-[4px] origin-bottom" style={{ height: `${(v / d.max) * 100}%`, background: SERIES_COLORS[0], animationDelay: `${260 + i * 70}ms` }} />
-                <span className="mock-bar w-full max-w-[18px] rounded-[4px] origin-bottom" style={{ height: `${(g / d.max) * 100}%`, background: SERIES_COLORS[1], animationDelay: `${310 + i * 70}ms` }} />
+                <span className="mock-bar w-full max-w-[18px] rounded-[4px] origin-bottom" style={{ height: `${(v / d.max) * 100}%`, background: SERIES_COLORS[0], animationDelay: `${180 + i * 50}ms` }} />
+                <span className="mock-bar w-full max-w-[18px] rounded-[4px] origin-bottom" style={{ height: `${(g / d.max) * 100}%`, background: SERIES_COLORS[1], animationDelay: `${215 + i * 50}ms` }} />
                 {on && (
                   <div
                     className={cn(
@@ -222,9 +224,9 @@ const W = 300, H = 118, PAD = 6;
 
 function GrowthView({ t }: { t: Dict["features"]["mocks"]["analytics"]["growth"] }) {
   const n = GROWTH.totals.length;
-  const step = useStep(n, 250, 250);
+  const step = useStep(n, 170, 150);
   const at = step < 0 ? 0 : step;
-  const total = useCountUp(GROWTH.totals[at], true, 300);
+  const total = useCountUp(GROWTH.totals[at], true, 220);
   const lo = 240, hi = 325;
   const pts = GROWTH.totals.map((v, i) => ({
     x: PAD + (i / (n - 1)) * (W - PAD * 2),
@@ -239,11 +241,11 @@ function GrowthView({ t }: { t: Dict["features"]["mocks"]["analytics"]["growth"]
       <div className="flex items-end justify-between gap-3">
         <span className="flex flex-col gap-1.5 min-w-0">
           <span className="text-[11px] text-ink-3 leading-none truncate">{t.totalLabel}</span>
-          <span className="text-[30px] font-semibold text-ink leading-none tracking-[-1px] tabular-nums">{total}</span>
+          <span className="text-[30px] font-semibold leading-none tracking-[-1px] tabular-nums" style={{ color: GREEN }}>{total}</span>
         </span>
         <span
-          className={cn("flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[11.5px] font-medium leading-none transition-all duration-500", TONE_TEXT.up)}
-          style={{ background: "color-mix(in oklab, #12a150 12%, var(--surface))", opacity: done ? 1 : 0, transform: done ? "none" : "translateY(4px)" }}
+          className={cn("flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[11.5px] font-medium leading-none transition-all duration-300", TONE_TEXT.up)}
+          style={{ background: `color-mix(in oklab, ${GREEN} 12%, var(--surface))`, opacity: done ? 1 : 0, transform: done ? "none" : "translateY(4px)" }}
         >
           <TrendingUp className="w-3.5 h-3.5" strokeWidth={2.4} />{t.delta}
         </span>
@@ -253,24 +255,24 @@ function GrowthView({ t }: { t: Dict["features"]["mocks"]["analytics"]["growth"]
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-[118px] overflow-visible" role="img" aria-label={t.totalLabel}>
           <defs>
             <linearGradient id="growth-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={ACCENT} stopOpacity="0.28" />
-              <stop offset="100%" stopColor={ACCENT} stopOpacity="0" />
+              <stop offset="0%" stopColor={GREEN} stopOpacity="0.3" />
+              <stop offset="100%" stopColor={GREEN} stopOpacity="0" />
             </linearGradient>
           </defs>
           {[0, 0.5, 1].map((f) => (
             <line key={f} x1="0" x2={W} y1={PAD + f * (H - PAD * 2)} y2={PAD + f * (H - PAD * 2)} stroke="var(--hairline)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           ))}
-          <path className="mock-area" d={`${line} L ${pts[n - 1].x} ${H} L ${pts[0].x} ${H} Z`} fill="url(#growth-fill)" style={{ animationDelay: "500ms" }} />
-          <path className="mock-line" d={line} fill="none" stroke={ACCENT} strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength={1} style={{ strokeDasharray: 1, animationDuration: `${n * 250}ms`, animationDelay: "250ms" }} />
+          <path className="mock-area" d={`${line} L ${pts[n - 1].x} ${H} L ${pts[0].x} ${H} Z`} fill="url(#growth-fill)" style={{ animationDelay: "350ms" }} />
+          <path className="mock-line" d={line} fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength={1} style={{ strokeDasharray: 1, animationDuration: `${n * 170}ms`, animationDelay: "150ms" }} />
           {/* the head of the line — it moves month by month as the line is drawn */}
-          <line x1={head.x} x2={head.x} y1={PAD} y2={H - PAD} stroke={ACCENT} strokeWidth="1" strokeDasharray="3 3" opacity={done ? 0 : 0.35} vectorEffect="non-scaling-stroke" style={{ transition: `all 260ms ${EASE}` }} />
+          <line x1={head.x} x2={head.x} y1={PAD} y2={H - PAD} stroke={GREEN} strokeWidth="1" strokeDasharray="3 3" opacity={done ? 0 : 0.35} vectorEffect="non-scaling-stroke" style={{ transition: `all 200ms ${EASE}` }} />
           {pts.map((p, i) => (
             <circle
               key={i}
               cx={p.x} cy={p.y} r={i === at ? 4.5 : 3}
-              fill="var(--surface)" stroke={ACCENT} strokeWidth="2.5" vectorEffect="non-scaling-stroke"
+              fill="var(--surface)" stroke={GREEN} strokeWidth="2.5" vectorEffect="non-scaling-stroke"
               opacity={i <= at ? 1 : 0}
-              style={{ transition: `opacity 200ms linear, r 260ms ${EASE}` }}
+              style={{ transition: `opacity 160ms linear, r 200ms ${EASE}` }}
             />
           ))}
         </svg>
@@ -283,9 +285,17 @@ function GrowthView({ t }: { t: Dict["features"]["mocks"]["analytics"]["growth"]
 
       <div className="grid grid-cols-3 gap-2">
         {t.stats.map((label, i) => (
-          <div key={label} className="mock-row rounded-xl bg-surface-2 border border-hairline px-2.5 py-2 flex flex-col gap-1.5" style={{ animationDelay: `${1500 + i * 130}ms` }}>
+          <div
+            key={label}
+            className="mock-row rounded-xl border px-2.5 py-2 flex flex-col gap-1.5"
+            style={{
+              animationDelay: `${1000 + i * 90}ms`,
+              background: `color-mix(in oklab, ${STAT_COLORS[i]} 8%, var(--surface-2))`,
+              borderColor: `color-mix(in oklab, ${STAT_COLORS[i]} 24%, transparent)`,
+            }}
+          >
             <span className="text-[10.5px] text-ink-3 leading-none truncate">{label}</span>
-            <span className={cn("flex items-center gap-1 text-[16px] font-semibold leading-none tabular-nums", TONE_TEXT[GROWTH.tones[i]])}>
+            <span className="flex items-center gap-1 text-[16px] font-semibold leading-none tabular-nums" style={{ color: STAT_COLORS[i] }}>
               {GROWTH.tones[i] === "up" ? <TrendingUp className="w-3.5 h-3.5" strokeWidth={2.6} /> : <TrendingDown className="w-3.5 h-3.5" strokeWidth={2.6} />}
               {GROWTH.tones[i] === "up" ? "+" : "−"}{GROWTH.stats[i]}
             </span>
@@ -296,73 +306,19 @@ function GrowthView({ t }: { t: Dict["features"]["mocks"]["analytics"]["growth"]
   );
 }
 
-/* ── View 3: groups — six weeks of trend behind every bar ────── */
-function Spark({ values, color, delay }: { values: number[]; color: string; delay: number }) {
-  const lo = Math.min(...values) - 4;
-  const hi = Math.max(...values) + 4;
-  const pts = values.map((v, i) => ({
-    x: (i / (values.length - 1)) * 46 + 1,
-    y: 14 - ((v - lo) / (hi - lo)) * 12,
-  }));
-  return (
-    <svg viewBox="0 0 48 16" className="hidden sm:block w-[48px] h-[16px] shrink-0" aria-hidden>
-      <path className="mock-line" d={smoothPath(pts)} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength={1} style={{ strokeDasharray: 1, animationDuration: "900ms", animationDelay: `${delay}ms` }} />
-    </svg>
-  );
-}
-
-function GroupsView({ t }: { t: Dict["features"]["mocks"]["analytics"]["groups"] }) {
-  const reading = useStep(t.rows.length + 1, 700, 900, true);
-  return (
-    <div className="flex flex-col gap-2.5">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3 leading-none">{t.caption}</span>
-      {t.rows.map((name, i) => {
-        const r = GROUP_ROWS[i];
-        const Icon = r.tone === "up" ? TrendingUp : TrendingDown;
-        const read = reading === i;
-        return (
-          <div
-            key={name}
-            className="mock-row flex items-center gap-3 rounded-lg -mx-1.5 px-1.5 py-1 transition-colors duration-300"
-            style={{ animationDelay: `${120 + i * 90}ms`, background: read ? `color-mix(in oklab, ${TONE_HEX[r.tone]} 9%, transparent)` : "transparent" }}
-          >
-            <span className="flex flex-col gap-1.5 min-w-0 flex-1">
-              <span className="flex items-center gap-2">
-                <span className="text-[12.5px] font-medium text-ink leading-none truncate flex-1">{name}</span>
-                <Spark values={r.spark} color={TONE_HEX[r.tone]} delay={400 + i * 120} />
-                <span className="text-[11.5px] text-ink-2 leading-none tabular-nums shrink-0 w-[30px] text-right">{r.pct}%</span>
-              </span>
-              <span className="h-[7px] rounded-full bg-surface-3 overflow-hidden">
-                <span
-                  className="block h-full rounded-full origin-left"
-                  style={{ width: `${r.pct}%`, background: TONE_HEX[r.tone], animation: `barGrowX 0.9s ${EASE} ${220 + i * 90}ms both` }}
-                />
-              </span>
-            </span>
-            <span className={cn("flex items-center gap-1 text-[11px] font-medium leading-none whitespace-nowrap shrink-0 w-[88px] justify-end", TONE_TEXT[r.tone])}>
-              <Icon className="w-3.5 h-3.5" strokeWidth={2.4} />
-              {r.delta} · {r.tone === "up" ? t.up : t.down}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ── View 4: the board report — the donut reads out its slices ── */
+/* ── View 3: the board report — the donut reads out its slices ── */
 function ReportView({ t }: { t: Dict["features"]["mocks"]["analytics"]["report"] }) {
   const [state, setState] = useState<"idle" | "busy" | "done">("idle");
   const R = 34, C = 2 * Math.PI * R;
-  const reading = useStep(REPORT.slices.length + 1, 800, 700, true);
+  const reading = useStep(REPORT.slices.length + 1, 520, 300, true);
   const slice = reading >= 0 && reading < REPORT.slices.length ? reading : null;
   const center = slice === null ? REPORT.total : Math.round((REPORT.total * REPORT.slices[slice]) / 100);
-  const shown = useCountUp(center, true, 450);
+  const shown = useCountUp(center, true, 320);
 
   /* The export runs itself once the view is up — that is the whole point of it. */
   useEffect(() => {
-    const a = setTimeout(() => setState("busy"), 2400);
-    const b = setTimeout(() => setState("done"), 3300);
+    const a = setTimeout(() => setState("busy"), 1400);
+    const b = setTimeout(() => setState("done"), 2100);
     return () => {
       clearTimeout(a);
       clearTimeout(b);
@@ -374,7 +330,7 @@ function ReportView({ t }: { t: Dict["features"]["mocks"]["analytics"]["report"]
     <div className="flex flex-col gap-4">
       <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3 leading-none">{t.caption}</span>
       <div className="flex items-center gap-4 sm:gap-5">
-        <div className="relative w-[92px] h-[92px] sm:w-[112px] sm:h-[112px] shrink-0 mock-pop" style={{ animationDelay: "80ms" }}>
+        <div className="relative w-[92px] h-[92px] sm:w-[112px] sm:h-[112px] shrink-0 mock-pop" style={{ animationDelay: "60ms" }}>
           <svg viewBox="0 0 96 96" className="w-full h-full">
             <circle cx="48" cy="48" r={R} fill="none" stroke="var(--hairline)" strokeWidth="12" />
             {REPORT.slices.map((pct, i) => (
@@ -387,12 +343,17 @@ function ReportView({ t }: { t: Dict["features"]["mocks"]["analytics"]["report"]
                 strokeDasharray={`${(pct / 100) * C} ${C}`}
                 strokeDashoffset={-(offsets[i] / 100) * C}
                 className="mock-ring"
-                style={{ ["--ring-len" as string]: `${C}`, ["--ring-off" as string]: `${-(offsets[i] / 100) * C}`, animationDelay: `${250 + i * 180}ms`, transition: `stroke-width 280ms ${EASE}, opacity 280ms linear` } as CSSProperties}
+                style={{ ["--ring-len" as string]: `${C}`, ["--ring-off" as string]: `${-(offsets[i] / 100) * C}`, animationDelay: `${160 + i * 120}ms`, transition: `stroke-width 220ms ${EASE}, opacity 220ms linear` } as CSSProperties}
               />
             ))}
           </svg>
           <span className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 px-3 text-center">
-            <span className="text-[19px] font-semibold text-ink leading-none tracking-[-0.5px] tabular-nums">{shown}</span>
+            <span
+              className="text-[19px] font-semibold leading-none tracking-[-0.5px] tabular-nums transition-colors duration-300"
+              style={{ color: slice === null ? "var(--ink)" : SLICE_COLORS[slice] }}
+            >
+              {shown}
+            </span>
             <span key={slice} className="pin-in text-[9.5px] text-ink-3 leading-[1.2] truncate max-w-full">{slice === null ? t.totalLabel : t.slices[slice]}</span>
           </span>
         </div>
@@ -401,7 +362,7 @@ function ReportView({ t }: { t: Dict["features"]["mocks"]["analytics"]["report"]
             <span
               key={label}
               className={cn("mock-row flex items-center gap-2 rounded-lg -mx-1.5 px-1.5 py-1 text-[12px] leading-none transition-colors duration-300", slice === i ? "text-ink" : "text-ink-2")}
-              style={{ animationDelay: `${420 + i * 110}ms`, background: slice === i ? "var(--surface-2)" : "transparent" }}
+              style={{ animationDelay: `${280 + i * 80}ms`, background: slice === i ? `color-mix(in oklab, ${SLICE_COLORS[i]} 11%, transparent)` : "transparent" }}
             >
               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: SLICE_COLORS[i] }} />
               <span className="truncate">{label}</span>
@@ -418,64 +379,16 @@ function ReportView({ t }: { t: Dict["features"]["mocks"]["analytics"]["report"]
             className={cn(
               "mock-pop flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-medium leading-none transition-colors duration-300",
               i === 0
-                ? state === "done" ? "bg-[#12a150] text-white" : "btn-brand"
+                ? state === "done" ? "text-white" : "btn-brand"
                 : "border border-hairline-strong text-ink-2"
             )}
-            style={{ animationDelay: `${900 + i * 120}ms` }}
+            style={{ animationDelay: `${600 + i * 90}ms`, ...(i === 0 && state === "done" ? { background: GREEN } : null) }}
           >
             {i === 0 && state === "busy" ? <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} /> : i === 0 && state === "done" ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <FileDown className="w-3.5 h-3.5" strokeWidth={2.2} />}
             {i === 0 ? (state === "busy" ? t.exporting : state === "done" ? t.exported : label) : label}
           </span>
         ))}
         <span className="ml-auto text-[11px] text-ink-3 leading-none">{t.note}</span>
-      </div>
-    </div>
-  );
-}
-
-/* ── View 5: goals — plan against fact ───────────────────────── */
-function GoalRing({ label, fact, plan, delta, color, delay, of, quarter }: { label: string; fact: number; plan: number; delta: number; color: string; delay: number; of: string; quarter: string }) {
-  const pct = Math.round((fact / plan) * 100);
-  const shown = useCountUp(pct, true, 1200);
-  const R = 26, C = 2 * Math.PI * R;
-  return (
-    <div className="mock-pop flex flex-col items-center gap-2 min-w-0" style={{ animationDelay: `${delay}ms` }}>
-      <div className="relative w-[76px] h-[76px]">
-        <svg viewBox="0 0 64 64" className="w-full h-full">
-          <circle cx="32" cy="32" r={R} fill="none" stroke="var(--hairline)" strokeWidth="7" />
-          <circle
-            cx="32" cy="32" r={R} fill="none" stroke={color} strokeWidth="7" strokeLinecap="round"
-            transform="rotate(-90 32 32)"
-            strokeDasharray={`${(pct / 100) * C} ${C}`}
-            className="mock-ring"
-            style={{ ["--ring-len" as string]: `${C}`, ["--ring-off" as string]: "0", animationDelay: `${delay + 120}ms` } as CSSProperties}
-          />
-        </svg>
-        <span className="absolute inset-0 flex items-center justify-center text-[15px] font-semibold text-ink leading-none tabular-nums">{shown}%</span>
-      </div>
-      <span className="flex flex-col items-center gap-1 min-w-0">
-        <span className="text-[12px] font-medium text-ink leading-none text-center truncate max-w-full">{label}</span>
-        <span className="text-[11px] text-ink-3 leading-none tabular-nums">{fact} {of} {plan}</span>
-        <span className={cn("text-[10.5px] font-medium leading-none tabular-nums", TONE_TEXT.up)}>+{delta} {quarter}</span>
-      </span>
-    </div>
-  );
-}
-
-function GoalsView({ t }: { t: Dict["features"]["mocks"]["analytics"]["goals"] }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3 leading-none">{t.caption}</span>
-      <div className="grid grid-cols-3 gap-2 pt-1">
-        {t.items.map((label, i) => (
-          <GoalRing key={label} label={label} fact={GOALS[i].fact} plan={GOALS[i].plan} delta={GOALS[i].delta} color={RING_COLORS[i]} delay={120 + i * 220} of={t.of} quarter={t.quarter} />
-        ))}
-      </div>
-      <div className="mock-row rounded-xl bg-surface-2 border border-hairline px-3 py-2.5 flex items-center gap-2.5" style={{ animationDelay: "900ms" }}>
-        <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: `color-mix(in oklab, ${ACCENT} 14%, var(--surface))`, color: ACCENT }}>
-          <Target className="w-3.5 h-3.5" strokeWidth={2.4} />
-        </span>
-        <span className="text-[12px] text-ink-2 leading-[1.35]">{t.note}</span>
       </div>
     </div>
   );
@@ -488,8 +401,13 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [round, setRound] = useState(0);
+  const [touched, setTouched] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
-  const views = block.points;
+  const railWrapRef = useRef<HTMLDivElement>(null);
+  /* One label per view, never more: the dictionary must not be able to ask
+     for a chart that does not exist. */
+  const views = block.points.slice(0, VIEWS.length);
+  const accent = VIEWS[active].color;
 
   useEffect(() => {
     if (!inView || paused || prefersReducedMotion()) return;
@@ -506,16 +424,19 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
   const pick = (i: number) => {
     setActive(i);
     setRound((n) => n + 1);
+    setTouched(true);
   };
 
   return (
     <article ref={ref} className="overflow-hidden rounded-[24px] md:rounded-[28px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)] grid grid-cols-1 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
       {/* Story + switcher */}
       <div className="flex flex-col justify-center gap-3 p-7 md:p-10">
-        <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: ACCENT }}>{block.eyebrow}</span>
-        <h3 className="font-semibold text-ink text-[22px] md:text-[28px] leading-[1.2] tracking-[-0.6px]">{block.title}</h3>
+        <h3 className="font-semibold text-ink text-[30px] md:text-[40px] leading-[1.05] tracking-[-1.2px]">{block.title}</h3>
         <p className="text-[15.5px] font-normal text-ink-2 leading-[1.55]">{block.text}</p>
 
+        {/* Обгортка тільки під курсор: сам рейок на телефоні прокручується,
+            і все, що в ньому, поїхало б разом зі скролом. */}
+        <div ref={railWrapRef} className="relative">
         <div
           ref={railRef}
           role="tablist"
@@ -523,14 +444,15 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
           className="flex md:flex-col gap-1.5 md:gap-1 pt-2 -mx-1 px-1 overflow-x-auto md:overflow-visible snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {views.map((v, i) => {
-            const Icon = VIEW_ICONS[i];
+            const { icon: Icon, color } = VIEWS[i];
             const on = i === active;
             return (
               <button
-                key={v.title}
+                key={v}
                 type="button"
                 role="tab"
                 aria-selected={on}
+                data-click-here
                 onClick={() => pick(i)}
                 className={cn(
                   "relative shrink-0 snap-center flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-left overflow-hidden transition-colors duration-200",
@@ -539,18 +461,18 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
               >
                 <span
                   className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200"
-                  style={{ background: on ? ACCENT : `color-mix(in oklab, ${ACCENT} 13%, var(--surface))`, color: on ? "#fff" : ACCENT }}
+                  style={{ background: on ? color : `color-mix(in oklab, ${color} 13%, var(--surface))`, color: on ? "#fff" : color }}
                 >
                   <Icon className="w-4 h-4" strokeWidth={2.2} />
                 </span>
-                <span className={cn("text-[14px] leading-[1.25] whitespace-nowrap md:whitespace-normal", on ? "font-semibold text-ink" : "font-medium text-ink-2")}>{v.title}</span>
+                <span className={cn("text-[14px] leading-[1.25] whitespace-nowrap md:whitespace-normal", on ? "font-semibold text-ink" : "font-medium text-ink-2")}>{v}</span>
                 {on && (
                   <span aria-hidden className="absolute left-0 right-0 bottom-0 h-[2px] overflow-hidden">
                     <span
                       key={`${active}-${round}`}
                       className="block h-full origin-left"
                       style={{
-                        background: ACCENT,
+                        background: color,
                         opacity: 0.6,
                         animationName: "barGrowX",
                         animationDuration: `${CYCLE_MS}ms`,
@@ -565,6 +487,8 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
             );
           })}
         </div>
+          <ClickHere host={railWrapRef} show={!touched} size={54} />
+        </div>
       </div>
 
       {/* The screen: same chrome, a different chart every few seconds */}
@@ -578,7 +502,10 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
           <div className="w-full rounded-[20px] bg-surface border border-hairline shadow-[0_30px_60px_-30px_rgba(0,50,120,0.35)] p-4 sm:p-5 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-3">
               <span className="flex items-center gap-2.5 min-w-0">
-                <span className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center" style={{ background: `color-mix(in oklab, ${ACCENT} 14%, var(--surface))`, color: ACCENT }}>
+                <span
+                  className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center transition-colors duration-300"
+                  style={{ background: `color-mix(in oklab, ${accent} 14%, var(--surface))`, color: accent }}
+                >
                   <BarChart3 className="w-4 h-4" strokeWidth={2.2} />
                 </span>
                 <span className="flex flex-col gap-1 min-w-0">
@@ -588,7 +515,7 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
               </span>
               <span className="flex items-center gap-1 shrink-0">
                 {views.map((v, i) => (
-                  <span key={v.title} aria-hidden className="h-[5px] rounded-full transition-all duration-300" style={{ width: i === active ? 16 : 5, background: i === active ? ACCENT : "var(--hairline-strong)" }} />
+                  <span key={v} aria-hidden className="h-[5px] rounded-full transition-all duration-300" style={{ width: i === active ? 16 : 5, background: i === active ? VIEWS[i].color : "var(--hairline-strong)" }} />
                 ))}
               </span>
             </div>
@@ -596,13 +523,11 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
             <div key={active} className={cn("min-h-[272px] flex flex-col justify-center", inView && "mock-on view-in")}>
               {active === 0 && <AttendanceView t={t.attendance} />}
               {active === 1 && <GrowthView t={t.growth} />}
-              {active === 2 && <GroupsView t={t.groups} />}
-              {active === 3 && <ReportView t={t.report} />}
-              {active === 4 && <GoalsView t={t.goals} />}
+              {active === 2 && <ReportView t={t.report} />}
             </div>
           </div>
           <span className="mt-5 flex items-center gap-1.5 text-[12px] text-ink-3 leading-none text-center">
-            <MousePointerClick className="tap-hint w-3.5 h-3.5 shrink-0" style={{ color: ACCENT }} strokeWidth={2.2} />
+            <MousePointerClick className="tap-hint w-3.5 h-3.5 shrink-0" style={{ color: accent }} strokeWidth={2.2} />
             {t.hint}
           </span>
         </div>

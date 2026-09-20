@@ -5,7 +5,7 @@ export const post: BlogPost = {
   category: "growth",
   date: "2026-09-04",
   minutes: 8,
-  related: ["analizuite", "skilky-liudei-u-tserkvi", "komanda-bez-vyhorannia"],
+  related: ["vid-vidviduvacha-do-lidera", "dani-v-riznykh-mistsiakh", "piat-pytan-pro-systemu"],
   copy: {
     ua: {
       seoTitle: "Ставте цілі: як церкві виміряти зростання",

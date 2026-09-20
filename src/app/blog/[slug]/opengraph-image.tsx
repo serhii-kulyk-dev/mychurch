@@ -4,6 +4,9 @@ import { join } from "node:path";
 import { BLOG_CATEGORIES, BLOG_SLUGS, getPost } from "@/content/blog";
 import { SITE_URL } from "@/lib/seo";
 
+/* Статичний експорт: файл генерується під час збірки, не на запит. */
+export const dynamic = "force-static";
+
 /* Обкладинка статті для соцмереж і месенджерів.
 
    Одна картинка на весь сайт погано працює для блогу: у стрічці
@@ -13,7 +16,7 @@ import { SITE_URL } from "@/lib/seo";
    Ця ж адреса йде в розмітку BlogPosting як `image`: Google хоче
    обкладинку від 1200px завширшки, а логотип на 256px їй не був. */
 
-export const alt = "Стаття в блозі MyChurch";
+export const alt = "Стаття в блозі «Моєї Церкви»";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -51,7 +54,7 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
   ]);
   const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
 
-  const title = copy?.title ?? "Блог MyChurch";
+  const title = copy?.title ?? "Блог «Моєї Церкви»";
   const lead = copy?.lead ?? "";
 
   return new ImageResponse(

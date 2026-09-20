@@ -1,6 +1,6 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "people": people, family */
+/* Module pages: people, family — their catalogue group is the `group` field below. */
 export const peopleModules: ModuleDetail[] = [
   {
     id: "people",
@@ -11,7 +11,7 @@ export const peopleModules: ModuleDetail[] = [
         seoTitle: "Люди — модуль «Моя Церква»",
         seoDescription: "Картка кожної людини в церкві: статус, історія участі, нотатки, контакти та зв'язки — в одному місці замість трьох таблиць.",
         title: "Кожна людина в церкві — на своєму місці",
-        lead: "Модуль «Люди» — серце MyChurch. Одна картка замість трьох таблиць: хто ця людина, у якій групі, коли була востаннє і хто за неї відповідає.",
+        lead: "Модуль «Люди» — серце «Моєї Церкви». Одна картка замість трьох таблиць: хто ця людина, у якій групі, коли була востаннє і хто за неї відповідає.",
         highlights: [
           "Профіль з повною історією участі",
           "Статуси: гість, новенький, член церкви",
@@ -53,20 +53,6 @@ export const peopleModules: ModuleDetail[] = [
             { title: "Марія Іщенко", sub: "Перший візит у неділю", badge: { label: "Гість", tone: "neutral" } },
           ],
           footer: "Фільтр: усі · новенькі · без групи",
-        },
-        day: {
-          title: "Один день картки людини",
-          text: "Неділя. Усе, що відбувається з людьми, дописується в їхні картки — ніхто нічого не переносить руками.",
-          items: [
-            { time: "09:48", title: "Відмітка на служінні", text: "Відмітка приходу з QR у фойє лягає в картку як участь у служінні 21 вересня.", count: "163 картки" },
-            { time: "10:12", title: "Гість заповнив анкету", text: "Нова картка зі статусом «гість»: телефон, район і те, хто його запросив.", count: "4 нові" },
-            { time: "12:30", title: "Лідер дописав нотатку", text: "Після розмови в фойє: «шукає групу на Виноградарі». Нотатку бачать пастор і лідер, більше ніхто.", count: "9 нотаток" },
-            { time: "13:05", title: "Молитовна потреба з бота", text: "Заявка чіпляється до картки людини разом із тим, хто її взяв і коли відповів.", count: "6 заявок" },
-            { time: "15:00", title: "Розсилка домашній групі", text: "Хто отримав, прочитав і відповів «буду» — видно в картці кожного, а не лише в звіті розсилки.", count: "24 з 26" },
-            { time: "18:40", title: "Явка малої групи", text: "Лідер відмічає присутніх із телефона. Двоє без відмітки третій тиждень поспіль.", count: "2 без відмітки" },
-            { time: "21:00", title: "Сегмент «новенькі без групи»", text: "Пастор відкриває збережений фільтр — чотири сьогоднішні картки вже в ньому.", count: "12 у списку" },
-          ],
-          footer: "Жоден із цих записів не переносився в таблицю руками.",
         },
       },
       en: {
@@ -115,20 +101,6 @@ export const peopleModules: ModuleDetail[] = [
             { title: "Maria Ishchenko", sub: "First visit on Sunday", badge: { label: "Guest", tone: "neutral" } },
           ],
           footer: "Filter: all · newcomers · no group",
-        },
-        day: {
-          title: "One day in a person's profile",
-          text: "A Sunday. Everything that happens with people is written into their profiles — nobody copies anything by hand.",
-          items: [
-            { time: "09:48", title: "Checked in at the service", text: "A QR check-in in the lobby lands in the profile as attendance at the 21 September service.", count: "163 profiles" },
-            { time: "10:12", title: "A guest filled in the card", text: "A new profile with the status \"guest\": phone, district and who invited them.", count: "4 new" },
-            { time: "12:30", title: "A leader added a note", text: "After a chat in the lobby: \"looking for a group in Obolon\". Only the pastor and the leader see it.", count: "9 notes" },
-            { time: "13:05", title: "A prayer request from the bot", text: "The request attaches to the person's profile, along with who picked it up and when they replied.", count: "6 requests" },
-            { time: "15:00", title: "Campaign to the Obolon group", text: "Who received, read and replied \"I'll be there\" shows in each profile, not just in the campaign report.", count: "24 of 26" },
-            { time: "18:40", title: "Small group attendance", text: "The leader marks who came from their phone. Two people unmarked for the third week running.", count: "2 unmarked" },
-            { time: "21:00", title: "Segment \"newcomers without a group\"", text: "The pastor opens the saved filter — today's four profiles are already in it.", count: "12 on the list" },
-          ],
-          footer: "Not one of these entries was copied into a spreadsheet by hand.",
         },
       },
     },

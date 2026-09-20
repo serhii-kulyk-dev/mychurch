@@ -4,11 +4,8 @@ import AiHero from "@/components/sections/ai-hero";
 import AiScenarios from "@/components/sections/ai-scenarios";
 import AiChatWatcher from "@/components/sections/ai-chat-watcher";
 import AiTryIt from "@/components/sections/ai-try-it";
-import AiRoutine from "@/components/sections/ai-routine";
 import AiPersona from "@/components/sections/ai-persona";
-import AiFeatures from "@/components/sections/ai-features";
 import AiTrust from "@/components/sections/ai-trust";
-import AiHowItWorks from "@/components/sections/ai-how-it-works";
 import Cta from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
 import JsonLd from "@/components/shared/json-ld";
@@ -33,11 +30,8 @@ export default function AiPage() {
         <AiScenarios />
         <AiChatWatcher />
         <AiTryIt />
-        <AiRoutine />
         <AiPersona />
-        <AiFeatures />
         <AiTrust />
-        <AiHowItWorks />
         <Cta />
       </main>
       <Footer />

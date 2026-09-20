@@ -5,16 +5,14 @@ import { ChevronDown, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { scrollToSection, sectionClick } from "@/lib/scroll";
 import LogoLink from "@/components/shared/logo-link";
 import PreferenceToggles from "@/components/shared/preference-toggles";
-import { PRICING_COPY } from "@/content/pricing";
 import { useLang, useT } from "@/lib/lang";
 import { useDemoModal } from "@/context/demo-modal-context";
-import { useWorkspace } from "@/context/workspace-context";
 import { LEAD_AMBASSADOR_HREF } from "@/content/ambassadors";
 import { TELEGRAM_COPY } from "@/content/telegram";
 import { BLOG_COPY } from "@/content/blog";
-import { COMPARE_COPY } from "@/content/compare";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -22,16 +20,19 @@ export default function Navbar() {
   const [more, setMore] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const moreTimer = useRef<number | null>(null);
   const { open: openModal } = useDemoModal();
-  const { open: openSpace } = useWorkspace();
   const t = useT();
   const { lang } = useLang();
 
-  /* Верхній ряд — це шлях до продукту: що це, для кого, кому вже працює,
-     скільки коштує. «Амбасадор» саме тут — жива церква переконує сильніше
-     за будь-який розділ про можливості. Другорядне живе у згортці «Більше»,
-     щоб рядок меню не перетворювався на список: «Модулі», «Телеграм-бот» —
-     канал, а не шлях до продукту, і решта довідкових розділів.
+  /* Верхній ряд — це шлях до продукту: що це, для кого, кому вже працює.
+     «Амбасадор» саме тут — жива церква переконує сильніше за будь-який
+     розділ про можливості. Решта живе у згортці «Більше», щоб рядок меню
+     не перетворювався на список: «Блог» і «Питання» — розділи, куди йдуть
+     свідомо і з пошуку, а не проходячи меню зверху вниз, тож вони не мусять
+     займати місце в головному ряду.
+     «Вартості» в меню поки немає: сторінка жива за /pricing, але сум там
+     ще не названо, тож ми не ведемо на неї з навігації.
      «Імпорту» в меню немає зовсім: перенесення даних — це крок всередині
      модулів, тож він живе посиланням у /modules і в статтях блогу, де на
      нього виходять з питання, а не з рядка навігації. */
@@ -40,40 +41,38 @@ export default function Navbar() {
     { label: t.nav.audience, href: "/for-whom", match: "/for-whom" },
     { label: t.nav.ai, href: "/ai", match: "/ai" },
     { label: t.nav.ambassadors, href: LEAD_AMBASSADOR_HREF, match: LEAD_AMBASSADOR_HREF },
-    { label: BLOG_COPY[lang].navLabel, href: "/blog", match: "/blog" },
-    { label: PRICING_COPY[lang].navLabel, href: "/pricing", match: "/pricing" },
   ];
 
-  const MORE_LINKS: { label: string; href: string; match: string }[] = [
-    { label: t.nav.modules, href: "/modules", match: "/modules" },
-    { label: TELEGRAM_COPY[lang].navLabel, href: "/telegram", match: "/telegram" },
-    { label: COMPARE_COPY[lang].navLabel, href: "/compare", match: "/compare" },
-    { label: t.nav.faq, href: "/faq", match: "/faq" },
-    { label: t.nav.support, href: "/support", match: "/support" },
-    { label: t.nav.about, href: "/about", match: "/about" },
+  /* Згортка — не плоский список: спершу дві сторінки про сам продукт, потім
+     усе, по що приходять уже після нього — почитати, спитати, написати. «Про
+     нас» замикає ряд свідомо: компанію читають, коли продукт уже зрозумілий,
+     тож у меню вона стоїть останньою, як і в підвалі. */
+  const MORE_GROUPS: { label: string; href: string; match: string }[][] = [
+    [
+      { label: t.nav.modules, href: "/modules", match: "/modules" },
+      { label: TELEGRAM_COPY[lang].navLabel, href: "/telegram", match: "/telegram" },
+    ],
+    [
+      { label: BLOG_COPY[lang].navLabel, href: "/blog", match: "/blog" },
+      { label: t.nav.faq, href: "/faq", match: "/faq" },
+      { label: t.nav.support, href: "/support", match: "/support" },
+      { label: t.nav.about, href: "/about", match: "/about" },
+    ],
   ];
 
-  const moreActive = MORE_LINKS.some((link) => pathname === link.match);
+  const moreActive = MORE_GROUPS.some((group) => group.some((link) => pathname === link.match));
 
   /* «Контакти» — це якір на головну, а не розділ: на широкому екрані він
      живе іконкою поруч з перемикачами, щоб рядок меню лишався читабельним.
      У шухляді на телефоні місця вистачає — там він текстом, як був. */
   const CONTACTS = { label: t.nav.contacts, href: "/#contacts", match: null };
 
-  /* Якорі на головну («Огляд», «Контакти») гортають сторінку, але не
+  /* Якорі на головну («Головна», «Контакти») гортають сторінку, але не
      лишають #hash в адресі: інакше наступне відкриття сайту починалося б
      посеред сторінки, а не згори. З інших сторінок це звичайний перехід —
-     там якоря ще нема, його треба спершу завантажити. */
-  const scrollToId = (id: string) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-  const toAnchor = (id: string) => (e: React.MouseEvent) => {
-    if (!document.getElementById(id)) return;
-    e.preventDefault();
-    scrollToId(id);
-  };
-
-  const toContacts = toAnchor("contacts");
+     там якоря ще нема, його треба спершу завантажити, а вже на місці адресу
+     чистить <AnchorGuard />. */
+  const toContacts = sectionClick("/#contacts");
 
   /* Solidify the bar once the page moves away from the top */
   useEffect(() => {
@@ -143,6 +142,25 @@ export default function Navbar() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
+  /* Наведення відкриває «Більше» одразу, а закриває з паузою: коротка
+     затримка прощає курсору, що проходить повз кнопку або зрізає кут до
+     панелі, і меню не блимає на кожному русі мишки. */
+  const cancelMoreClose = () => {
+    if (moreTimer.current === null) return;
+    window.clearTimeout(moreTimer.current);
+    moreTimer.current = null;
+  };
+
+  const scheduleMoreClose = () => {
+    cancelMoreClose();
+    moreTimer.current = window.setTimeout(() => {
+      moreTimer.current = null;
+      setMore(false);
+    }, 180);
+  };
+
+  useEffect(() => cancelMoreClose, []);
+
   /* Один рядок шухляди. */
   const drawerLink = (link: { label: string; href: string; match: string | null }) => (
     <Link
@@ -154,7 +172,7 @@ export default function Navbar() {
           e.preventDefault();
           /* Спершу шухляда їде вгору, потім сторінка — інакше два рухи
              накладаються і перехід виглядає смиканим. */
-          setTimeout(() => scrollToId(link.href.slice(2)), 300);
+          setTimeout(() => scrollToSection(link.href.slice(2)), 300);
         }
       }}
       className={cn(
@@ -179,19 +197,22 @@ export default function Navbar() {
         )}
         style={{ willChange: "transform", transform: "translateZ(0)" }}
       >
-        <div className="min-w-0 shrink-0">
+        {/* Логотип і права колонка тягнуться порівну (flex-1 від нульової
+            бази), тож рядок меню стоїть рівно посередині шапки, а не там,
+            куди його відсуне ширина логотипа. */}
+        <div className="flex-1 shrink-0">
           <LogoLink size="md" />
         </div>
 
         {/* Desktop navigation */}
-        <nav aria-label={t.nav.primary} className="hidden min-[1560px]:flex items-center gap-0.5 min-[1720px]:gap-1 shrink-0">
+        <nav aria-label={t.nav.primary} className="hidden min-[1260px]:flex items-center justify-center gap-0.5 min-[1320px]:gap-1 shrink-0">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              onClick={link.href.startsWith("/#") ? toAnchor(link.href.slice(2)) : undefined}
+              onClick={sectionClick(link.href)}
               className={cn(
-                "px-2 min-[1720px]:px-2.5 py-2 rounded-full text-[14px] min-[1720px]:text-[15px] leading-[1.2] tracking-[-0.16px] transition-colors duration-200 whitespace-nowrap",
+                "px-2 min-[1320px]:px-2.5 py-2 rounded-full text-[14px] min-[1320px]:text-[15px] leading-[1.2] tracking-[-0.16px] transition-colors duration-200 whitespace-nowrap",
                 link.match && pathname === link.match
                   ? "bg-surface-3 text-ink"
                   : "text-ink-2 hover:bg-surface-3 hover:text-ink"
@@ -201,16 +222,35 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* «Більше» — згортка з другорядними розділами. Відкривається кліком,
-             а не наведенням: на тачпаді випадайка від hover ловить курсор. */}
-          <div ref={moreRef} className="relative">
+          {/* «Більше» — згортка з другорядними розділами. Відкривається
+             наведенням: на мишці це на клік менше, а список і так короткий.
+             Наведення слухаємо тільки для миші (pointerType) — на тачскріні
+             лишається звичайний тап, інакше перший дотик відкривав би і одразу
+             закривав меню. Закриття з паузою: курсор, що зрізає кут між
+             кнопкою і панеллю, не мусить гасити щойно відкрите меню. */}
+          <div
+            ref={moreRef}
+            className="relative"
+            onPointerEnter={(e) => {
+              if (e.pointerType !== "mouse") return;
+              cancelMoreClose();
+              setMore(true);
+            }}
+            onPointerLeave={(e) => {
+              if (e.pointerType !== "mouse") return;
+              scheduleMoreClose();
+            }}
+          >
             <button
               type="button"
-              onClick={() => setMore((v) => !v)}
+              onClick={() => {
+                cancelMoreClose();
+                setMore((v) => !v);
+              }}
               aria-expanded={more}
               aria-haspopup="menu"
               className={cn(
-                "flex items-center gap-1 px-2 min-[1720px]:px-2.5 py-2 rounded-full text-[14px] min-[1720px]:text-[15px] leading-[1.2] tracking-[-0.16px] transition-colors duration-200 whitespace-nowrap",
+                "flex items-center gap-1 px-2 min-[1320px]:px-2.5 py-2 rounded-full text-[14px] min-[1320px]:text-[15px] leading-[1.2] tracking-[-0.16px] transition-colors duration-200 whitespace-nowrap",
                 more || moreActive
                   ? "bg-surface-3 text-ink"
                   : "text-ink-2 hover:bg-surface-3 hover:text-ink"
@@ -223,38 +263,56 @@ export default function Navbar() {
               />
             </button>
 
+            {/* Відступ між кнопкою і карткою — це padding самої обгортки, а не
+               порожнеча: інакше курсор на шляху вниз виходив би з меню. */}
+            <div
+              className={cn(
+                "absolute right-0 top-full pt-2",
+                more ? "pointer-events-auto" : "pointer-events-none"
+              )}
+            >
             <div
               role="menu"
               className={cn(
-                "absolute right-0 top-[calc(100%+8px)] min-w-[220px] p-1.5 rounded-2xl border border-hairline bg-surface shadow-[0_18px_40px_-24px_rgba(0,0,0,0.55)] origin-top-right transition-all duration-200",
+                "min-w-[220px] p-1.5 rounded-2xl border border-hairline bg-surface shadow-[0_18px_40px_-24px_rgba(0,0,0,0.55)] origin-top-right transition-all duration-200",
                 more
-                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                  : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+                  ? "opacity-100 scale-100 translate-y-0"
+                  : "opacity-0 scale-95 -translate-y-1"
               )}
             >
-              {MORE_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  role="menuitem"
-                  tabIndex={more ? 0 : -1}
-                  onClick={() => setMore(false)}
-                  className={cn(
-                    "block px-3 py-2 rounded-xl text-[14.5px] leading-[1.2] tracking-[-0.16px] transition-colors",
-                    pathname === link.match
-                      ? "bg-surface-3 text-ink font-medium"
-                      : "text-ink-2 hover:bg-surface-3 hover:text-ink"
-                  )}
-                >
-                  {link.label}
-                </Link>
+              {MORE_GROUPS.map((group, i) => (
+                /* Волосяна лінія замість підписів: груп усього дві, і назва
+                   над кожною важила б більше за самі пункти. */
+                <div key={i} className={i > 0 ? "mt-1.5 pt-1.5 border-t border-hairline" : undefined}>
+                  {group.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      role="menuitem"
+                      tabIndex={more ? 0 : -1}
+                      onClick={() => {
+                        cancelMoreClose();
+                        setMore(false);
+                      }}
+                      className={cn(
+                        "block px-3 py-2 rounded-xl text-[14.5px] leading-[1.2] tracking-[-0.16px] transition-colors",
+                        pathname === link.match
+                          ? "bg-surface-3 text-ink font-medium"
+                          : "text-ink-2 hover:bg-surface-3 hover:text-ink"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
               ))}
+            </div>
             </div>
           </div>
         </nav>
 
         {/* Desktop: preferences + CTA */}
-        <div className="hidden min-[1560px]:flex items-center gap-2 min-[1720px]:gap-3 justify-end">
+        <div className="hidden min-[1260px]:flex flex-1 items-center gap-2 min-[1320px]:gap-3 justify-end">
           <Link
             href="/#contacts"
             onClick={toContacts}
@@ -266,16 +324,10 @@ export default function Navbar() {
           </Link>
           <PreferenceToggles />
           <button
-            onClick={() => openSpace()}
-            className="flex items-center justify-center h-10 px-3.5 min-[1720px]:px-4 rounded-full border border-hairline-strong bg-surface text-ink-2 hover:text-ink hover:bg-surface-2 transition-colors shrink-0 text-[15px] font-medium tracking-[-0.32px] whitespace-nowrap"
-          >
-            {t.workspace.open}
-          </button>
-          <button
             onClick={openModal}
             data-track="cta"
             data-place="меню"
-            className="btn-primary btn-brand group relative flex items-center justify-center h-10 px-4 min-[1720px]:px-5 rounded-full overflow-hidden shrink-0"
+            className="btn-primary btn-brand group relative flex items-center justify-center h-10 px-4 min-[1320px]:px-5 rounded-full overflow-hidden shrink-0"
           >
             <span className="relative text-white font-semibold text-[15px] tracking-[-0.32px] leading-[1.4] whitespace-nowrap">
               {t.common.bookDemo}
@@ -284,9 +336,9 @@ export default function Navbar() {
         </div>
 
         {/* Mobile: toggles + hamburger */}
-        <div className="flex min-[1560px]:hidden items-center gap-2">
+        <div className="flex min-[1260px]:hidden items-center justify-end gap-2">
           <PreferenceToggles size="sm" />
-          {/* Між телефоном і повним меню (≈640–1560) головна дія лишається на
+          {/* Між телефоном і повним меню (≈640–1260) головна дія лишається на
              видноті: ховати її в шухляду на ноутбуці — втрачати конверсію. */}
           <button
             onClick={openModal}
@@ -314,7 +366,7 @@ export default function Navbar() {
       {/* Mobile menu drawer */}
       <div
         className={cn(
-          "fixed inset-0 top-16 md:top-20 z-40 min-[1560px]:hidden transition-all duration-300",
+          "fixed inset-0 top-16 md:top-20 z-40 min-[1260px]:hidden transition-all duration-300",
           open ? "pointer-events-auto" : "pointer-events-none"
         )}
       >
@@ -340,19 +392,17 @@ export default function Navbar() {
             <span className="px-4 pt-4 pb-1 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-ink-3">
               {t.nav.more}
             </span>
-            {MORE_LINKS.map((link) => drawerLink(link))}
+            {MORE_GROUPS.map((group, i) => (
+              <div
+                key={i}
+                className={cn("flex flex-col gap-1", i > 0 && "mt-2 pt-2 border-t border-hairline")}
+              >
+                {group.map((link) => drawerLink(link))}
+              </div>
+            ))}
 
             {drawerLink(CONTACTS)}
             <div className="pt-3 pb-1 flex flex-col gap-2">
-              <button
-                onClick={() => {
-                  setOpen(false);
-                  openSpace();
-                }}
-                className="flex items-center justify-center h-12 w-full rounded-full border border-hairline-strong bg-surface text-ink font-medium text-[16px] tracking-[-0.32px]"
-              >
-                {t.workspace.open}
-              </button>
               <button
                 onClick={() => {
                   setOpen(false);

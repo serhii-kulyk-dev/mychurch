@@ -59,8 +59,8 @@ export const MODULE_ACCENTS: Record<string, string> = {
   calendar: "#3b82f6", seasons: "#65a30d", goals: "#dc2626", events: "#f59e0b",
   analytics: "#0891b2",
   campuses: "#0f766e",
-  "kids-town": "#f08c00",
-  forms: "#7c3aed", applications: "#6366f1", links: "#10b981", automations: "#ca8a04", campaigns: "#d946ef", knowledge: "#0284c7", tables: "#64748b", projects: "#2563eb",
+  "kids-town": "#e11d48",
+  forms: "#7c3aed", applications: "#6366f1", links: "#10b981", automations: "#ca8a04", campaigns: "#d946ef", knowledge: "#b45309", tables: "#64748b", projects: "#2563eb",
   rooms: "#8b5e3c", inventory: "#b07d4f", infrastructure: "#6b7280",
   org: "#7c5cf0", requests: "#0891b2", accounting: "#059669",
   telegram: "#229ed9", viber: "#7360f2", instagram: "#e1306c", whatsapp: "#25d366", turbosms: "#f59e0b", notion: "#52525b",
@@ -69,15 +69,15 @@ export const MODULE_ACCENTS: Record<string, string> = {
 };
 
 export const GROUP_ICONS: Record<string, LucideIcon> = {
-  people: Users, activities: Flame, planning: CalendarDays, analytics: BarChart3,
-  campuses: Building2, clubs: Blocks, tools: LayoutGrid, resources: Package,
-  hr: Network, integrations: Send, platform: SlidersHorizontal, ai: Sparkles,
+  people: Users, serving: Flame, schedule: CalendarDays, outreach: Megaphone,
+  team: Network, property: Building2, insight: BarChart3, platform: SlidersHorizontal,
+  integrations: Plug,
 };
 
 export const GROUP_ACCENTS: Record<string, string> = {
-  people: "#0ea5e9", activities: "#f97316", planning: "#3b82f6", analytics: "#0891b2",
-  campuses: "#0f766e", clubs: "#f08c00", tools: "#7c3aed", resources: "#8b5e3c",
-  hr: "#7c5cf0", integrations: "#14b8a6", platform: "#64748b", ai: "#a855f7",
+  people: "#0ea5e9", serving: "#f97316", schedule: "#3b82f6", outreach: "#d946ef",
+  team: "#7c5cf0", property: "#8b5e3c", insight: "#0891b2", platform: "#64748b",
+  integrations: "#14b8a6",
 };
 
 /** A module's own colour, falling back to its group's when it has none. */

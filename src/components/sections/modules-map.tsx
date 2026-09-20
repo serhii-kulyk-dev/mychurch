@@ -5,9 +5,9 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalSto
 import { LayoutGrid, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
-import IllustratedAvatar, { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { lookFor } from "@/components/shared/person-avatar";
 import { MODULE_ICONS, GROUP_ICONS, GROUP_ACCENTS, moduleAccent } from "@/components/shared/module-icons";
-import { hasModulePage } from "@/content/modules";
+import { hasModulePage } from "@/content/modules/ids";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 import type { Dict } from "@/lib/i18n";
@@ -20,7 +20,7 @@ import type { Dict } from "@/lib/i18n";
    which line of a person's record.
    ──────────────────────────────────────────────────────────────── */
 
-type NodeId = "tools" | "activities" | "clubs" | "hr" | "planning" | "resources" | "channels" | "insight";
+type NodeId = "outreach" | "serving" | "team" | "schedule" | "property" | "channels" | "insight";
 
 interface NodeDef {
   id: NodeId;
@@ -35,25 +35,24 @@ interface NodeDef {
 /* Column order top-to-bottom; `ROWS` keeps the same order per side, so no
    connector ever crosses another. */
 const NODES: NodeDef[] = [
-  { id: "tools", groups: ["tools"], side: "left", dir: "in" },
-  { id: "activities", groups: ["activities"], side: "left", dir: "in" },
-  { id: "clubs", groups: ["clubs"], side: "left", dir: "in" },
-  { id: "hr", groups: ["hr"], side: "left", dir: "in" },
-  { id: "planning", groups: ["planning"], side: "right", dir: "in" },
-  { id: "resources", groups: ["resources"], side: "right", dir: "in" },
+  { id: "outreach", groups: ["outreach"], side: "left", dir: "in" },
+  { id: "serving", groups: ["serving"], side: "left", dir: "in" },
+  { id: "team", groups: ["team"], side: "left", dir: "in" },
+  { id: "schedule", groups: ["schedule"], side: "right", dir: "in" },
+  { id: "property", groups: ["property"], side: "right", dir: "in" },
   { id: "channels", groups: ["integrations"], side: "right", dir: "out" },
-  { id: "insight", groups: ["analytics", "ai"], side: "right", dir: "out", Icon: Sparkles },
+  { id: "insight", groups: ["insight"], side: "right", dir: "out", Icon: Sparkles },
 ];
 
 /** Row order inside the profile card. Each side stays monotonic. */
-const ROWS: NodeId[] = ["tools", "activities", "clubs", "planning", "hr", "resources", "channels", "insight"];
+const ROWS: NodeId[] = ["outreach", "serving", "schedule", "team", "property", "channels", "insight"];
 
 const LEFT = NODES.filter((n) => n.side === "left");
 const RIGHT = NODES.filter((n) => n.side === "right");
 
 const STORY: (NodeId | "platform")[] = [...ROWS, "platform"];
 
-const PLATFORM_MODULES = ["customization", "templates", "telegram-bot", "campuses"];
+const PLATFORM_MODULES = ["customization", "templates", "automations"];
 
 const STEP_MS = 3200;
 
@@ -80,7 +79,7 @@ function nodeOfModule(t: Dict, id: string): NodeId | "profile" | "platform" | nu
   if (!found) return null;
   const gid = found.group.id;
   if (gid === "people") return "profile";
-  if (gid === "platform" || gid === "campuses") return "platform";
+  if (gid === "platform") return "platform";
   return NODES.find((n) => n.groups.includes(gid))?.id ?? null;
 }
 
@@ -376,7 +375,7 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
               className="relative z-10 order-1 md:order-2 md:self-center rounded-[20px] bg-surface border border-hairline shadow-[0_18px_46px_-28px_rgba(0,0,0,0.38)] overflow-hidden"
             >
               <div className="flex items-center gap-3 px-4 py-3.5 border-b border-hairline bg-surface-2">
-                <IllustratedAvatar look={AVATAR_LOOKS[1]} size={40} className="rounded-full shrink-0" />
+                <PersonAvatar look={lookFor(copy.profile.name)} size={40} className="rounded-full shrink-0" />
                 <div className="flex flex-col gap-1 min-w-0">
                   <span className="font-semibold text-ink text-[15px] leading-none tracking-[-0.2px]">{copy.profile.name}</span>
                   <span className="text-[12px] text-ink-2 leading-none truncate">{copy.profile.status}</span>

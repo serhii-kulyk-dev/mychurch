@@ -4,14 +4,13 @@ import Link from "next/link";
 import { ArrowUpRight, Mail, Phone, Send } from "lucide-react";
 import LogoLink from "@/components/shared/logo-link";
 import PreferenceToggles from "@/components/shared/preference-toggles";
-import { PRICING_COPY } from "@/content/pricing";
 import { useLang, useT } from "@/lib/lang";
 import { LEAD_AMBASSADOR_HREF } from "@/content/ambassadors";
+import { sectionClick } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 import { SITE_TELEGRAM, SITE_TELEGRAM_HANDLE } from "@/lib/seo";
 import { TELEGRAM_COPY } from "@/content/telegram";
 import { BLOG_COPY } from "@/content/blog";
-import { COMPARE_COPY } from "@/content/compare";
 
 const NEW_LIFE = { label: "Нове Життя", href: "https://www.newlife.ck.ua/" };
 
@@ -102,8 +101,6 @@ export default function Footer() {
 
   const HELP = [
     { label: t.nav.audience, href: "/for-whom" },
-    { label: PRICING_COPY[lang].navLabel, href: "/pricing" },
-    { label: COMPARE_COPY[lang].navLabel, href: "/compare" },
     { label: t.nav.faq, href: "/faq" },
     { label: t.nav.support, href: "/support" },
   ];
@@ -148,7 +145,8 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-10 lg:w-[620px] lg:shrink-0 lg:gap-x-8">
             <Column title={t.footer.product}>
               {PRODUCT.map(({ label, href }) => (
-                <Link key={href} href={href} className={linkCls}>
+                /* «Головна» — якір на головну: на ній гортаємо без #hash в адресі. */
+                <Link key={href} href={href} onClick={sectionClick(href)} className={linkCls}>
                   {label}
                 </Link>
               ))}

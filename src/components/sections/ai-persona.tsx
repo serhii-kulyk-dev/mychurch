@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Check, MessageSquare, Pencil, Send, Smartphone, Smile } from "lucide-react";
+import { MessageSquare, Pencil, Send, Smartphone, Smile } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
-import IllustratedAvatar, { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { AVATAR_LOOKS } from "@/components/shared/person-avatar";
 import { useLang, useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ function Avatar({ option, size }: { option: number; size: number }) {
   if (!look) {
     return <Image src="/eva.jpg" alt="" width={size} height={size} sizes={`${size}px`} className="rounded-full" />;
   }
-  return <IllustratedAvatar look={look} size={size} />;
+  return <PersonAvatar look={look} size={size} />;
 }
 
 export default function AiPersona() {
@@ -39,16 +39,6 @@ export default function AiPersona() {
           <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{t.eyebrow}</span>
           <h2 className="font-semibold text-ink text-[30px] md:text-[42px] leading-[1.12] tracking-[-1px] md:tracking-[-1.5px]">{t.title}</h2>
           <p className="text-[16.5px] md:text-[18px] text-ink-2 leading-[1.55]">{t.text}</p>
-          <ul className="flex flex-col gap-3 pt-1">
-            {t.points.map((p) => (
-              <li key={p} className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-brand-soft flex items-center justify-center shrink-0">
-                  <Check className="w-[13px] h-[13px] text-brand" strokeWidth={3} />
-                </span>
-                <span className="text-[15.5px] text-ink leading-[1.4]">{p}</span>
-              </li>
-            ))}
-          </ul>
         </FadeIn>
 
         <FadeIn delay={2} variant="scale" className="relative">

@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import AppPreview from "@/components/shared/app-preview";
+import GridPulse from "@/components/shared/grid-pulse";
 import RotatingWords from "@/components/shared/rotating-words";
 import { prefersReducedMotion } from "@/components/shared/fade-in";
 import { useDemoModal } from "@/context/demo-modal-context";
@@ -124,19 +125,26 @@ export default function Hero() {
             animationDelay: "-8s",
           }}
         />
-        {/* Grid, faded out towards the edges */}
+        {/* Grid, faded out towards the edges — and the light that moves in it */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
             maskImage:
               "radial-gradient(ellipse 70% 55% at 50% 30%, black 20%, transparent 78%)",
             WebkitMaskImage:
               "radial-gradient(ellipse 70% 55% at 50% 30%, black 20%, transparent 78%)",
           }}
-        />
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)",
+              backgroundSize: "56px 56px",
+            }}
+          />
+          <GridPulse className="absolute inset-0" />
+        </div>
       </div>
 
       {/* ── Copy ───────────────────────────────────────── */}
@@ -220,15 +228,6 @@ export default function Hero() {
               />
             </Link>
           </div>
-
-          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            {t.hero.proof.map((item) => (
-              <li key={item} className="flex items-center gap-1.5">
-                <Check className="w-[14px] h-[14px] text-brand" strokeWidth={3} />
-                <span className="text-[13.5px] text-ink-3 leading-none">{item}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 

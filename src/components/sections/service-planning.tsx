@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
-  ArrowRight, Baby, BookOpen, Bus, Check, Clock, ClipboardList, CalendarDays,
-  Keyboard, Languages, Megaphone, Mic, Music4, Plus, Presentation, Search, Sparkles,
-  UtensilsCrossed, Video, Volume2, Wine,
+  ArrowRight, BookOpen, Check, Clock, CalendarDays,
+  Keyboard, Megaphone, Mic, Music4, Plus, Search, Sparkles,
+  Video, Wine,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
-import IllustratedAvatar, { AVATAR_LOOKS, type AvatarLook } from "@/components/shared/illustrated-avatar";
-import { hasModulePage } from "@/content/modules";
+import PersonAvatar, { lookFor, type AvatarLook } from "@/components/shared/person-avatar";
+import { hasModulePage } from "@/content/modules/ids";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
@@ -58,11 +58,6 @@ const BLOCK_ICONS: Record<string, LucideIcon> = {
 const BLOCK_ACCENTS: Record<string, string> = {
   worship: "#f05b8b", prayer: "#8b5bf0", video: "#0ea5e9", sermon: "#007aff", announce: "#f59e0b", communion: "#12a150",
 };
-const ROLE_ICONS: Record<string, LucideIcon> = {
-  sound: Volume2, slides: Presentation, worship: Music4, registration: ClipboardList,
-  translation: Languages, decor: Sparkles, kids: Baby, transport: Bus, kitchen: UtensilsCrossed,
-};
-const LOOKS = [1, 5, 0, 4, 3, 2, 6];
 
 const MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const subscribeMotion = (onChange: () => void) => {
@@ -87,7 +82,6 @@ export default function ServicePlanning() {
   const t = useT().servicePlanning;
   const plan = t.plan;
   const lib = plan.library;
-  const needs = t.needs;
 
   const hostRef = useRef<HTMLDivElement>(null);
   const tapRef = useRef(0);
@@ -96,17 +90,10 @@ export default function ServicePlanning() {
   const [ptrs, setPtrs] = useState<Record<string, Pointer>>({});
   const [tap, setTap] = useState<{ id: number; x: number; y: number } | null>(null);
   const [live, setLive] = useState<Live | null>(null);
-  const [event, setEvent] = useState(0);
 
   /* No motion preference — the finished plan is simply shown. */
   const reduced = useSyncExternalStore(subscribeMotion, () => window.matchMedia(MOTION_QUERY).matches, () => false);
 
-  /* One avatar per person, not per row — Andrii leads two blocks. */
-  const lookOf = new Map<string, number>();
-  plan.items.forEach((item) => {
-    if (!lookOf.has(item.who)) lookOf.set(item.who, LOOKS[lookOf.size % LOOKS.length]);
-  });
-  const lookFor = (who: string): AvatarLook => AVATAR_LOOKS[lookOf.get(who) ?? 0];
   const owner = (kind: string) => plan.items.find((i) => i.kind === kind);
 
   useEffect(() => {
@@ -238,38 +225,19 @@ export default function ServicePlanning() {
   const done = filledCount === rows.length && communionOn;
   const link = hasModulePage("service-planning") ? "/modules/service-planning" : "/modules";
 
-  const ev = needs.events[event];
-  const openOf = (e: typeof ev) => e.roles.reduce((sum, r) => sum + Math.max(0, r.need - r.filled), 0);
-  const evOpen = openOf(ev);
-
   return (
     <section id="service-planning" className="w-full flex flex-col items-center py-16 md:py-24 bg-surface border-y border-hairline scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-16 md:gap-24">
 
-        {/* ── Heading ──────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,430px)] gap-8 lg:gap-14 items-end">
-          <FadeIn className="flex flex-col gap-4">
-            <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{t.eyebrow}</span>
-            <h2 className="font-semibold text-ink text-[30px] md:text-[42px] leading-[1.12] tracking-[-1px] md:tracking-[-1.5px]">{t.title}</h2>
-            <p className="text-[16.5px] md:text-[18px] text-ink-2 leading-[1.55] max-w-[620px]">{t.text}</p>
-          </FadeIn>
-          <FadeIn delay={1} className="flex flex-col gap-3">
-            <ul className="flex flex-col gap-3">
-              {t.points.map((p) => (
-                <li key={p} className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-brand-soft flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-[13px] h-[13px] text-brand" strokeWidth={3} />
-                  </span>
-                  <span className="text-[15px] text-ink leading-[1.4]">{p}</span>
-                </li>
-              ))}
-            </ul>
-            <Link href={link} className="group inline-flex items-center gap-1.5 pt-1 text-[14.5px] font-semibold text-brand">
-              {t.link}
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.2} />
-            </Link>
-          </FadeIn>
-        </div>
+        {/* ── Heading: one thought, set as large as it reads ─────── */}
+        <FadeIn className="flex flex-col items-center text-center gap-5">
+          <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{t.eyebrow}</span>
+          <h2 className="font-semibold text-ink text-[46px] sm:text-[66px] md:text-[88px] leading-[1.0] tracking-[-2px] md:tracking-[-3.6px]">{t.title}</h2>
+          <Link href={link} className="group inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand">
+            {t.link}
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.2} />
+          </Link>
+        </FadeIn>
 
         {/* ── The composition: library + plan + the hands ─ */}
         <FadeIn variant="scale" className="relative">
@@ -278,42 +246,43 @@ export default function ServicePlanning() {
             className="absolute -inset-8 rounded-[48px] -z-10 blur-3xl opacity-60"
             style={{ background: "radial-gradient(closest-side, var(--glow), transparent)" }}
           />
-          <div ref={hostRef} className="relative grid grid-cols-1 lg:grid-cols-[288px_minmax(0,1fr)] gap-4 lg:gap-5">
+          <div ref={hostRef} className="relative grid grid-cols-1 lg:grid-cols-[228px_minmax(0,1fr)] gap-4 lg:gap-5 lg:items-start">
 
-            {/* Song library */}
-            <div className="rounded-[22px] border border-hairline bg-surface shadow-[0_24px_50px_-40px_rgba(0,50,120,0.45)] overflow-hidden self-start">
-              <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-hairline bg-surface-2">
-                <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "color-mix(in oklab, #f05b8b 14%, transparent)" }}>
-                  <Music4 className="w-4 h-4" strokeWidth={2.2} style={{ color: "#f05b8b" }} />
+            {/* Song library — a side note beside the plan, not a second hero:
+                smaller and tucked below the plan’s header line. */}
+            <div className="rounded-[18px] border border-hairline bg-surface shadow-[0_18px_40px_-36px_rgba(0,50,120,0.45)] overflow-hidden self-start lg:mt-14">
+              <div className="flex items-center gap-2 px-3 py-2.5 border-b border-hairline bg-surface-2">
+                <span className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: "color-mix(in oklab, #f05b8b 14%, transparent)" }}>
+                  <Music4 className="w-3.5 h-3.5" strokeWidth={2.2} style={{ color: "#f05b8b" }} />
                 </span>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[14px] font-semibold text-ink leading-none truncate">{lib.title}</span>
-                  <span className="text-[11.5px] text-ink-3 leading-none mt-1.5">{lib.count}</span>
+                <div className="flex items-baseline gap-1.5 min-w-0">
+                  <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{lib.title}</span>
+                  <span className="text-[11px] text-ink-3 leading-none">{lib.count}</span>
                 </div>
               </div>
 
-              <div className="p-3 flex flex-col gap-3">
+              <div className="p-2.5 flex flex-col gap-2.5">
                 <div
                   data-slot="lib-search"
                   className={cn(
-                    "flex items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors",
+                    "flex items-center gap-2 rounded-lg border px-2.5 py-2 transition-colors",
                     s >= STEP.SEARCH ? "border-brand bg-brand-soft/50" : "border-hairline bg-surface-2"
                   )}
                 >
-                  <Search className="w-4 h-4 text-ink-3 shrink-0" strokeWidth={2.2} />
+                  <Search className="w-3.5 h-3.5 text-ink-3 shrink-0" strokeWidth={2.2} />
                   {s >= STEP.SEARCH ? (
-                    <span className="text-[13.5px] text-ink leading-none">
+                    <span className="text-[12.5px] text-ink leading-none">
                       {lib.query}
                       <span className="plan-caret" />
                     </span>
                   ) : (
-                    <span className="text-[13.5px] text-ink-3 leading-none">{lib.placeholder}</span>
+                    <span className="text-[12.5px] text-ink-3 leading-none">{lib.placeholder}</span>
                   )}
                 </div>
 
                 {s >= STEP.SEARCH && (
-                  <div className="plan-value flex flex-col gap-1.5">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-3">{lib.foundTitle}</span>
+                  <div className="plan-value flex flex-col gap-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-3">{lib.foundTitle}</span>
                     {lib.found.map((song, i) => (
                       <SongRow
                         key={song.name}
@@ -327,8 +296,8 @@ export default function ServicePlanning() {
                   </div>
                 )}
 
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-3">{lib.recentTitle}</span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-ink-3">{lib.recentTitle}</span>
                   {lib.recent.map((song, i) => (
                     <SongRow
                       key={song.name}
@@ -371,7 +340,7 @@ export default function ServicePlanning() {
                 </div>
               </div>
 
-              <ul className="px-4 sm:px-5 py-1">
+              <ul className="flex flex-col gap-2 px-4 sm:px-5 py-4">
                 {rows.map((item) => {
                   const Icon = BLOCK_ICONS[item.kind] ?? Sparkles;
                   const accent = BLOCK_ACCENTS[item.kind] ?? "var(--brand)";
@@ -382,7 +351,7 @@ export default function ServicePlanning() {
                       key={`${item.kind}-${item.time}`}
                       data-slot={`block-${item.kind}`}
                       className={cn(
-                        "plan-row flex items-start gap-3 py-3 -mx-2 px-2 rounded-xl border-b border-hairline last:border-b-0",
+                        "plan-row flex items-start gap-3 rounded-xl border border-hairline bg-surface-2 px-3 py-3",
                         isNew && "is-new"
                       )}
                     >
@@ -445,7 +414,7 @@ export default function ServicePlanning() {
                       </div>
 
                       <span className="flex items-center gap-1.5 shrink-0 pt-0.5" title={`${item.who} · ${item.role}`}>
-                        <IllustratedAvatar look={lookFor(item.who)} size={22} className="rounded-full" />
+                        <PersonAvatar look={lookFor(item.who)} size={22} className="rounded-full" />
                         <span className="hidden md:inline text-[12.5px] text-ink-3 leading-none">{item.short}</span>
                         {filled && (
                           <span className="plan-slot-on w-4 h-4 rounded-full bg-[#12a150] flex items-center justify-center">
@@ -488,100 +457,6 @@ export default function ServicePlanning() {
             })}
           </div>
         </FadeIn>
-
-        {/* ── The need behind each event ───────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,330px)_minmax(0,1fr)] gap-8 lg:gap-12 items-start">
-          <FadeIn className="flex flex-col gap-4">
-            <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{needs.eyebrow}</span>
-            <h3 className="font-semibold text-ink text-[24px] md:text-[30px] leading-[1.15] tracking-[-0.8px]">{needs.title}</h3>
-            <p className="text-[15.5px] md:text-[16.5px] text-ink-2 leading-[1.55]">{needs.text}</p>
-
-            <ul className="flex flex-col gap-2 pt-2">
-              {needs.events.map((e, i) => {
-                const open = openOf(e);
-                return (
-                  <li key={e.name}>
-                    <button
-                      onClick={() => setEvent(i)}
-                      aria-pressed={event === i}
-                      className={cn(
-                        "w-full flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-left transition-colors",
-                        event === i
-                          ? "bg-surface border-hairline-strong shadow-[0_10px_24px_-20px_rgba(0,0,0,0.5)]"
-                          : "bg-transparent border-hairline hover:border-hairline-strong"
-                      )}
-                    >
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <span className={cn("text-[14px] font-medium leading-none truncate", event === i ? "text-ink" : "text-ink-2")}>{e.name}</span>
-                        <span className="text-[12px] text-ink-3 leading-none mt-1.5">{e.date}</span>
-                      </div>
-                      <span
-                        className={cn(
-                          "shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold leading-none",
-                          open === 0 ? "bg-[#12a150]/12 text-[#0e7a3c] dark:text-[#3ddc97]" : "bg-[#ff9500]/14 text-[#c46a00] dark:text-[#ffb454]"
-                        )}
-                      >
-                        {open === 0 ? needs.closed : `+${open}`}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </FadeIn>
-
-          <FadeIn delay={2} className="rounded-[24px] border border-hairline bg-surface-2 overflow-hidden">
-            <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-hairline bg-surface">
-              <div className="flex flex-col min-w-0">
-                <span className="text-[15px] font-semibold text-ink leading-none truncate">{ev.name}</span>
-                <span className="text-[12.5px] text-ink-3 leading-none mt-1.5">{ev.date}</span>
-              </div>
-              <span
-                className={cn(
-                  "shrink-0 rounded-full px-3 py-1.5 text-[12px] font-semibold leading-none",
-                  evOpen === 0 ? "bg-[#12a150]/12 text-[#0e7a3c] dark:text-[#3ddc97]" : "bg-[#ff9500]/14 text-[#c46a00] dark:text-[#ffb454]"
-                )}
-              >
-                {evOpen === 0 ? needs.allClosed : needs.openLabel.replace("{n}", String(evOpen))}
-              </span>
-            </div>
-
-            <ul key={event} className="px-5 py-2">
-              {ev.roles.map((role, i) => {
-                const Icon = ROLE_ICONS[role.kind] ?? ClipboardList;
-                const covered = role.filled >= role.need;
-                return (
-                  <li
-                    key={role.name}
-                    className="plan-slot-on flex items-center gap-3 py-3 border-b border-hairline last:border-b-0"
-                    style={{ animationDelay: `${i * 70}ms` }}
-                  >
-                    <span className="w-8 h-8 rounded-xl bg-surface border border-hairline flex items-center justify-center shrink-0">
-                      <Icon className="w-[15px] h-[15px] text-ink-2" strokeWidth={2} />
-                    </span>
-                    <span className="w-[92px] sm:w-[120px] shrink-0 text-[14px] font-medium text-ink leading-none truncate">{role.name}</span>
-
-                    <span className="flex items-center gap-1.5 flex-1 flex-wrap">
-                      {Array.from({ length: role.need }, (_, sl) => (
-                        <span
-                          key={sl}
-                          className={cn(
-                            "w-[11px] h-[11px] rounded-full",
-                            sl < role.filled ? "bg-[#12a150]" : "border border-dashed border-[#c46a00] dark:border-[#ffb454]"
-                          )}
-                        />
-                      ))}
-                    </span>
-
-                    <span className={cn("shrink-0 text-[12px] font-semibold leading-none tabular-nums", covered ? "text-[#0e7a3c] dark:text-[#3ddc97]" : "text-ink-3")}>
-                      {covered ? needs.closed : needs.of.replace("{filled}", String(role.filled)).replace("{need}", String(role.need))}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </FadeIn>
-        </div>
       </div>
     </section>
   );
@@ -617,14 +492,14 @@ function SongRow({ slot, name, tone, picked, label }: { slot: string; name: stri
     <div
       data-slot={slot}
       className={cn(
-        "flex items-center gap-2 rounded-xl border px-2.5 py-2 transition-colors",
+        "flex items-center gap-2 rounded-lg border px-2 py-1.5 transition-colors",
         picked ? "border-[#12a150]/45 bg-[#12a150]/8" : "border-hairline bg-surface"
       )}
     >
-      <span className="w-6 h-6 rounded-lg bg-surface-2 flex items-center justify-center shrink-0">
-        <Music4 className="w-3 h-3 text-ink-3" strokeWidth={2.2} />
+      <span className="w-5 h-5 rounded-md bg-surface-2 flex items-center justify-center shrink-0">
+        <Music4 className="w-[11px] h-[11px] text-ink-3" strokeWidth={2.2} />
       </span>
-      <span className="flex-1 min-w-0 text-[13px] font-medium text-ink leading-none truncate">{name}</span>
+      <span className="flex-1 min-w-0 text-[12.5px] font-medium text-ink leading-none truncate">{name}</span>
       {picked ? (
         <span className="plan-slot-on flex items-center gap-1 text-[10.5px] font-semibold text-[#0e7a3c] dark:text-[#3ddc97] leading-none">
           <Check className="w-3 h-3" strokeWidth={3.2} /> <span className="hidden sm:inline">{label}</span>
@@ -666,7 +541,7 @@ function GhostPointer({ p, label, look, accent, flip }: { p: Pointer; label: str
         )}
         style={{ background: accent }}
       >
-        <IllustratedAvatar look={look} size={20} className="rounded-full ring-[1.5px] ring-white/50" />
+        <PersonAvatar look={look} size={20} className="rounded-full ring-[1.5px] ring-white/50" />
         {label}
       </span>
     </span>

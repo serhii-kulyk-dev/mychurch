@@ -6,7 +6,7 @@ import { ArrowRight, ArrowUpRight, Check, ChevronRight, LayoutGrid, MonitorPlay,
 import FadeIn from "@/components/shared/fade-in";
 import SectionHeading from "@/components/shared/section-heading";
 import ModuleMock from "@/components/shared/module-mock";
-import ModulesMap from "@/components/sections/modules-map";
+import ServiceNeeds from "@/components/sections/service-needs";
 import {
   FEATURE_ICONS, MODULE_ICONS, moduleAccent, AUDIENCE_ROLE_ICONS, AUDIENCE_ROLE_ACCENTS,
 } from "@/components/shared/module-icons";
@@ -447,60 +447,6 @@ function Benefits({ ctx }: { ctx: Ctx }) {
   );
 }
 
-/* ── One day (optional) ─────────────────────────────────────────── */
-function Day({ ctx }: { ctx: Ctx }) {
-  const { accent, copy, t } = ctx;
-  const d = copy.day;
-  if (!d) return null;
-  return (
-    <section id="day" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-[128px]">
-      <div className="w-full max-w-[1120px] px-5 md:px-8 grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)] gap-8 lg:gap-14">
-        <FadeIn className="lg:sticky lg:top-36 lg:self-start flex flex-col gap-3">
-          <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: accent }}>{t.modulePage.dayEyebrow}</span>
-          <h2 className="font-semibold text-ink text-[28px] md:text-[36px] leading-[1.12] tracking-[-0.9px]">{d.title}</h2>
-          {d.text && <p className="text-[15.5px] text-ink-2 leading-[1.55]">{d.text}</p>}
-          {d.footer && (
-            <div
-              className="mt-3 rounded-[16px] border p-4 flex items-start gap-3"
-              style={{ borderColor: `color-mix(in oklab, ${accent} 35%, var(--hairline))`, background: `color-mix(in oklab, ${accent} 7%, var(--surface))` }}
-            >
-              <span className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `color-mix(in oklab, ${accent} 16%, var(--surface))`, color: accent }}>
-                <Zap className="w-4 h-4" strokeWidth={2.2} />
-              </span>
-              <p className="text-[15px] font-medium text-ink leading-[1.45]">{d.footer}</p>
-            </div>
-          )}
-        </FadeIn>
-
-        <div className="relative flex flex-col gap-3">
-          <span aria-hidden className="absolute left-[5px] md:left-[5px] top-6 bottom-6 w-[2px]" style={{ backgroundImage: "repeating-linear-gradient(to bottom, var(--hairline-strong) 0 6px, transparent 6px 12px)" }} />
-          {d.items.map((item, i) => (
-            <FadeIn key={item.time + item.title} delay={i % 4}>
-              <article className="grid grid-cols-[86px_minmax(0,1fr)] md:grid-cols-[108px_minmax(0,1fr)] gap-3 md:gap-4 items-start">
-                <div className="flex items-center gap-2.5 pt-[18px]">
-                  <span className="relative z-10 w-3 h-3 rounded-full border-2 border-surface shrink-0" style={{ background: accent }} />
-                  <span className="text-[14px] md:text-[15px] font-semibold text-ink tabular-nums leading-none">{item.time}</span>
-                </div>
-                <div className="rounded-[16px] bg-surface border border-hairline px-4 py-4 md:px-5 flex flex-col gap-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold text-ink text-[16.5px] leading-[1.3] tracking-[-0.2px]">{item.title}</h3>
-                    {item.count && (
-                      <span className="shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold leading-none tabular-nums whitespace-nowrap" style={{ background: `color-mix(in oklab, ${accent} 14%, var(--surface))`, color: accent }}>
-                        {item.count}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[14.5px] text-ink-2 leading-[1.5]">{item.text}</p>
-                </div>
-              </article>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ── Kanban path (optional) ─────────────────────────────────────── */
 const STAGE_TONE: Record<Tone, string> = {
   brand: "var(--brand)",
@@ -650,14 +596,16 @@ export default function ModulePage({ id }: { id: string }) {
   const copy = detail.copy[lang];
   const ctx: Ctx = { id, name, accent, copy, t };
   const videoId = getModuleVideo(id);
+  /* Набір команди на подію показуємо там, де про нього й питають — у плануванні служіння. */
+  const needs = id === "service-planning";
 
   /* Only the sections this module actually has. */
   const rail = [
     { id: "inside", label: t.modulePage.insideEyebrow },
-    { id: "how", label: t.modulePage.howEyebrow },
-    ...(copy.pipeline ? [{ id: "flow", label: t.modulePage.pipelineEyebrow }] : []),
-    ...(copy.day ? [{ id: "day", label: t.modulePage.dayEyebrow }] : []),
     ...(videoId ? [{ id: "video", label: t.modulePage.videoEyebrow }] : []),
+    { id: "how", label: t.modulePage.howEyebrow },
+    ...(needs ? [{ id: "needs", label: t.servicePlanning.needs.eyebrow }] : []),
+    ...(copy.pipeline ? [{ id: "flow", label: t.modulePage.pipelineEyebrow }] : []),
     ...(copy.benefits ? [{ id: "benefits", label: t.modulePage.benefitsEyebrow }] : []),
     { id: "who", label: t.modulePage.audienceEyebrow },
     { id: "faq", label: t.modulePage.faqEyebrow },
@@ -668,14 +616,13 @@ export default function ModulePage({ id }: { id: string }) {
       <Hero ctx={ctx} groupId={groupId} groupTitle={groupTitle} soon={found?.item.soon} />
       <Rail items={rail} accent={accent} />
       <Features ctx={ctx} />
-      <Steps ctx={ctx} />
-      <Pipeline ctx={ctx} />
-      <Day ctx={ctx} />
       {videoId && <Video ctx={ctx} fileId={videoId} />}
+      <Steps ctx={ctx} />
+      {needs && <ServiceNeeds accent={accent} />}
+      <Pipeline ctx={ctx} />
       <Benefits ctx={ctx} />
       <Audience ctx={ctx} />
       <Faq ctx={ctx} />
-      <ModulesMap focusModule={id} />
       <Related ctx={ctx} related={detail.related} />
     </>
   );

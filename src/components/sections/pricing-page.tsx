@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, Coffee, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import { PRICING_COPY } from "@/content/pricing";
 import { LEAD_AMBASSADOR, LEAD_AMBASSADOR_HREF } from "@/content/ambassadors";
@@ -9,9 +9,9 @@ import { useLang } from "@/lib/lang";
 
 /* Сходинка тарифів. Щаблі йдуть згори вниз і накопичуються, тому це
    не чотири однакові картки поруч, а рядки, що ростуть: ліворуч —
-   номер, назва і ціна, праворуч — яку рутину щабель знімає і які
+   номер, назва і кому це, праворуч — яку рутину щабель знімає і які
    модулі додає. Індикатор ліворуч показує, котрий це щабель із
-   чотирьох. */
+   чотирьох. Сум на сторінці немає: ціну називаємо в розмові. */
 
 const SHELL = "w-full max-w-[1000px] px-5 md:px-8";
 
@@ -90,7 +90,7 @@ export default function PricingPage() {
                 key={tier.id}
                 className="grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] gap-x-10 gap-y-4 py-7 md:py-9 border-b border-hairline"
               >
-                {/* ліворуч: щабель, назва, ціна */}
+                {/* ліворуч: щабель, назва, кому це */}
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center gap-2" aria-hidden>
                     {Array.from({ length: total }, (_, s) => (
@@ -103,11 +103,6 @@ export default function PricingPage() {
                   <h3 className="font-semibold text-ink text-[24px] md:text-[27px] leading-[1.15] tracking-[-0.7px]">
                     {tier.name}
                   </h3>
-                  <p className="flex items-start gap-2 text-[15px] font-medium text-brand leading-[1.4]">
-                    <Coffee className="w-4 h-4 mt-[3px] shrink-0" aria-hidden />
-                    {tier.coffee}
-                  </p>
-                  {tier.uah && <p className="text-[14px] text-ink-3 leading-[1.4]">{tier.uah}</p>}
                   <p className="text-[14px] text-ink-3 leading-[1.5]">{tier.who}</p>
                 </div>
 

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/sections/navbar";
 import AmbassadorPage from "@/components/sections/ambassador-page";
-import AmbassadorsBecome from "@/components/sections/ambassadors-become";
 import Cta from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
 import JsonLd from "@/components/shared/json-ld";
@@ -47,7 +46,6 @@ export default async function AmbassadorDetailPage({ params }: { params: Params 
           )}
         />
         <AmbassadorPage id={slug} />
-        <AmbassadorsBecome />
         <Cta />
       </main>
       <Footer />

@@ -17,6 +17,10 @@ import type { Dict, Lang } from "@/lib/i18n";
    assembles itself — the sidebar fills with the modules that close
    those wishes, split into "on from day one" and "add later".
    Hovering a wish lights up exactly the modules it brought in.
+
+   Lives on /modules alone: all seventeen wishes in their four groups, and
+   the set hands over to the brief below. The home page asks a narrower
+   question — one pain, one solved screen — in the «Було — стало» block.
    ──────────────────────────────────────────────────────────────── */
 
 /** [one, few, many] — Ukrainian needs all three, English only the first two. */
@@ -112,23 +116,29 @@ export default function ModuleBuilder() {
     return g ? new Set(g.modules) : null;
   }, [hover]);
 
+  const groups = BUILDER_GROUPS;
   const total = ALL_GOALS.length;
   const count = set.all.length;
   /* The empty sidebar still carries the two core lines. */
   const shown = empty ? CORE_MODULES.length : count;
 
   const scrollToSet = () => document.getElementById("builder-set")?.scrollIntoView({ behavior: "smooth", block: "center" });
-  const scrollToBrief = () => document.getElementById("brief")?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  /* The set has to land somewhere: the brief right under the constructor. */
+  const takeSet = () => {
+    track("builder_cta", { place: "modules", picked: goals.length });
+    document.getElementById("brief")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const rowState = (id: string): "on" | "lit" | "dim" => (!hovered ? "on" : hovered.has(id) ? "lit" : "dim");
 
   return (
-    <section id="builder" className="w-full flex flex-col items-center py-12 md:py-16 scroll-mt-24">
+    <section id="builder" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-8 md:gap-10">
-        <FadeIn className="flex flex-col gap-3.5 max-w-[720px]">
+        <FadeIn className="flex flex-col gap-4 max-w-[760px]">
           <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{b.eyebrow}</span>
-          <h2 className="font-semibold text-ink text-[28px] md:text-[38px] leading-[1.12] tracking-[-0.9px] md:tracking-[-1.3px]">{b.title}</h2>
-          <p className="text-[16px] md:text-[17px] text-ink-2 leading-[1.55]">{b.text}</p>
+          <h2 className="font-semibold text-ink text-[30px] md:text-[44px] leading-[1.12] tracking-[-1px] md:tracking-[-1.6px]">{b.title}</h2>
+          <p className="text-[16.5px] md:text-[18px] text-ink-2 leading-[1.55]">{b.lead}</p>
         </FadeIn>
 
         <FadeIn variant="scale">
@@ -140,7 +150,7 @@ export default function ModuleBuilder() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[15px] font-semibold text-ink leading-[1.3]">{b.pickLabel}</span>
+                  <h3 className="text-[15px] font-semibold text-ink leading-[1.3]">{b.pickLabel}</h3>
                   <span className="text-[12.5px] text-ink-3 tabular-nums">
                     {b.picked.replace("{n}", String(goals.length)).replace("{total}", String(total))}
                   </span>
@@ -157,7 +167,7 @@ export default function ModuleBuilder() {
               </div>
 
               <div className="flex flex-col gap-5">
-                {BUILDER_GROUPS.map((group) => (
+                {groups.map((group) => (
                   <div key={group.id} className="flex flex-col gap-2">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3">
                       {b.groups[group.id as keyof typeof b.groups]}
@@ -173,7 +183,7 @@ export default function ModuleBuilder() {
                             type="button"
                             aria-pressed={on}
                             onClick={() => {
-                              track("builder_pick", { label: copy.label, id: goal.id, on: !on });
+                              track("builder_pick", { label: copy.label, id: goal.id, on: !on, place: "modules" });
                               toggle(goal.id);
                             }}
                             onMouseEnter={() => setHover(goal.id)}
@@ -181,23 +191,20 @@ export default function ModuleBuilder() {
                             onFocus={() => setHover(goal.id)}
                             onBlur={() => setHover(null)}
                             className={cn(
-                              "w-full text-left flex items-start gap-3 rounded-[14px] border px-3 py-2.5 transition-[background-color,border-color,box-shadow] duration-150",
+                              "w-full text-left flex items-center gap-3 rounded-[14px] border px-3 py-2.5 transition-[background-color,border-color,box-shadow] duration-150",
                               on ? "border-brand/45 bg-brand-soft" : "border-hairline bg-surface hover:border-hairline-strong hover:bg-surface-2"
                             )}
                           >
                             <span
-                              className="mt-[1px] w-8 h-8 rounded-[10px] border border-hairline flex items-center justify-center shrink-0"
+                              className="w-8 h-8 rounded-[10px] border border-hairline flex items-center justify-center shrink-0"
                               style={{ background: `color-mix(in oklab, ${accent} 12%, var(--surface))`, color: accent }}
                             >
                               <goal.Icon className="w-4 h-4" strokeWidth={2.1} />
                             </span>
-                            <span className="flex flex-col gap-0.5 min-w-0 flex-1">
-                              <span className="text-[14.5px] font-medium text-ink leading-[1.3]">{copy.label}</span>
-                              <span className="text-[12.5px] text-ink-3 leading-[1.35]">{copy.note}</span>
-                            </span>
+                            <span className="text-[14.5px] font-medium text-ink leading-[1.3] min-w-0 flex-1">{copy.label}</span>
                             <span
                               className={cn(
-                                "mt-[5px] w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors duration-150",
+                                "w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors duration-150",
                                 on ? "bg-brand border-brand" : "border-hairline-strong bg-surface"
                               )}
                             >
@@ -361,7 +368,7 @@ export default function ModuleBuilder() {
                 <div className="flex flex-col gap-2.5">
                   <button
                     type="button"
-                    onClick={scrollToBrief}
+                    onClick={takeSet}
                     disabled={empty}
                     className={cn(
                       "btn-primary btn-brand group relative flex items-center justify-center gap-2 h-12 w-full rounded-full overflow-hidden",

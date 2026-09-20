@@ -10,7 +10,11 @@ const eslintConfig = defineConfig([
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
+    // Тека статичного експорту (distDir у next.config.ts).
+    ".static/**",
     "build/**",
+    /* Тимчасові копії репозиторію від Claude Code — не наш код. */
+    ".claude/worktrees/**",
     "next-env.d.ts",
   ]),
 ]);

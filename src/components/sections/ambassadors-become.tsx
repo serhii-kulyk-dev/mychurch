@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowRight, Headset, Sparkles, MessageSquareHeart } from "lucide-react";
+import { ArrowRight, Sparkles, MessageSquareHeart } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import SectionHeading from "@/components/shared/section-heading";
 import { useDemoModal } from "@/context/demo-modal-context";
 import { useT } from "@/lib/lang";
 
-const PERK_ICONS = [Headset, Sparkles, MessageSquareHeart];
+const PERK_ICONS = [Sparkles, MessageSquareHeart];
 
 export default function AmbassadorsBecome() {
   const t = useT().ambassadorsPage;
@@ -17,7 +17,7 @@ export default function AmbassadorsBecome() {
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-14">
         <SectionHeading eyebrow={t.becomeEyebrow} title={t.becomeTitle} text={t.becomeText} />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
+        <div className="w-full max-w-[720px] mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
           {t.perks.map((perk, i) => {
             const Icon = PERK_ICONS[i] ?? Sparkles;
             return (

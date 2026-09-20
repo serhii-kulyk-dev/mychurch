@@ -5,9 +5,12 @@ import { MODULE_IDS } from "@/content/modules";
 import { ROLE_IDS } from "@/components/shared/role-icons";
 import { absoluteUrl } from "@/lib/seo";
 
+/* Статичний експорт: файл генерується під час збірки, не на запит. */
+export const dynamic = "force-static";
+
 /* Карта сайту: усі сторінки, які мають потрапити в пошук.
-   Вартості й порівняння тут свідомо немає — вони закриті від індексації
-   (noIndex у своїх pageMeta), на них ведемо тільки з самого сайту.
+   Вартості тут свідомо немає — вона закрита від індексації
+   (noIndex у своєму pageMeta), на неї ведемо тільки з самого сайту.
    Пріоритети — відносні: головна найвища, службові сторінки нижчі. */
 
 const STATIC_PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [

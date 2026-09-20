@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMeta({
   title: SUPPORT_COPY.ua.seoTitle,
   description: SUPPORT_COPY.ua.seoDescription,
   path: "/support",
-  keywords: ["підтримка MyChurch", "допомога з системою для церкви", "час відповіді підтримки"],
+  keywords: ["підтримка «Моєї Церкви»", "допомога з системою для церкви", "час відповіді підтримки"],
 });
 
 export default function SupportPage() {

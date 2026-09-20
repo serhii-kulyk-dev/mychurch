@@ -5,8 +5,7 @@ export const post: BlogPost = {
   category: "process",
   date: "2026-09-18",
   minutes: 8,
-  featured: true,
-  related: ["yak-obraty-systemu-dlia-tserkvy", "dani-v-riznykh-mistsiakh", "peredacha-sluzhinnia"],
+  related: ["yak-obraty-systemu-dlia-tserkvy", "dani-v-riznykh-mistsiakh", "piat-pytan-pro-systemu"],
   copy: {
     ua: {
       seoTitle: "Ваша церква унікальна: система має підлаштуватись під вас",
@@ -95,7 +94,7 @@ export const post: BlogPost = {
           ],
         },
         {
-          heading: "Як це працює в MyChurch",
+          heading: "Як це працює в «Моїй Церкві»",
           blocks: [
             {
               kind: "list",

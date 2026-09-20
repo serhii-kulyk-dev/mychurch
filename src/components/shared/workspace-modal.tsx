@@ -6,8 +6,8 @@ import { ArrowUpRight, LayoutGrid, X } from "lucide-react";
 import ModuleMock from "@/components/shared/module-mock";
 import { MODULE_ICONS, moduleAccent } from "@/components/shared/module-icons";
 import { ROLE_ICONS, ROLE_ACCENTS } from "@/components/shared/role-icons";
-import { getModule, hasModulePage } from "@/content/modules";
-import type { RoleId } from "@/content/modules";
+import type { ModuleDetail, RoleId } from "@/content/modules/types";
+import { hasModulePage } from "@/content/modules/ids";
 import { ROLE_MODULES } from "@/content/role-modules";
 import { useWorkspace } from "@/context/workspace-context";
 import { useLang, useT } from "@/lib/lang";
@@ -33,6 +33,22 @@ export default function WorkspaceModal() {
 
   const [role, setRole] = useState<RoleId | null>(null);
 
+  /* Тексти всіх сорока модулів двома мовами — це пів мегабайта, і вони
+     потрібні лише тому, хто відкрив «Мій простір». Модалка живе в
+     layout, тож без лінивого імпорту цей вантаж їхав би на кожну
+     сторінку сайту. Вантажимо на першому відкритті. */
+  const [catalog, setCatalog] = useState<ModuleDetail[] | null>(null);
+  useEffect(() => {
+    if (!isOpen || catalog) return;
+    let alive = true;
+    void import("@/content/modules").then((m) => {
+      if (alive) setCatalog(m.MODULE_DETAILS);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [isOpen, catalog]);
+
   const windowRef = useRef<HTMLDivElement>(null);
   const scrollbarWidthRef = useRef(0);
 
@@ -55,7 +71,7 @@ export default function WorkspaceModal() {
   const home = role ? ROLE_MODULES[role].find((id) => flat.some((x) => x.i.id === id)) : undefined;
   const found = flat.find((x) => x.i.id === moduleId) ?? flat.find((x) => x.i.id === home) ?? flat[0];
   const current = found?.i.id ?? null;
-  const detail = current ? getModule(current) : undefined;
+  const detail = current ? catalog?.find((m) => m.id === current) : undefined;
 
   /* What this module gives this role — authored per module, not generated. */
   const roleLine = role && detail ? detail.copy[lang].audience.find((a) => a.role === role)?.text : undefined;

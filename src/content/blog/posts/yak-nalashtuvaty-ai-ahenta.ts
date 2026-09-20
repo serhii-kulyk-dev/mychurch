@@ -5,7 +5,7 @@ export const post: BlogPost = {
   category: "ai",
   date: "2026-09-12",
   minutes: 8,
-  related: ["telegram-bot-dlia-tserkvy", "zaiavky-ta-zvernennia", "planuvannia-nedilnoho-sluzhinnia"],
+  related: ["vid-vidviduvacha-do-lidera", "vasha-tserkva-unikalna", "dani-v-riznykh-mistsiakh"],
   copy: {
     ua: {
       seoTitle: "Як налаштувати ШІ-асистента, щоб він допомагав церкві",

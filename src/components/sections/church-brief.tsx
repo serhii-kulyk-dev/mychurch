@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import type { Dict } from "@/lib/i18n";
 
 /* Bottom of the modules page: the visitor describes their church and we propose
-   a module set. Submission goes through the same /api/lead as the demo modal. */
+   a module set. Submission goes through the same sendLead() as the demo modal. */
 
 function moduleName(t: Dict, id: string) {
   for (const g of t.modules.groups) {
@@ -137,7 +137,6 @@ export default function ChurchBrief() {
   const modalErrors = t.modal.errors;
 
   const [size, setSize] = useState<number | null>(null);
-  const [tools, setTools] = useState<number[]>([]);
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -187,12 +186,8 @@ export default function ChurchBrief() {
     [f.errors]
   );
 
-  const toggleTool = (i: number) =>
-    setTools((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]));
-
   const reset = () => {
     setSize(null);
-    setTools([]);
     setAbout(wishes);
     setTouched(false);
     setName("");
@@ -232,7 +227,7 @@ export default function ChurchBrief() {
     }
     sendingRef.current = true;
     setState("sending");
-    track("form_submit", { source: "brief", size: size === null ? "" : f.sizes[size], tools: tools.length, goals: goals.length });
+    track("form_submit", { source: "brief", size: size === null ? "" : f.sizes[size], goals: goals.length });
     try {
       const ok = await sendLead({
         name,
@@ -241,7 +236,6 @@ export default function ChurchBrief() {
         source: "brief",
         about,
         size: size === null ? undefined : f.sizes[size],
-        tools: tools.map((i) => f.tools[i]),
       });
       track(ok ? "lead" : "lead_failed", { source: "brief" });
       setState(ok ? "sent" : "failed");
@@ -252,7 +246,7 @@ export default function ChurchBrief() {
   };
 
   return (
-    <section id="brief" className="w-full flex flex-col items-center py-12 md:py-16 scroll-mt-24">
+    <section id="brief" className="w-full flex flex-col items-center pt-12 md:pt-16 pb-16 md:pb-24 scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8">
         <FadeIn variant="scale">
           <div className="overflow-hidden rounded-[24px] md:rounded-[32px] border border-hairline bg-surface grid grid-cols-1 lg:grid-cols-[1fr_1.08fr] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
@@ -268,27 +262,11 @@ export default function ChurchBrief() {
               />
 
               <div className="relative flex flex-col gap-4">
-                <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{b.eyebrow}</span>
                 <h2 className="font-semibold text-ink text-[28px] md:text-[36px] leading-[1.12] tracking-[-0.9px] md:tracking-[-1.2px]">{b.title}</h2>
                 <p className="text-[16px] md:text-[17px] text-ink-2 leading-[1.55]">{b.text}</p>
               </div>
 
-              <ul className="relative flex flex-col gap-3">
-                {/* FadeIn — це div, тож він живе всередині <li>, а не між ним і <ul>:
-                    інакше список перестає бути списком для скрінрідера. */}
-                {b.points.map((p, i) => (
-                  <li key={p}>
-                    <FadeIn delay={1 + i} variant="left" className="flex items-start gap-3">
-                      <span className="mt-0.5 w-6 h-6 rounded-full bg-brand-soft flex items-center justify-center shrink-0">
-                        <Check className="w-[13px] h-[13px] text-brand" strokeWidth={3} />
-                      </span>
-                      <span className="text-[15.5px] text-ink leading-[1.45]">{p}</span>
-                    </FadeIn>
-                  </li>
-                ))}
-              </ul>
-
-              <FadeIn delay={4} variant="scale" className="relative">
+              <FadeIn delay={1} variant="scale" className="relative">
                 {goals.length > 0 ? <BuiltSet t={t} goals={goals} start={set.start} later={set.later} /> : <ExampleSet t={t} />}
               </FadeIn>
 
@@ -328,22 +306,6 @@ export default function ChurchBrief() {
                           markStart("розмір церкви");
                           track("brief_size", { label: s });
                           setSize(size === i ? null : i);
-                        }}
-                      >
-                        {s}
-                      </Chip>
-                    ))}
-                  </ChipGroup>
-
-                  <ChipGroup label={f.toolsLabel}>
-                    {f.tools.map((s, i) => (
-                      <Chip
-                        key={s}
-                        active={tools.includes(i)}
-                        onClick={() => {
-                          markStart("інструменти");
-                          track("brief_tool", { label: s });
-                          toggleTool(i);
                         }}
                       >
                         {s}

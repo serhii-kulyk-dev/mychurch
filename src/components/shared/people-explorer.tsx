@@ -5,7 +5,8 @@ import {
   Heart, UsersRound, HeartHandshake, GraduationCap, NotebookPen, ClipboardCheck, History,
   Cake, Church, Phone, User, Check, Sparkles, Plus, X, MousePointerClick,
 } from "lucide-react";
-import IllustratedAvatar, { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { AVATAR_LOOKS } from "@/components/shared/person-avatar";
+import ClickHere from "@/components/shared/click-here";
 import { useT } from "@/lib/lang";
 
 const META_ICONS = [User, Cake, Church, Phone];
@@ -39,9 +40,23 @@ function Section({
   );
 }
 
+/* Рідні, які самі є в базі, стоять зі своїм фото. Решта — просто літера:
+   у справжній базі фото є не в кожного, і чуже обличчя тут гірше за його
+   відсутність (донька з лицем сорокарічного чоловіка). */
+function FamilyFace({ name, profiles }: { name: string; profiles: readonly { readonly name: string }[] }) {
+  const idx = profiles.findIndex((p) => p.name.split(" ")[0] === name);
+  if (idx >= 0) return <PersonAvatar look={AVATAR_LOOKS[idx]} size={18} />;
+  return (
+    <span aria-hidden className="shrink-0 w-[18px] h-[18px] rounded-full bg-surface-2 border border-hairline flex items-center justify-center text-[9px] font-semibold text-ink-3 leading-none">
+      {name.slice(0, 1)}
+    </span>
+  );
+}
+
 export default function PeopleExplorer() {
   const t = useT().features.mocks.people;
   const hostRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [added, setAdded] = useState<Record<string, string[]>>({});
@@ -94,8 +109,23 @@ export default function PeopleExplorer() {
 
   return (
     <div ref={hostRef} className="w-full max-w-[560px] mx-auto flex flex-col gap-3">
+      {/* Підказка стоїть над людьми: спершу читаєш, що робити, потім бачиш,
+          на кого тиснути. Кнопки тут немає — дія одна, і вона на картці. */}
+      <div style={{ display: "grid", gridTemplateRows: selected === null ? "1fr" : "0fr", transition: "grid-template-rows 0.45s var(--ease-out-soft)" }}>
+        <div style={{ overflow: "hidden" }}>
+          <div className="flex justify-center">
+            <span className={["inline-flex items-center gap-2 rounded-full bg-surface/70 border border-hairline pl-2 pr-4 py-1.5 transition-opacity duration-300", inView ? "opacity-100" : "opacity-0"].join(" ")}>
+              <span className="tap-hint shrink-0 w-7 h-7 rounded-full bg-brand-soft flex items-center justify-center">
+                <MousePointerClick className="w-[15px] h-[15px] text-brand" strokeWidth={2.2} />
+              </span>
+              <span className="text-[13.5px] text-ink-2 leading-[1.35]">{t.hint}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Avatar strip */}
-      <div className="grid grid-cols-3 gap-2 md:gap-3">
+      <div ref={stripRef} className="relative grid grid-cols-3 gap-2 md:gap-3">
         {t.profiles.map((p, i) => {
           const active = selected === i;
           return (
@@ -103,39 +133,23 @@ export default function PeopleExplorer() {
               key={p.id}
               onClick={() => pick(i)}
               aria-pressed={active}
+              data-click-here
               className={[
                 "hover-lift group rounded-2xl border p-3 flex flex-col items-center gap-2 text-center transition-all duration-300",
                 active ? "bg-surface border-brand/40 shadow-[0_18px_40px_-20px_rgba(0,122,255,0.55)]" : "bg-surface/80 border-hairline opacity-90",
               ].join(" ")}
             >
               <span className={["rounded-full transition-transform duration-300", active ? "scale-110 ring-[3px] ring-brand/30" : "group-hover:scale-105"].join(" ")}>
-                <IllustratedAvatar look={AVATAR_LOOKS[i]} size={48} />
+                <PersonAvatar look={AVATAR_LOOKS[i]} size={48} />
               </span>
               <span className="text-[12.5px] md:text-[13px] font-semibold text-ink leading-[1.2]">{p.name.split(" ")[0]}</span>
               <span className="text-[11px] text-ink-3 leading-none">{p.role}</span>
             </button>
           );
         })}
-      </div>
-
-      {/* Explicit call to action — nothing opens until the visitor clicks */}
-      <div style={{ display: "grid", gridTemplateRows: selected === null ? "1fr" : "0fr", transition: "grid-template-rows 0.45s var(--ease-out-soft)" }}>
-        <div style={{ overflow: "hidden" }}>
-          <div className={["relative rounded-[20px] border-2 border-dashed border-brand/40 bg-surface/70 p-5 md:p-6 flex flex-col items-center text-center gap-4 transition-opacity duration-300", inView ? "opacity-100" : "opacity-0"].join(" ")}>
-            <span className="tap-hint w-12 h-12 rounded-2xl bg-brand-soft flex items-center justify-center">
-              <MousePointerClick className="w-6 h-6 text-brand" strokeWidth={2.2} />
-            </span>
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[17px] font-semibold text-ink leading-[1.2] tracking-[-0.3px]">{t.tryTitle}</span>
-              <span className="text-[13.5px] text-ink-2 leading-[1.5] max-w-[380px]">{t.tryText}</span>
-            </div>
-            <button onClick={() => pick(0)} className="btn-primary btn-brand group relative inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full overflow-hidden">
-              <span className="relative text-white font-semibold text-[14.5px] tracking-[-0.2px]">{t.tryCta}</span>
-              <Sparkles className="relative w-4 h-4 text-white" strokeWidth={2.4} />
-            </button>
-            <span className="text-[12px] text-ink-3">{t.hint}</span>
-          </div>
-        </div>
+        {/* Слова підказки — у рядку вище, а палець — просто тут: величезний
+            курсор обходить людей, поки жодної з них не відкрили. */}
+        <ClickHere host={stripRef} show={selected === null} />
       </div>
 
       {/* Expanding profile */}
@@ -146,7 +160,7 @@ export default function PeopleExplorer() {
               {/* Header */}
               <div className="mock-pop flex items-center gap-3.5" style={{ animationDelay: "40ms" }}>
                 <div className="relative shrink-0">
-                  <IllustratedAvatar look={AVATAR_LOOKS[selected!]} size={64} />
+                  <PersonAvatar look={AVATAR_LOOKS[selected!]} size={64} />
                   <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#12a150] border-[3px] border-surface flex items-center justify-center">
                     <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />
                   </span>
@@ -190,9 +204,9 @@ export default function PeopleExplorer() {
                 <Section icon={Heart} accent="#f05b8b" title={t.labels.family} delay={380}>
                   {profile.family.length ? (
                     <ul className="flex flex-col gap-1">
-                      {profile.family.map((f, i) => (
+                      {profile.family.map((f) => (
                         <li key={f.name} className="flex items-center gap-2 text-[12.5px] text-ink">
-                          <IllustratedAvatar look={AVATAR_LOOKS[(selected! + i + 1) % AVATAR_LOOKS.length]} size={18} />
+                          <FamilyFace name={f.name} profiles={t.profiles} />
                           <span className="font-medium">{f.name}</span>
                           <span className="text-ink-3">· {f.rel}</span>
                         </li>

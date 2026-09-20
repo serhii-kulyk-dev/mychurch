@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter, Caveat, Manrope } from "next/font/google";
 import "./globals.css";
 import { DemoModalProvider } from "@/context/demo-modal-context";
@@ -8,6 +9,7 @@ import WorkspaceModal from "@/components/shared/workspace-modal";
 import { THEME_KEY, LANG_KEY } from "@/lib/prefs";
 import JsonLd from "@/components/shared/json-ld";
 import SkipLink from "@/components/shared/skip-link";
+import AnchorGuard from "@/components/shared/anchor-guard";
 import BackToTop from "@/components/shared/back-to-top";
 import Analytics from "@/components/shared/analytics";
 import { graph, organizationSchema, websiteSchema } from "@/lib/schema";
@@ -117,17 +119,20 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
         <JsonLd data={graph(organizationSchema(), websiteSchema())} />
       </head>
       <body className="min-h-full flex flex-col font-sans">
+        {/* Тема і мова стають на місце ще до гідратації — інакше блимає. */}
+        <Script id="boot-prefs" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
         {/* Перший таб на сторінці: пропустити меню й піти одразу в контент. */}
         <SkipLink />
+        {/* Якорі гортають сторінку, але не лишають #hash в адресі. */}
+        <AnchorGuard />
         <DemoModalProvider>
           <WorkspaceProvider>
             {children}
             <BackToTop />
-            {/* Свій лічильник кроків: /admin показує, хто заходив і що робив. */}
+            {/* Трекер кроків відвідувача — події йдуть у GA4. */}
             <Analytics />
             <DemoModal />
             <WorkspaceModal />

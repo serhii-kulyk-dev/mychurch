@@ -9,7 +9,7 @@ import CursorDemo from "@/components/shared/cursor-demo";
 import { ROLE_ICONS, ROLE_ACCENTS, ROLE_CAP_ICONS } from "@/components/shared/role-icons";
 import { useDemoModal } from "@/context/demo-modal-context";
 import { useT } from "@/lib/lang";
-import { moduleHrefByName } from "@/content/modules";
+import { moduleHrefByName } from "@/content/modules/ids";
 
 export default function RolePage({ roleId }: { roleId: string }) {
   const all = useT();

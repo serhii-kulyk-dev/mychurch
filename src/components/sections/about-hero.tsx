@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, HeartHandshake, Radar, Send } from "lucide-react";
 import FadeIn, { prefersReducedMotion } from "@/components/shared/fade-in";
-import IllustratedAvatar, { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { AVATAR_LOOKS } from "@/components/shared/person-avatar";
 import { useT } from "@/lib/lang";
 
 /* The hero shows the mission instead of describing it: a room full of people,
@@ -13,10 +13,13 @@ import { useT } from "@/lib/lang";
 /* Two staggered rows read as a room; a single wrapping row leaves orphans. */
 const ROWS = [
   [0, 3, 1, 6, 2, 7], // index into AVATAR_LOOKS, repeats kept apart
-  [4, 5, 0, 6, 3],
+  [4, 5, 7, 6, 3],
 ];
 const FLAT = ROWS.flat();
-const TARGETS = [8, 3, 6]; // who slips away, per cycle — flat index
+/* Хто зникає, по циклах — плаский індекс у ROWS. Обличчя в цих трьох
+   клітинках мусить збігатися зі статтю людини з attentionRows того ж
+   циклу (Олена, Дмитро, Наталя): картка внизу показує те саме фото. */
+const TARGETS = [8, 3, 6];
 const FLOATS = new Set([1, 5, 9]);
 
 /* calm → slipping → flagged → reached → back */
@@ -127,7 +130,7 @@ export default function AboutHero() {
                             transform: dim ? "translateY(8px) scale(0.86)" : "none",
                           }}
                         >
-                          <IllustratedAvatar
+                          <PersonAvatar
                             look={AVATAR_LOOKS[look % AVATAR_LOOKS.length]}
                             className="w-10 h-10 sm:w-[52px] sm:h-[52px] md:w-[68px] md:h-[68px] rounded-full"
                           />
@@ -178,7 +181,7 @@ export default function AboutHero() {
                   </span>
 
                   <div className="flex items-center gap-3">
-                    <IllustratedAvatar look={targetLook} className="w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0" />
+                    <PersonAvatar look={targetLook} className="w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0" />
                     <div className="flex flex-col gap-0.5 min-w-0 flex-1">
                       <span className="text-[14.5px] font-semibold text-ink leading-[1.2] truncate">{person.name}</span>
                       <span className="text-[12.5px] text-ink-3 leading-[1.3] truncate">{person.note}</span>

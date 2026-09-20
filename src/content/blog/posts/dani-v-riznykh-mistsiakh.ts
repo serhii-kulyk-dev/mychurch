@@ -5,7 +5,7 @@ export const post: BlogPost = {
   category: "data",
   date: "2026-08-18",
   minutes: 7,
-  related: ["perenesty-dani-z-excel", "zakhyst-personalnykh-danykh", "skilky-liudei-u-tserkvi"],
+  related: ["piat-pytan-pro-systemu", "yak-obraty-systemu-dlia-tserkvy", "stavte-tsili"],
   copy: {
     ua: {
       seoTitle: "Дані церкви в п'яти місцях: чому інформація губиться",

@@ -2,3 +2,19 @@
 # Next.js кладе експортовану сторінку not-found у корінь як /404.html,
 # а цей файл потрапляє в корінь сайту разом із рештою public/.
 ErrorDocument 404 /404.html
+
+# Картинки для соцмереж Next кладе файлами без розширення
+# (/opengraph-image, /blog/<стаття>/opengraph-image). Apache віддав би
+# їх як text/plain, і превʼю в месенджерах не було б.
+<FilesMatch "^opengraph-image$">
+  ForceType image/png
+</FilesMatch>
+
+# Список амбасадорів окремою сторінкою не потрібен — він один.
+# Раніше це робив redirects() у next.config, але статичний експорт
+# редиректів не вміє, тож переносимо правило на хостинг.
+#
+# Саме RedirectMatch із ^...$: звичайний Redirect збігається за
+# префіксом, і під нього потрапила б сама /ambassadors/nove-zhyttia/,
+# отримавши нескінченний редирект на себе.
+RedirectMatch 301 ^/ambassadors/?$ /ambassadors/nove-zhyttia/

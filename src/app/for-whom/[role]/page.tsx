@@ -22,7 +22,9 @@ export async function generateMetadata({ params }: { params: Promise<{ role: str
   if (!r) return {};
   return pageMeta({
     title: `${r.name} у церкві — що бачить і що може | Моя Церква`,
-    description: r.tagline,
+    /* Опис у пошуку — розгорнутий `description`, а не `tagline`: той
+       коротший за 60 символів і виглядає в сніпеті обрізаним. */
+    description: r.description,
     path: `/for-whom/${role}`,
   });
 }

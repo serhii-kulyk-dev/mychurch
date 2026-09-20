@@ -1,6 +1,6 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "integrations": telegram, viber, instagram, whatsapp, turbosms, notion */
+/* Module pages: telegram, viber, instagram, whatsapp, turbosms, notion — their catalogue group is the `group` field below. */
 export const integrationsModules: ModuleDetail[] = [
   {
     id: "telegram",
@@ -11,7 +11,7 @@ export const integrationsModules: ModuleDetail[] = [
         seoTitle: "Telegram — модуль «Моя Церква»",
         seoDescription: "Telegram у «Моїй Церкві»: розсилки за групами й фільтрами, нагадування служителям, відмітка приходу за QR і статус доставки — з бази церкви, без нових застосунків.",
         title: "Повідомлення церкви доходять туди, де люди вже є",
-        lead: "Telegram — це там, де ваша громада вже спілкується. Підключіть канал і бота церкви до MyChurch — і нагадування, розсилки та відмітка приходу працюватимуть без жодної нової програми.",
+        lead: "Telegram — це там, де ваша громада вже спілкується. Підключіть канал і бота церкви до «Моєї Церкви» — і нагадування, розсилки та відмітка приходу працюватимуть без жодної нової програми.",
         highlights: [
           "Розсилки за групами й фільтрами",
           "Нагадування служителям за день і за годину",
@@ -22,12 +22,12 @@ export const integrationsModules: ModuleDetail[] = [
           { icon: "Send", title: "Розсилки з бази", text: "Оберіть сегмент — «молодіжка», «без групи», «служителі неділі» — і повідомлення піде саме їм, а не всьому чату." },
           { icon: "BellRing", title: "Нагадування без рук", text: "За день до служіння, за годину до зустрічі групи, у день народження — сценарії з автоматизацій відправляють самі." },
           { icon: "QrCode", title: "Відмітка приходу в Telegram", text: "Людина сканує QR на вході або натискає кнопку в боті — явка вже в системі, рецепція нічого не вводить." },
-          { icon: "Megaphone", title: "Канал церкви", text: "Оголошення й події публікуються в канал прямо з MyChurch — з посиланням на реєстрацію." },
+          { icon: "Megaphone", title: "Канал церкви", text: "Оголошення й події публікуються в канал прямо з «Моєї Церкви» — з посиланням на реєстрацію." },
           { icon: "Contact", title: "Прив'язка до картки", text: "Кожен, хто написав боту, автоматично з'єднується зі своєю карткою в базі. Номер телефону — і людина знайдена." },
           { icon: "Activity", title: "Статус доставки", text: "Бачите, кому доставлено, хто прочитав, хто заблокував бота — і кого треба дістати іншим каналом." },
         ],
         steps: [
-          { title: "Підключіть бота", text: "Створіть бота через BotFather, вставте токен у налаштування — MyChurch зробить решту за хвилину." },
+          { title: "Підключіть бота", text: "Створіть бота через BotFather, вставте токен у налаштування — «Моя Церква» зробить решту за хвилину." },
           { title: "Запросіть людей", text: "Надішліть посилання або QR-код — людина натискає «Старт», і її картка прив'язується до Telegram." },
           { title: "Надсилайте й нагадуйте", text: "Розсилки, нагадування та відмітка приходу тепер працюють через Telegram — з бази, а не з телефона адміністратора." },
         ],
@@ -55,20 +55,6 @@ export const integrationsModules: ModuleDetail[] = [
             { from: "bot", text: "Передав Андрію. Нагадаю за годину до репетиції." },
           ],
           input: "Написати боту…",
-        },
-        day: {
-          title: "Один день у Telegram",
-          text: "Неділя в церкві на 300 людей. Усі повідомлення нижче йдуть з бази — ніхто не копіює списки в чати.",
-          items: [
-            { time: "07:40", title: "Нагадування служителям", text: "Прославлення, зустріч гостей і «Дитяче містечко» отримують від бота «сьогодні ви на служінні о 10:00».", count: "26 повідомлень" },
-            { time: "08:10", title: "Підтвердження участі", text: "Хто ще не підтвердив, натискає «Буду» просто в боті. Лідер бачить, кого бракує.", count: "3 без відповіді" },
-            { time: "09:45", title: "Відмітку приходу відкрито", text: "Рецепція вмикає QR на вході. Люди сканують — явка одразу в картках.", count: "QR активний" },
-            { time: "10:02", title: "Явка записана", text: "Хто просканував QR або натиснув кнопку в боті, вже у списку присутніх.", count: "228 відміток" },
-            { time: "12:30", title: "Гість написав боту", text: "Новенький натиснув «Старт» після служіння. Бот питає ім'я й телефон, картка з'являється в базі.", count: "5 нових карток" },
-            { time: "18:00", title: "Анонс у канал", text: "Молодіжка в п'ятницю і збори лідерів у вівторок ідуть у канал церкви з кнопкою реєстрації.", count: "2 публікації" },
-            { time: "21:00", title: "Звіт про доставку", text: "Адміністратор бачить, кому не дійшло і хто заблокував бота.", count: "7 недоставлених" },
-          ],
-          footer: "Недоставлені лишаються у списку — наступна розсилка піде їм через SMS.",
         },
       },
       en: {
@@ -120,20 +106,6 @@ export const integrationsModules: ModuleDetail[] = [
           ],
           input: "Message the bot…",
         },
-        day: {
-          title: "One day in Telegram",
-          text: "A Sunday at a church of 300. Every message below comes from the database — nobody copies lists into chats.",
-          items: [
-            { time: "07:40", title: "Volunteer reminders", text: "Worship, the welcome team and Kids Town get \"you're serving today at 10:00\" from the bot.", count: "26 messages" },
-            { time: "08:10", title: "Confirmations", text: "Anyone who hasn't confirmed taps \"I'll be there\" in the bot. The leader sees who's missing.", count: "3 no reply" },
-            { time: "09:45", title: "Check-in opens", text: "Reception switches on the QR at the door. People scan it and attendance lands in their profiles.", count: "QR live" },
-            { time: "10:02", title: "Attendance recorded", text: "Everyone who scanned the QR or tapped the bot button is already on the present list.", count: "228 check-ins" },
-            { time: "12:30", title: "A guest writes to the bot", text: "A newcomer taps Start after the service. The bot asks for a name and phone, a profile appears.", count: "5 new profiles" },
-            { time: "18:00", title: "Announcement to the channel", text: "Friday youth night and Tuesday's leaders meeting go to the church channel with a sign-up button.", count: "2 posts" },
-            { time: "21:00", title: "Delivery report", text: "The administrator sees who wasn't reached and who blocked the bot.", count: "7 undelivered" },
-          ],
-          footer: "Undelivered people stay on the list — the next campaign reaches them by SMS.",
-        },
       },
     },
   },
@@ -146,7 +118,7 @@ export const integrationsModules: ModuleDetail[] = [
         seoTitle: "Viber — модуль «Моя Церква»",
         seoDescription: "Viber у «Моїй Церкві»: розсилки й нагадування для старшого покоління, ті самі сегменти, що й у Telegram, звіт про доставку та резерв через SMS.",
         title: "Нагадування доходять і до тих, хто не в Telegram",
-        lead: "У багатьох церквах старше покоління живе у Viber. Підключіть Viber до MyChurch — і розсилки про служіння, події та зустрічі груп приходитимуть їм звичним способом, з тієї ж бази.",
+        lead: "У багатьох церквах старше покоління живе у Viber. Підключіть Viber до «Моєї Церкви» — і розсилки про служіння, події та зустрічі груп приходитимуть їм звичним способом, з тієї ж бази.",
         highlights: [
           "Ті самі сегменти, що й у Telegram та SMS",
           "Нагадування про служіння та зустрічі",
@@ -163,7 +135,7 @@ export const integrationsModules: ModuleDetail[] = [
         steps: [
           { title: "Підключіть акаунт", text: "Створіть бізнес-акаунт Viber для церкви, додайте ключ у налаштування — підключення займає кілька хвилин." },
           { title: "Позначте канал у картках", text: "Під час імпорту або через форму людина обирає, де їй зручніше отримувати повідомлення." },
-          { title: "Запускайте розсилки", text: "Пишіть один текст, обирайте сегмент — MyChurch доставить через Viber тим, хто його обрав." },
+          { title: "Запускайте розсилки", text: "Пишіть один текст, обирайте сегмент — «Моя Церква» доставить через Viber тим, хто його обрав." },
         ],
         audience: [
           { role: "pastor", text: "Знає, що оголошення дійшло до всієї церкви, а не тільки до молоді." },
@@ -283,7 +255,7 @@ export const integrationsModules: ModuleDetail[] = [
         seoTitle: "Instagram — модуль «Моя Церква»",
         seoDescription: "Instagram Direct у «Моїй Церкві»: спільна скринька, повідомлення стає карткою людини одним натисканням, швидкі відповіді й онбординг з першого повідомлення.",
         title: "Кожне повідомлення в Direct стає людиною в базі",
-        lead: "Новенькі пишуть церкві в Instagram частіше, ніж дзвонять. Підключіть Direct до MyChurch — і кожне «а коли у вас служіння?» стане карткою людини, а не загубленим повідомленням.",
+        lead: "Новенькі пишуть церкві в Instagram частіше, ніж дзвонять. Підключіть Direct до «Моєї Церкви» — і кожне «а коли у вас служіння?» стане карткою людини, а не загубленим повідомленням.",
         highlights: [
           "Повідомлення з Direct у спільній скриньці команди",
           "Заявка стає карткою одним натисканням",
@@ -311,7 +283,7 @@ export const integrationsModules: ModuleDetail[] = [
           { q: "Коли інтеграція буде доступна?", a: "Інтеграція з Instagram зараз розгортається поетапно. Напишіть нам — ми підключимо вашу церкву до раннього доступу." },
           { q: "Чи потрібно давати комусь пароль від Instagram?", a: "Ні. Підключення відбувається через офіційну авторизацію Meta: ви даєте дозвіл на повідомлення, а пароль лишається у вас." },
           { q: "Хто бачить переписку з Direct?", a: "Лише ті, кому ви відкрили доступ до скриньки. Історія зберігається в картці людини з тими самими правами, що й нотатки." },
-          { q: "Чи можна відповідати з телефона?", a: "Так, зі спільної скриньки в мобільній версії MyChurch — або як звикли, в Instagram: повідомлення все одно синхронізуються." },
+          { q: "Чи можна відповідати з телефона?", a: "Так, зі спільної скриньки в мобільній версії «Моєї Церкви» — або як звикли, в Instagram: повідомлення все одно синхронізуються." },
         ],
         mock: {
           kind: "chat",
@@ -408,7 +380,7 @@ export const integrationsModules: ModuleDetail[] = [
         seoTitle: "WhatsApp — модуль «Моя Церква»",
         seoDescription: "WhatsApp у «Моїй Церкві»: спільна скринька для розмов, розсилки за тими самими сегментами, що й у Telegram, затверджені шаблони та історія в картці людини.",
         title: "Ті, хто живе у WhatsApp, не випадають із розсилок",
-        lead: "Частина громади — за кордоном, частина спілкується з місіонерами чи гостями з інших країн, і всі вони у WhatsApp. Підключіть його до MyChurch — і листування та розсилки підуть з тієї ж бази, що й Telegram.",
+        lead: "Частина громади — за кордоном, частина спілкується з місіонерами чи гостями з інших країн, і всі вони у WhatsApp. Підключіть його до «Моєї Церкви» — і листування та розсилки підуть з тієї ж бази, що й Telegram.",
         highlights: [
           "Спільна скринька команди для розмов",
           "Розсилки за тими самими сегментами",
@@ -423,7 +395,7 @@ export const integrationsModules: ModuleDetail[] = [
           { icon: "Contact", title: "Прив'язка до картки", text: "Номер телефону з'єднує розмову з людиною в базі — історія листування зберігається у картці." },
         ],
         steps: [
-          { title: "Підключіть номер", text: "Зареєструйте бізнес-номер церкви у WhatsApp Business і додайте його в налаштування MyChurch." },
+          { title: "Підключіть номер", text: "Зареєструйте бізнес-номер церкви у WhatsApp Business і додайте його в налаштування «Моєї Церкви»." },
           { title: "Затвердіть шаблони", text: "Ми допоможемо оформити шаблони нагадувань і привітань, щоб їх прийняли з першого разу." },
           { title: "Пишіть і розсилайте", text: "Розмови ведуться зі спільної скриньки, розсилки — з тих самих сегментів, що й у решті каналів." },
         ],
@@ -436,7 +408,7 @@ export const integrationsModules: ModuleDetail[] = [
           { q: "Коли можна буде підключити WhatsApp?", a: "Інтеграція розгортається поступово. Напишіть нам — додамо вашу церкву до раннього доступу і допоможемо з підключенням." },
           { q: "Чи потрібен окремий номер телефону?", a: "Так, WhatsApp Business потребує номера, не прив'язаного до особистого акаунта. Підійде окрема SIM-карта церкви." },
           { q: "Чи можна писати з особистого WhatsApp пастора?", a: "Розмови команди ведуться з номера церкви. Так історія лишається в церкві, навіть коли людина з команди змінюється." },
-          { q: "Чи є ліміти на розсилки?", a: "WhatsApp обмежує масові повідомлення шаблонами і поступово розширює ліміт для нових номерів. MyChurch показує поточний ліміт і відправляє чергу в його межах." },
+          { q: "Чи є ліміти на розсилки?", a: "WhatsApp обмежує масові повідомлення шаблонами і поступово розширює ліміт для нових номерів. «Моя Церква» показує поточний ліміт і відправляє чергу в його межах." },
         ],
         mock: {
           kind: "list",
@@ -450,19 +422,6 @@ export const integrationsModules: ModuleDetail[] = [
             { title: "Василь Панченко", sub: "Хочу приєднатися до групи", meta: "Пн", badge: { label: "Новенький", tone: "brand" } },
           ],
           footer: "Скринька: усі · мої · без відповіді",
-        },
-        day: {
-          title: "День у скриньці WhatsApp",
-          text: "Церква, частина громади якої за кордоном. Так виглядатиме день, коли інтеграцію відкриють для вас.",
-          items: [
-            { time: "08:20", title: "Нічні повідомлення", text: "Те, що надійшло з інших часових поясів, чекає у скриньці з позначкою «без відповіді».", count: "6 без відповіді" },
-            { time: "09:00", title: "Черговий бере розмови", text: "Один із команди відкриває скриньку. Решта бачить, що ці розмови вже в роботі.", count: "мої · 6" },
-            { time: "11:30", title: "Нова людина в базі", text: "Номер із розмови не знайшовся в базі — картка створюється просто зі скриньки.", count: "2 картки" },
-            { time: "14:00", title: "Розсилка діаспорі", text: "Сегмент «Варшава» отримує затверджений шаблон із часом онлайн-трансляції.", count: "19 отримувачів" },
-            { time: "18:45", title: "Підтвердження на неділю", text: "Шаблон «підтвердіть участь» іде команді табору. Відповіді потрапляють у картку події.", count: "12 відповідей" },
-            { time: "21:10", title: "Що лишилось без відповіді", text: "Скринька показує розмови, які ніхто не взяв. Вони переходять на ранок наступного чергового.", count: "2 розмови" },
-          ],
-          footer: "Уся переписка зберігається в картках людей, а не на телефоні того, хто відповідав.",
         },
       },
       en: {
@@ -512,19 +471,6 @@ export const integrationsModules: ModuleDetail[] = [
           ],
           footer: "Inbox: all · mine · unanswered",
         },
-        day: {
-          title: "A day in the WhatsApp inbox",
-          text: "A church with part of its congregation abroad. This is how a day will look once the integration opens for you.",
-          items: [
-            { time: "08:20", title: "Overnight messages", text: "Whatever arrived from other time zones waits in the inbox marked unanswered.", count: "6 unanswered" },
-            { time: "09:00", title: "Someone takes the inbox", text: "One person on the team opens it. The rest see those conversations are already in hand.", count: "mine · 6" },
-            { time: "11:30", title: "A new person in the database", text: "The number in the conversation wasn't in the database — a profile is created from the inbox itself.", count: "2 profiles" },
-            { time: "14:00", title: "Campaign to the diaspora", text: "The Warsaw segment gets the approved template with the time of the online broadcast.", count: "19 recipients" },
-            { time: "18:45", title: "Confirmations for Sunday", text: "The \"please confirm\" template goes to the camp team. Replies land on the event card.", count: "12 replies" },
-            { time: "21:10", title: "What's still unanswered", text: "The inbox shows conversations nobody picked up. They carry over to the next person on duty.", count: "2 conversations" },
-          ],
-          footer: "The whole correspondence stays in people's profiles, not on the phone of whoever replied.",
-        },
       },
     },
   },
@@ -537,7 +483,7 @@ export const integrationsModules: ModuleDetail[] = [
         seoTitle: "TurboSMS — модуль «Моя Церква»",
         seoDescription: "TurboSMS у «Моїй Церкві»: масові SMS по Україні за секунди, назва церкви замість номера, статус доставки по кожному номеру й резерв для Telegram і Viber.",
         title: "SMS доходить кожному — навіть без інтернету",
-        lead: "Коли треба, щоб повідомлення побачили всі — і бабуся без смартфона, і той, у кого вимкнений Telegram, — працює SMS. TurboSMS відправляє тисячі повідомлень по Україні за секунди, прямо з MyChurch.",
+        lead: "Коли треба, щоб повідомлення побачили всі — і бабуся без смартфона, і той, у кого вимкнений Telegram, — працює SMS. TurboSMS відправляє тисячі повідомлень по Україні за секунди, прямо з «Моєї Церкви».",
         highlights: [
           "Назва церкви замість незнайомого номера",
           "Розсилка на сегмент за хвилину",
@@ -661,36 +607,36 @@ export const integrationsModules: ModuleDetail[] = [
       ua: {
         seoTitle: "Notion — модуль «Моя Церква»",
         seoDescription: "Двостороння синхронізація Notion і «Моєї Церкви»: сторінки стають базою знань, бази — таблицями, зміни підхоплюються за хвилину, права доступу зберігаються.",
-        title: "Документи церкви живуть у Notion і в MyChurch одночасно",
+        title: "Документи церкви живуть у Notion і в «Моїй Церкві» одночасно",
         lead: "Якщо команда вже веде інструкції, плани й бази в Notion — не переносьте нічого вручну. Двостороння синхронізація тримає документи й таблиці однаковими в обох місцях.",
         highlights: [
           "Двостороння синхронізація сторінок і баз",
           "Зміни підхоплюються за хвилину",
           "База знань церкви — з Notion без копіювання",
-          "Права доступу MyChurch зберігаються",
+          "Права доступу «Моєї Церкви» зберігаються",
         ],
         features: [
-          { icon: "RefreshCw", title: "В обидва боки", text: "Змінили сторінку в Notion — вона оновилась у базі знань. Додали людину в MyChurch — рядок з'явився в базі Notion." },
-          { icon: "Database", title: "Бази ↔ таблиці", text: "Список служителів, інвентар, задачі проєкту — база Notion стає таблицею MyChurch зі збереженням типів полів." },
+          { icon: "RefreshCw", title: "В обидва боки", text: "Змінили сторінку в Notion — вона оновилась у базі знань. Додали людину в «Мою Церкву» — рядок з'явився в базі Notion." },
+          { icon: "Database", title: "Бази ↔ таблиці", text: "Список служителів, інвентар, задачі проєкту — база Notion стає таблицею «Моєї Церкви» зі збереженням типів полів." },
           { icon: "BookOpen", title: "База знань без копіювання", text: "Інструкції для команди, сценарії служінь, політики — публікуються в базу знань прямо з Notion." },
           { icon: "GitBranch", title: "Вибіркова синхронізація", text: "Обирайте, які сторінки й бази синхронізувати. Особисті нотатки команди лишаються в Notion." },
-          { icon: "Lock", title: "Права доступу", text: "Хто бачить документ у MyChurch, визначають ролі MyChurch — навіть якщо у Notion сторінка відкрита всім." },
+          { icon: "Lock", title: "Права доступу", text: "Хто бачить документ у «Моїй Церкві», визначають її ж ролі — навіть якщо у Notion сторінка відкрита всім." },
         ],
         steps: [
-          { title: "Підключіть робочий простір", text: "Авторизуйте Notion і оберіть сторінки та бази, до яких MyChurch матиме доступ." },
-          { title: "Зіставте поля", text: "Для баз — вкажіть, яка колонка Notion відповідає якому полю MyChurch. Одного разу." },
-          { title: "Працюйте, де зручно", text: "Команда редагує в Notion, лідери читають у MyChurch — і ніхто не запитує, яка версія актуальна." },
+          { title: "Підключіть робочий простір", text: "Авторизуйте Notion і оберіть сторінки та бази, до яких «Моя Церква» матиме доступ." },
+          { title: "Зіставте поля", text: "Для баз — вкажіть, яка колонка Notion відповідає якому полю «Моєї Церкви». Одного разу." },
+          { title: "Працюйте, де зручно", text: "Команда редагує в Notion, лідери читають у «Моїй Церкві» — і ніхто не запитує, яка версія актуальна." },
         ],
         audience: [
-          { role: "pastor", text: "Читає плани й документи в MyChurch, не заходячи в Notion." },
+          { role: "pastor", text: "Читає плани й документи в «Моїй Церкві», не заходячи в Notion." },
           { role: "leader", text: "Відкриває інструкцію до служіння в базі знань — завжди актуальну." },
-          { role: "hr", text: "Веде політики й чек-листи в Notion, а команда бачить їх у своїх ролях MyChurch." },
+          { role: "hr", text: "Веде політики й чек-листи в Notion, а команда бачить їх у своїх ролях у «Моїй Церкві»." },
         ],
         faq: [
           { q: "Що станеться, якщо змінити документ в обох місцях одночасно?", a: "Перемагає остання збережена версія, а попередню ми зберігаємо в історії — нічого не втрачається." },
-          { q: "Чи синхронізуються люди з бази MyChurch у Notion?", a: "Так, якщо ви це увімкнете для конкретної бази. Нотатки з обмеженим доступом у Notion не передаються." },
-          { q: "Як часто оновлюються дані?", a: "Зміни з Notion підхоплюються протягом хвилини. Зміни з MyChurch потрапляють у Notion одразу." },
-          { q: "Чи можна відключити Notion пізніше без втрати даних?", a: "Так. Усе, що було синхронізовано, лишається в MyChurch як звичайні документи й таблиці." },
+          { q: "Чи синхронізуються люди з бази «Моєї Церкви» у Notion?", a: "Так, якщо ви це увімкнете для конкретної бази. Нотатки з обмеженим доступом у Notion не передаються." },
+          { q: "Як часто оновлюються дані?", a: "Зміни з Notion підхоплюються протягом хвилини. Зміни з «Моєї Церкви» потрапляють у Notion одразу." },
+          { q: "Чи можна відключити Notion пізніше без втрати даних?", a: "Так. Усе, що було синхронізовано, лишається в «Моїй Церкві» як звичайні документи й таблиці." },
         ],
         mock: {
           kind: "list",
@@ -704,19 +650,6 @@ export const integrationsModules: ModuleDetail[] = [
             { title: "Політика захисту дітей", sub: "База знань · Дитяче містечко", meta: "3 дні тому", badge: { label: "Конфлікт версій", tone: "amber" } },
           ],
           footer: "Синхронізується щохвилини · в обидва боки",
-        },
-        day: {
-          title: "Один день синхронізації",
-          text: "Звичайний вівторок: команда працює в Notion, лідери читають у MyChurch. Ніхто не пересилає файли.",
-          items: [
-            { time: "09:15", title: "Правка в Notion", text: "Лідер прославлення змінив сценарій недільного служіння. За хвилину та сама версія в базі знань.", count: "1 сторінка" },
-            { time: "10:40", title: "Новий служитель", text: "Людину додали в MyChurch — у базі Notion «Служителі 2026» з'явився рядок із роллю й контактом.", count: "1 рядок" },
-            { time: "12:00", title: "Інструкція для рецепції", text: "Оновлену сторінку опубліковано в базу знань. Рецепція читає її у своїй ролі, без доступу до Notion.", count: "оновлено" },
-            { time: "15:20", title: "План табору", text: "Задачі з бази Notion підтягнулися в проєкт «Літо-2026» разом зі статусами й відповідальними.", count: "18 задач" },
-            { time: "17:05", title: "Конфлікт версій", text: "Політику захисту дітей правили в обох місцях. Лишилась остання версія, попередня — в історії.", count: "1 конфлікт" },
-            { time: "20:00", title: "Журнал за день", text: "Адміністратор дивиться, які сторінки оновились і звідки прийшла кожна зміна.", count: "23 оновлення" },
-          ],
-          footer: "Кнопки «оновити» немає — зміни підхоплюються щохвилини в обидва боки.",
         },
       },
       en: {
@@ -765,19 +698,6 @@ export const integrationsModules: ModuleDetail[] = [
             { title: "Child protection policy", sub: "Knowledge base · Kids Town", meta: "3 days ago", badge: { label: "Version conflict", tone: "amber" } },
           ],
           footer: "Syncs every minute · both directions",
-        },
-        day: {
-          title: "One day of syncing",
-          text: "An ordinary Tuesday: the team works in Notion, leaders read in MyChurch. Nobody forwards files.",
-          items: [
-            { time: "09:15", title: "An edit in Notion", text: "The worship leader changed the Sunday service script. A minute later the same version is in the knowledge base.", count: "1 page" },
-            { time: "10:40", title: "A new volunteer", text: "A person was added in MyChurch — a row with their role and contact appeared in the Notion \"Volunteers 2026\" database.", count: "1 row" },
-            { time: "12:00", title: "Reception guide", text: "The updated page is published to the knowledge base. Reception reads it in their role, with no Notion access.", count: "updated" },
-            { time: "15:20", title: "Camp plan", text: "Tasks from the Notion database pulled into the \"Summer 2026\" project with their statuses and owners.", count: "18 tasks" },
-            { time: "17:05", title: "Version conflict", text: "The child protection policy was edited in both places. The latest version stayed, the previous one went to history.", count: "1 conflict" },
-            { time: "20:00", title: "The day's sync log", text: "The administrator checks which pages were updated and where each change came from.", count: "23 updates" },
-          ],
-          footer: "There is no Refresh button — changes are picked up every minute in both directions.",
         },
       },
     },

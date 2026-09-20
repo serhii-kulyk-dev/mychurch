@@ -3,6 +3,9 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { SITE_URL } from "@/lib/seo";
 
+/* Статичний експорт: файл генерується під час збірки, не на запит. */
+export const dynamic = "force-static";
+
 /* Картинка для соцмереж і месенджерів — одна на весь сайт.
 
    Показуємо продукт, а не гасло: зліва слоган, справа фрагмент
@@ -204,7 +207,7 @@ export default async function OpengraphImage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 22, color: "#8cc2ff" }}>{new URL(SITE_URL).host}</span>
           <span style={{ display: "flex", fontSize: 19, color: "rgba(255,255,255,0.55)" }}>
-            Діє програма безкоштовного підключення
+            Програма підключення відкрита
           </span>
         </div>
       </div>

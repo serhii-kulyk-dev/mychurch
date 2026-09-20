@@ -5,12 +5,12 @@ import Link from "next/link";
 import {
   Check, Sparkles, UserCheck, Bell, MapPin, Music, QrCode, Ticket, Wallet, Download, Search,
   Send, Repeat, Users, Heart, Baby, Video, Building2, TrendingUp, Clock, DoorOpen, ScanLine,
-  Megaphone, Inbox, HeartHandshake, Route, Gauge, Coins, Maximize2,
+  Megaphone, Inbox, HeartHandshake, Route, Gauge, Coins, ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import CursorDemo from "@/components/shared/cursor-demo";
-import IllustratedAvatar, { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { AVATAR_LOOKS, lookFor } from "@/components/shared/person-avatar";
 import { ROLE_ICONS, ROLE_ACCENTS } from "@/components/shared/role-icons";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
@@ -18,13 +18,6 @@ import { cn } from "@/lib/utils";
 type Screens = ReturnType<typeof useT>["audience"]["screens"];
 type Card<K extends keyof Screens> = { s: Screens[K]; accent: string };
 
-/* Every role plays live, on one page — nobody is hidden behind "інші ролі". */
-const ORDER = ["pastor", "leader", "deacon", "volunteer", "visitor", "member", "hr", "accountant", "reception"];
-/* Дев'ять ролей у три колонки лягли б рівною сіткою 3×3 — надто рівною.
-   Три панелі на дві клітинки дають 12 клітинок, тобто чотири повні ряди
-   з різним ритмом: дашборд пастора, дошка заявок і стійка рецепції — саме
-   ті екрани, яким ширина потрібна по суті. */
-const WIDE = new Set(["pastor", "deacon", "reception"]);
 /* Дев'ять ролей на вісім облич — дублікат віддали найдальшій парі в сітці
    (диякон у першому ряду, бухгалтер у третьому). */
 const LOOK: Record<string, number> = { pastor: 0, leader: 2, deacon: 6, volunteer: 4, visitor: 1, member: 3, hr: 5, accountant: 6, reception: 7 };
@@ -100,7 +93,7 @@ function LeaderCard({ s, accent }: Card<"leader">) {
           const ok = on[i];
           return (
             <li key={m} className="mock-row flex items-center gap-2.5 px-3 py-2" style={{ animationDelay: `${100 + i * 70}ms` }}>
-              <IllustratedAvatar look={AVATAR_LOOKS[i % AVATAR_LOOKS.length]} size={26} />
+              <PersonAvatar look={lookFor(m)} size={26} />
               <span className="flex-1 text-[13px] font-medium text-ink leading-none truncate">{m}</span>
               <button
                 type="button"
@@ -155,7 +148,7 @@ function VisitorCard({ s, accent }: Card<"visitor">) {
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center gap-2.5">
-        <IllustratedAvatar look={AVATAR_LOOKS[2]} size={34} />
+        <PersonAvatar look={lookFor(s.name)} size={34} />
         <div className="flex flex-col min-w-0">
           <span className="text-[13.5px] font-semibold text-ink leading-none truncate">{s.name}</span>
           <span className="text-[11px] text-ink-3 leading-none mt-1 truncate">{s.firstVisit}</span>
@@ -231,7 +224,7 @@ function HrCard({ s, accent }: Card<"hr">) {
         ))}
       </div>
       <div className="mock-row rounded-xl border border-hairline bg-surface-2 px-3 py-2.5 flex items-center gap-2.5" style={{ animationDelay: "300ms" }}>
-        <IllustratedAvatar look={AVATAR_LOOKS[1]} size={28} />
+        <PersonAvatar look={lookFor(s.requestWho)} size={28} />
         <div className="flex flex-col min-w-0 flex-1">
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-ink-3 leading-none truncate">{s.requestTitle} · {s.requestWho}</span>
           <span className="text-[12.5px] text-ink leading-none mt-1.5 truncate">{s.requestWhat}</span>
@@ -294,7 +287,7 @@ function ReceptionCard({ s, accent }: Card<"reception">) {
         className="mock-row rounded-xl border bg-surface-2 px-3 py-2.5 flex items-center gap-2.5"
         style={{ animationDelay: "240ms", borderColor: ok ? "#12a150" : `color-mix(in oklab, ${accent} 40%, transparent)` }}
       >
-        <IllustratedAvatar look={AVATAR_LOOKS[1]} size={30} />
+        <PersonAvatar look={lookFor(s.foundName)} size={30} />
         <div className="flex flex-col min-w-0">
           <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{s.foundName}</span>
           <span className="text-[10.5px] text-ink-3 leading-none mt-1 truncate">{s.foundMeta}</span>
@@ -339,7 +332,7 @@ function PastorFocus({ s, accent }: Card<"pastor">) {
         </span>
         {s.attention.map((a, i) => (
           <div key={a.name} className="mock-row flex items-center gap-2" style={{ animationDelay: `${360 + i * 90}ms` }}>
-            <IllustratedAvatar look={AVATAR_LOOKS[(i + 1) % AVATAR_LOOKS.length]} size={22} />
+            <PersonAvatar look={lookFor(a.name)} size={22} />
             <div className="flex flex-col min-w-0">
               <span className="text-[12px] font-medium text-ink leading-none truncate">{a.name}</span>
               <span className="text-[10.5px] text-ink-3 leading-none mt-1 truncate">{a.note}</span>
@@ -421,7 +414,7 @@ function VisitorWelcome({ s }: Card<"visitor">) {
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center gap-2.5">
-        <IllustratedAvatar look={AVATAR_LOOKS[2]} size={30} />
+        <PersonAvatar look={lookFor(s.name)} size={30} />
         <div className="flex flex-col min-w-0">
           <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{s.name}</span>
           <span className="text-[10.5px] text-ink-3 leading-none mt-1 truncate">{s.firstVisit}</span>
@@ -447,7 +440,7 @@ function MemberGroup({ s }: Card<"member">) {
       <div className="mock-row rounded-xl bg-surface-2 border border-hairline p-3 flex flex-col gap-2" style={{ animationDelay: "240ms" }}>
         <span className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-ink-3"><Heart className="w-3 h-3" />{s.familyTitle}</span>
         <div className="flex items-center gap-2">
-          <div className="flex -space-x-1.5">{[1, 2, 3].map((k) => <IllustratedAvatar key={k} look={AVATAR_LOOKS[k % AVATAR_LOOKS.length]} size={22} className="ring-2 ring-surface rounded-full" />)}</div>
+          <div className="flex -space-x-1.5">{[1, 2, 3].map((k) => <PersonAvatar key={k} look={AVATAR_LOOKS[k % AVATAR_LOOKS.length]} size={22} className="ring-2 ring-surface rounded-full" />)}</div>
           <span className="text-[11.5px] text-ink-2 leading-[1.3] truncate">{s.family}</span>
         </div>
       </div>
@@ -466,7 +459,7 @@ function HrTree({ s, accent }: Card<"hr">) {
       </div>
       <div className="relative flex flex-col items-center gap-3.5 pt-0.5">
         <div data-demo="hover" className="mock-pop flex items-center gap-2 rounded-full bg-surface border border-hairline pl-1 pr-3 py-1 z-10" style={{ animationDelay: "100ms" }}>
-          <IllustratedAvatar look={AVATAR_LOOKS[0]} size={24} />
+          <PersonAvatar look={lookFor(s.root)} size={24} />
           <span className="text-[12px] font-semibold text-ink">{s.root}</span>
         </div>
         <span className="absolute top-[34px] left-1/2 -translate-x-1/2 w-[2px] h-3.5 bg-hairline-strong" />
@@ -614,7 +607,7 @@ function DeaconNeeds({ s, accent }: Card<"deacon">) {
           className="mock-row rounded-xl border bg-surface-2 px-3 py-2.5 flex items-center gap-2.5"
           style={{ animationDelay: `${100 + i * 100}ms`, borderColor: i === 0 && !taken ? "color-mix(in oklab, #ff9500 50%, transparent)" : "var(--hairline)" }}
         >
-          <IllustratedAvatar look={AVATAR_LOOKS[(i + 3) % AVATAR_LOOKS.length]} size={28} />
+          <PersonAvatar look={lookFor(n.who)} size={28} />
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{n.who}</span>
             <span className="text-[11px] text-ink-3 leading-none mt-1 truncate">{n.what}</span>
@@ -644,7 +637,7 @@ function DeaconVisits({ s, accent }: Card<"deacon">) {
       <ul className="rounded-xl border border-hairline bg-surface-2 divide-y divide-hairline">
         {s.visits.map((v, i) => (
           <li key={v.name} className="mock-row flex items-center gap-2.5 px-3 py-2" style={{ animationDelay: `${100 + i * 80}ms` }}>
-            <IllustratedAvatar look={AVATAR_LOOKS[(i + 5) % AVATAR_LOOKS.length]} size={26} />
+            <PersonAvatar look={lookFor(v.name)} size={26} />
             <div className="flex flex-col min-w-0 flex-1">
               <span className="text-[12.5px] font-medium text-ink leading-none truncate">{v.name}</span>
               <span className="text-[10.5px] text-ink-3 leading-none mt-1 truncate">{v.note}</span>
@@ -712,7 +705,7 @@ function VolunteerSwap({ s, accent }: Card<"volunteer">) {
         const asked = pick === i;
         return (
           <div key={c.name} className="mock-row rounded-xl border bg-surface-2 px-3 py-2.5 flex items-center gap-2.5" style={{ animationDelay: `${100 + i * 100}ms`, borderColor: asked ? "#12a150" : "var(--hairline)" }}>
-            <IllustratedAvatar look={AVATAR_LOOKS[(i + 2) % AVATAR_LOOKS.length]} size={28} />
+            <PersonAvatar look={lookFor(c.name)} size={28} />
             <div className="flex flex-col min-w-0 flex-1">
               <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{c.name}</span>
               <span className="text-[10.5px] text-ink-3 leading-none mt-1 truncate">{c.note}</span>
@@ -819,7 +812,7 @@ function HrLoad({ s, accent }: Card<"hr">) {
       </div>
       <div className="mock-row rounded-xl border border-hairline bg-surface-2 p-3 flex flex-col gap-2.5" style={{ animationDelay: "120ms" }}>
         <div className="flex items-center gap-2.5">
-          <IllustratedAvatar look={AVATAR_LOOKS[1]} size={28} />
+          <PersonAvatar look={lookFor(s.loadWho)} size={28} />
           <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{s.loadWho}</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -901,7 +894,7 @@ function ReceptionKids({ s, accent }: Card<"reception">) {
           className="mock-row w-full rounded-xl border bg-surface-2 px-3 py-2.5 flex items-center gap-2.5 text-left transition-colors duration-200"
           style={{ animationDelay: `${100 + i * 90}ms`, borderColor: pick === i ? accent : "var(--hairline)" }}
         >
-          <IllustratedAvatar look={AVATAR_LOOKS[(i + 4) % AVATAR_LOOKS.length]} size={28} />
+          <PersonAvatar look={lookFor(k.name)} size={28} />
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-[12.5px] font-semibold text-ink leading-none truncate">{k.name}</span>
             <span className="text-[10.5px] text-ink-3 leading-none mt-1 truncate">{k.note}</span>
@@ -934,50 +927,49 @@ function Body({ id, accent, scene }: { id: string; accent: string; scene: number
   }
 }
 
-/* One role's panel: it plays itself on a loop — a pointer with that person's
-   name tag walks in, presses the one button this role presses in real life. */
-function Panel({ id, startDelay, className }: { id: string; startDelay: number; className?: string }) {
+/* Одна роль на сцені: привидний курсор з її ім'ям заходить і тисне ту саму
+   кнопку, яку ця людина тисне в житті. Коли сцена догралася, вона сама
+   передає естафету — тому в кадрі завжди рівно один курсор. */
+function Panel({ id, scene, run, startDelay, onDone }: { id: string; scene: number; run: number; startDelay: number; onDone: () => void }) {
   const t = useT().audience;
   const role = t.roles.find((r) => r.id === id);
-  const [run, setRun] = useState(0);
   if (!role) return null;
   const Icon = ROLE_ICONS[id];
   const accent = ROLE_ACCENTS[id];
-  const scene = run % SCENES;
   const touch = TOUCH.has(`${id}-${scene}`);
 
   return (
     <CursorDemo
       playKey={`${id}-${run}`}
       startDelay={startDelay}
-      onDone={() => setRun((r) => r + 1)}
+      onDone={onDone}
       label={role.short}
       look={AVATAR_LOOKS[LOOK[id] ?? 0]}
       accent={accent}
       mode={touch ? "touch" : "pointer"}
-      className={className}
     >
-      <div className="mock-on h-full rounded-[22px] bg-surface border border-hairline shadow-[0_20px_44px_-30px_rgba(0,40,100,0.4)] overflow-hidden flex flex-col">
-        <div className="flex items-center gap-2.5 px-4 py-3 border-b border-hairline" style={{ background: `linear-gradient(120deg, color-mix(in oklab, ${accent} 12%, var(--surface)), var(--surface-2))` }}>
-          <span className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 bg-surface border border-hairline" style={{ color: accent }}>
-            <Icon className="w-[17px] h-[17px]" strokeWidth={2.2} />
+      <div className="mock-on rounded-[22px] bg-surface border border-hairline shadow-[0_28px_60px_-40px_rgba(0,40,100,0.5)] overflow-hidden flex flex-col">
+        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-hairline" style={{ background: `linear-gradient(120deg, color-mix(in oklab, ${accent} 12%, var(--surface)), var(--surface-2))` }}>
+          <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-surface border border-hairline" style={{ color: accent }}>
+            <Icon className="w-[19px] h-[19px]" strokeWidth={2.2} />
           </span>
           <span className="flex flex-col min-w-0">
-            <span className="text-[14px] font-semibold text-ink leading-[1.2] truncate">{role.name}</span>
-            <span className="text-[11px] text-ink-3 leading-none mt-0.5 truncate">{role.screen.title}</span>
+            <span className="text-[15px] font-semibold text-ink leading-[1.2] truncate">{role.name}</span>
+            <span className="text-[11.5px] text-ink-3 leading-none mt-0.5 truncate">{role.screen.title}</span>
           </span>
-          {/* Не «далі», а «розгорнути»: кнопка обіцяє більший екран тієї
-              самої ролі, тому підпис виїжджає з-під іконки на ховері. */}
-          <Link
-            href={`/for-whom/${id}`}
-            aria-label={`${role.name} — ${t.expand}`}
-            className="group/exp ml-auto h-8 rounded-full border border-hairline bg-surface flex items-center gap-1 px-2 text-ink-3 shrink-0 transition-colors duration-200 hover:text-ink hover:border-hairline-strong"
-          >
-            <span className="max-w-0 overflow-hidden whitespace-nowrap text-[11.5px] font-medium opacity-0 transition-all duration-300 group-hover/exp:max-w-[110px] group-hover/exp:opacity-100 group-focus-visible/exp:max-w-[110px] group-focus-visible/exp:opacity-100">{t.expand}</span>
-            <Maximize2 className="w-[15px] h-[15px] shrink-0" strokeWidth={2.2} />
-          </Link>
+          {/* Лічильник сцен замість дев'яти однакових кнопок «розгорнути»:
+              видно, що екран не один, і що показ сам іде далі. */}
+          <span aria-hidden className="ml-auto flex items-center gap-1.5 shrink-0">
+            {Array.from({ length: SCENES }, (_, k) => (
+              <span
+                key={k}
+                className="block w-1.5 h-1.5 rounded-full transition-colors duration-300"
+                style={{ background: k === scene ? accent : "var(--hairline-strong)" }}
+              />
+            ))}
+          </span>
         </div>
-        <div key={run} className="p-4">
+        <div key={run} className="p-5">
           <Body id={id} accent={accent} scene={scene} />
         </div>
       </div>
@@ -985,18 +977,100 @@ function Panel({ id, startDelay, className }: { id: string; startDelay: number; 
   );
 }
 
-/* Eight screens that work by themselves — the whole church on one page, so
-   the scale of it is visible without a single click. */
-export default function AudienceStage() {
+/* Порядок сторінки: спершу ті, хто веде, далі ті, хто служить щотижня,
+   потім ті, хто тримає структуру й гроші, — і наприкінці ті, заради кого
+   все це робиться. */
+const GROUPS: { key: "lead" | "serve" | "admin" | "come"; ids: string[] }[] = [
+  { key: "lead", ids: ["pastor", "leader", "deacon"] },
+  { key: "serve", ids: ["volunteer", "reception"] },
+  { key: "admin", ids: ["hr", "accountant"] },
+  { key: "come", ids: ["visitor", "member"] },
+];
+
+/* Один блок — одна роль: ліворуч чим вона живе, праворуч її живий екран.
+   Тиснути нічого не треба — екран заводиться сам, коли доїхав у кадр, і
+   сам переходить до наступної сцени тієї ж ролі. */
+function RoleBlock({ id, flip }: { id: string; flip: boolean }) {
+  const t = useT().audience;
+  const [cur, setCur] = useState({ scene: 0, run: 0 });
+  const role = t.roles.find((r) => r.id === id);
+  if (!role) return null;
+  const accent = ROLE_ACCENTS[id];
+  const Icon = ROLE_ICONS[id];
+
   return (
-    <section className="w-full flex flex-col items-center pt-2 md:pt-4 pb-14 md:pb-20">
-      <div className="w-full max-w-[1120px] px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 items-start">
-        {ORDER.map((id, i) => (
-          <FadeIn key={id} delay={i % 3} variant="scale" className={cn("h-full", WIDE.has(id) && "lg:col-span-2")}>
-            <Panel id={id} startDelay={700 + (i % 3) * 800} />
+    <article className="w-full max-w-[1120px] px-5 md:px-8 grid grid-cols-1 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] gap-6 lg:gap-14 items-center">
+      <FadeIn className={cn("flex flex-col gap-4 min-w-0", flip && "lg:order-2")}>
+        <span
+          className="w-11 h-11 rounded-2xl flex items-center justify-center"
+          style={{ background: `color-mix(in oklab, ${accent} 13%, var(--surface))`, color: accent }}
+        >
+          <Icon className="w-[22px] h-[22px]" strokeWidth={2.1} />
+        </span>
+        <div className="flex flex-col gap-2.5">
+          <h3 className="font-semibold text-ink text-[28px] md:text-[34px] leading-[1.1] tracking-[-1px]">
+            {t.blocks.for} {role.plural}
+          </h3>
+          <p className="text-[16px] md:text-[17px] text-ink-2 leading-[1.55]">{role.hero.subtitle}</p>
+        </div>
+        <ul className="flex flex-col gap-2">
+          {role.hero.proof.map((p) => (
+            <li key={p} className="flex items-start gap-2.5 text-[14.5px] text-ink leading-[1.45]">
+              <span
+                className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 mt-[2px]"
+                style={{ background: `color-mix(in oklab, ${accent} 16%, var(--surface))`, color: accent }}
+              >
+                <Check className="w-3 h-3" strokeWidth={3.2} />
+              </span>
+              {p}
+            </li>
+          ))}
+        </ul>
+        <Link
+          href={`/for-whom/${role.id}`}
+          className="group inline-flex items-center gap-1.5 text-[14.5px] font-semibold w-fit"
+          style={{ color: `color-mix(in oklab, ${accent} 78%, var(--ink))` }}
+        >
+          {t.more}
+          <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+        </Link>
+      </FadeIn>
+
+      <FadeIn delay={1} variant="scale" className={cn("min-w-0", flip && "lg:order-1")}>
+        <Panel
+          id={id}
+          scene={cur.scene}
+          run={cur.run}
+          startDelay={700}
+          onDone={() => setCur((c) => ({ scene: (c.scene + 1) % SCENES, run: c.run + 1 }))}
+        />
+      </FadeIn>
+    </article>
+  );
+}
+
+/* Дев'ять ролей — дев'ять великих блоків поспіль, без вкладок і без вибору:
+   сторінку просто гортають, а кожен екран програє себе сам. Ролі згруповані
+   за тим, що людина робить у церкві, — щоб довгий список читався. */
+export default function AudienceStage() {
+  const t = useT().audience;
+  let n = 0;
+
+  return (
+    <section className="w-full flex flex-col items-center gap-12 md:gap-20 pt-4 md:pt-8 pb-14 md:pb-20">
+      {GROUPS.map((g) => (
+        <div key={g.key} className="w-full flex flex-col items-center gap-12 md:gap-20">
+          <FadeIn className="w-full max-w-[1120px] px-5 md:px-8 flex items-center gap-4">
+            <h2 className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-ink-3 whitespace-nowrap">
+              {t.blocks.groups[g.key]}
+            </h2>
+            <span aria-hidden className="h-px flex-1 bg-hairline" />
           </FadeIn>
-        ))}
-      </div>
+          {g.ids.map((id) => (
+            <RoleBlock key={id} id={id} flip={n++ % 2 === 1} />
+          ))}
+        </div>
+      ))}
     </section>
   );
 }

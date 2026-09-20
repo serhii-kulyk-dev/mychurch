@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "hr": org, requests, accounting */
+/* Module pages: org, requests, accounting — their catalogue group is the `group` field below. */
 export const hrModules: ModuleDetail[] = [
   {
     id: "org",
-    group: "hr",
+    group: "team",
     related: ["people", "ministries", "requests", "knowledge"],
     copy: {
       ua: {
@@ -77,19 +77,6 @@ export const hrModules: ModuleDetail[] = [
             { value: "2", label: "перевантажених помічено вчасно", text: "Людину в чотирьох командах одночасно видно ще до того, як вона попросить паузу." },
           ],
         },
-        day: {
-          title: "Тиждень у житті структури",
-          text: "Схема не «оновлюється раз на рік» — вона змінюється разом із командою.",
-          items: [
-            { time: "Пн · 09:10", title: "Нова людина в команді", text: "HR призначає Марка помічником у технічну команду. Схема оновлюється одразу для всіх.", count: "46 у команді" },
-            { time: "Пн · 09:11", title: "Доступи за роллю", text: "Разом із роллю відкривається доступ до графіка служіння й матеріалів команди.", count: "3 доступи" },
-            { time: "Вт · 14:00", title: "Керівник у відпустці", text: "Олена ставить заміщення на два тижні — погодження автоматично йдуть до заступника.", count: "2 тижні" },
-            { time: "Ср · 11:30", title: "Хто перевантажений", text: "Система підсвічує двох людей у чотирьох командах. Пастор бачить список ще до розмови.", count: "2 імені" },
-            { time: "Чт · 16:00", title: "Вакансія в оголошення", text: "Роль звукооператора лишилась порожньою. Бот пропонує її тим, хто позначив технічні дари.", count: "12 охочих" },
-            { time: "Пт · 10:00", title: "Передача служіння", text: "Василь передає зустріч гостей Ірині. Історія зберігає, хто й коли вів команду." },
-          ],
-          footer: "Жодного окремого «оновлення структури» ніхто не робив.",
-        },
       },
       en: {
         seoTitle: "Org structure — MyChurch module",
@@ -161,25 +148,12 @@ export const hrModules: ModuleDetail[] = [
             { value: "2", label: "overloaded people spotted in time", text: "Someone on four teams at once shows up before they ask for a break." },
           ],
         },
-        day: {
-          title: "A week in the life of the chart",
-          text: "The structure does not get refreshed once a year — it changes with the team.",
-          items: [
-            { time: "Mon · 09:10", title: "A new person on a team", text: "HR makes Mark an assistant on the tech team. The chart updates for everyone at once.", count: "46 on the team" },
-            { time: "Mon · 09:11", title: "Access follows the role", text: "The role opens access to the ministry rota and the team materials.", count: "3 permissions" },
-            { time: "Tue · 14:00", title: "A leader on holiday", text: "Olena sets a stand-in for two weeks — approvals route to the deputy automatically.", count: "2 weeks" },
-            { time: "Wed · 11:30", title: "Who is overloaded", text: "The system highlights two people on four teams each. The pastor has the list before the conversation.", count: "2 names" },
-            { time: "Thu · 16:00", title: "A vacancy goes public", text: "The sound engineer role stayed empty. The bot offers it to people who flagged technical gifts.", count: "12 interested" },
-            { time: "Fri · 10:00", title: "Handing over a ministry", text: "Vasyl hands the welcome team to Iryna. History keeps who led the team and when." },
-          ],
-          footer: "Nobody ran a separate structure update all week.",
-        },
       },
     },
   },
   {
     id: "requests",
-    group: "hr",
+    group: "team",
     related: ["org", "service-planning", "telegram-bot", "automations"],
     copy: {
       ua: {
@@ -247,20 +221,6 @@ export const hrModules: ModuleDetail[] = [
             },
           ],
         },
-        day: {
-          title: "Один понеділок у черзі запитів",
-          text: "Церква на 200 людей. HR і керівники не зводять нічого вручну — усе нижче відбувається в системі.",
-          items: [
-            { time: "07:40", title: "Запит на заміну з телефону", text: "Звукооператор дорогою на роботу просить заміну на неділю. Форма — три поля й коментар.", count: "1 запит" },
-            { time: "09:00", title: "HR відкриває чергу", text: "На екрані — усі відкриті запити церкви й ті, що застоялись у когось на погодженні.", count: "7 відкритих" },
-            { time: "10:30", title: "Керівник погоджує заміну", text: "Кнопка «Погодити» в Telegram. Графік служіння оновився, обидва служителі отримали повідомлення.", count: "2 сповіщення" },
-            { time: "12:15", title: "Запит на кошти пішов далі", text: "Лідер дитячого служіння погодив ₴3 200 на декор — запит автоматично перейшов до бухгалтера.", count: "крок 2 з 2" },
-            { time: "15:10", title: "Відпустка з перевіркою залишку", text: "HR бачить залишок днів у картці й погоджує 14–21 жовтня. Залишок зменшився сам.", count: "9 днів залишку" },
-            { time: "17:40", title: "Нагадування тим, хто затримує", text: "Два запити без руху другий день. Нагадування керівнику, копія — пастору.", count: "2 нагадування" },
-            { time: "20:00", title: "Зведення пастору", text: "Що погоджено за день і що чекає особисто на його рішення — одним повідомленням.", count: "1 зведення" },
-          ],
-          footer: "Жодного «нагадай, я тобі писав» у чатах: статус кожного запиту видно в системі.",
-        },
       },
       en: {
         seoTitle: "Requests — MyChurch module",
@@ -327,26 +287,12 @@ export const hrModules: ModuleDetail[] = [
             },
           ],
         },
-        day: {
-          title: "One Monday in the request queue",
-          text: "A church of 200 people. HR and leaders reconcile nothing by hand — it all happens in the system.",
-          items: [
-            { time: "07:40", title: "Cover request from a phone", text: "On his way to work, the sound engineer asks for cover on Sunday. Three fields and a comment.", count: "1 request" },
-            { time: "09:00", title: "HR opens the queue", text: "On screen: every open request in the church and the ones stuck with someone for approval.", count: "7 open" },
-            { time: "10:30", title: "The leader approves the cover", text: "The Approve button in Telegram. The rota is updated and both volunteers are notified.", count: "2 notifications" },
-            { time: "12:15", title: "A funds request moves on", text: "The kids ministry leader approved ₴3,200 for decor — the request went to the accountant automatically.", count: "step 2 of 2" },
-            { time: "15:10", title: "Leave checked against the balance", text: "HR sees the days left in the profile and approves 14–21 October. The balance drops on its own.", count: "9 days left" },
-            { time: "17:40", title: "Nudges for whoever is holding things up", text: "Two requests have not moved for a second day. A reminder to the leader, copied to the pastor.", count: "2 reminders" },
-            { time: "20:00", title: "Digest for the pastor", text: "What was approved today and what is waiting on his decision personally — in one message.", count: "1 digest" },
-          ],
-          footer: "No more \"remind me, I wrote to you\" in chats: every request's status is visible in the system.",
-        },
       },
     },
   },
   {
     id: "accounting",
-    group: "hr",
+    group: "team",
     related: ["analytics", "events", "camps", "projects"],
     copy: {
       ua: {
@@ -426,20 +372,6 @@ export const hrModules: ModuleDetail[] = [
             { value: "100%", label: "витрат із документом", text: "Фото чека — обов'язкове поле заявки. Звірка наприкінці місяця перестає бути пошуком паперів." },
           ],
         },
-        day: {
-          title: "Тиждень фінансів",
-          text: "Від недільного збору до зведення для пастора в п'ятницю.",
-          items: [
-            { time: "Нд · 12:30", title: "Недільний збір", text: "Двоє відповідальних перераховують і вносять суму. Обидва підписи лишаються в записі.", count: "₴18 400" },
-            { time: "Нд · 13:10", title: "Онлайн-пожертви", text: "Платежі за тиждень підтягуються з платіжного сервісу разом із призначенням.", count: "₴9 250" },
-            { time: "Пн · 10:00", title: "Заявка на витрату", text: "Лідер прославлення подає рахунок на струни й кабель — поряд видно залишок бюджету служіння.", count: "₴3 900" },
-            { time: "Пн · 10:40", title: "Погодження", text: "Сума в межах ліміту, тож заявка йде одразу до оплати й з'являється в черзі бухгалтера.", count: "1 клік" },
-            { time: "Ср · 15:00", title: "Внески за табір", text: "Оплати з модуля «Табори» падають у журнал цільовим фондом — вносити вдруге не треба.", count: "14 внесків" },
-            { time: "Пт · 09:00", title: "Виплати команді", text: "Бухгалтер формує відомість штату й компенсації служителям за місяць.", count: "11 людей" },
-            { time: "Пт · 17:00", title: "Зведення пастору", text: "Надходження, витрати, залишок по фондах і виконання бюджету — одним повідомленням." },
-          ],
-          footer: "Наприкінці місяця звіт для ради вже зібраний — його лишається відкрити.",
-        },
       },
       en: {
         seoTitle: "Accounting — MyChurch module",
@@ -517,20 +449,6 @@ export const hrModules: ModuleDetail[] = [
             { value: "8", label: "ministries see their budget", text: "A leader knows the balance before spending, so an overrun is noticed long before December." },
             { value: "100%", label: "of expenses carry a document", text: "A photo of the receipt is a required field. Month-end reconciliation stops being a paper hunt." },
           ],
-        },
-        day: {
-          title: "A week of church finance",
-          text: "From the Sunday offering to the pastor's summary on Friday.",
-          items: [
-            { time: "Sun · 12:30", title: "The Sunday offering", text: "Two people count it and enter the amount. Both signatures stay on the record.", count: "₴18,400" },
-            { time: "Sun · 13:10", title: "Online giving", text: "The week's payments come in from the payment provider together with their purpose.", count: "₴9,250" },
-            { time: "Mon · 10:00", title: "An expense request", text: "The worship leader files an invoice for strings and a cable — the ministry's remaining budget sits right beside it.", count: "₴3,900" },
-            { time: "Mon · 10:40", title: "Approval", text: "The amount is within the limit, so the request goes straight to payment and appears in the bookkeeper's queue.", count: "1 click" },
-            { time: "Wed · 15:00", title: "Camp payments", text: "Payments from the Camps module land in the ledger under the designated fund — no second entry.", count: "14 payments" },
-            { time: "Fri · 09:00", title: "Paying the team", text: "The bookkeeper prepares staff payroll and volunteer reimbursements for the month.", count: "11 people" },
-            { time: "Fri · 17:00", title: "Summary for the pastor", text: "Income, expenses, fund balances and budget progress — in a single message." },
-          ],
-          footer: "By month-end the board report is already assembled; someone just opens it.",
         },
       },
     },

@@ -88,7 +88,7 @@ export type MockSpec =
     };
 
 export interface ModuleCopy {
-  /** <title> — e.g. "Люди — модуль MyChurch". */
+  /** <title> — e.g. "Люди — модуль «Моя Церква»". */
   seoTitle: string;
   /** 120–160 characters. */
   seoDescription: string;
@@ -119,13 +119,6 @@ export interface ModuleCopy {
     title: string;
     text?: string;
     items: { value: string; label: string; text: string }[];
-  };
-  /** Optional: "one day with the module" — what happens on its own, hour by hour. 5–8 entries. */
-  day?: {
-    title: string;
-    text?: string;
-    items: { time: string; title: string; text: string; count?: string }[];
-    footer?: string;
   };
 }
 

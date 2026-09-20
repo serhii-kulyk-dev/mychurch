@@ -17,7 +17,7 @@ import {
   Users,
 } from "lucide-react";
 import FadeIn, { prefersReducedMotion } from "@/components/shared/fade-in";
-import IllustratedAvatar, { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { AVATAR_LOOKS, lookFor } from "@/components/shared/person-avatar";
 import SectionHeading from "@/components/shared/section-heading";
 import type { ChatAsk, ChatCollectField, ChatStep } from "@/lib/i18n";
 import { useT } from "@/lib/lang";
@@ -296,7 +296,7 @@ export default function AiChatWatcher() {
                     return (
                       <div key={item.id} className="bubble-in self-start flex items-end gap-2.5 max-w-[92%]">
                         <span className="shrink-0 mb-0.5">
-                          <IllustratedAvatar look={AVATAR_LOOKS[who % AVATAR_LOOKS.length]} size={30} />
+                          <PersonAvatar look={lookFor(t.members[who])} size={30} />
                         </span>
                         <div className="rounded-[18px] rounded-bl-[4px] bg-surface border border-hairline px-4 py-2.5 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
                           <span className="block text-[12.5px] font-semibold leading-none mb-1.5" style={{ color: NAME_COLORS[who % NAME_COLORS.length] }}>
@@ -340,7 +340,7 @@ export default function AiChatWatcher() {
                 <span className="flex items-center -space-x-2 shrink-0">
                   <Image src="/eva.jpg" alt="" width={34} height={34} sizes="34px" className="rounded-full ring-2 ring-surface" />
                   <span className="rounded-full ring-2 ring-surface">
-                    <IllustratedAvatar look={AVATAR_LOOKS[3]} size={34} />
+                    <PersonAvatar look={AVATAR_LOOKS[3]} size={34} />
                   </span>
                 </span>
                 <div className="flex-1 min-w-0 flex flex-col gap-1">

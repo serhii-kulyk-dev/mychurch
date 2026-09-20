@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "tools": forms, applications, links, automations, campaigns, knowledge, tables, projects */
+/* Module pages: forms, applications, links, automations, campaigns, knowledge, tables, projects — their catalogue group is the `group` field below. */
 export const toolsModules: ModuleDetail[] = [
   {
     id: "forms",
-    group: "tools",
+    group: "outreach",
     related: ["people", "onboarding", "events", "automations"],
     copy: {
       ua: {
@@ -38,7 +38,7 @@ export const toolsModules: ModuleDetail[] = [
           { role: "visitor", text: "Залишає контакт із телефона за пів хвилини — і його вже не загублять." },
         ],
         faq: [
-          { q: "Ми вже маємо Google Форми. Навіщо міняти?", a: "Google Форма складає відповіді в таблицю, яку хтось потім зводить із базою вручну. У MyChurch відповідь одразу створює або оновлює картку людини — і з нею можна працювати: дзвонити, додавати в групу, запускати сценарій." },
+          { q: "Ми вже маємо Google Форми. Навіщо міняти?", a: "Google Форма складає відповіді в таблицю, яку хтось потім зводить із базою вручну. У «Моїй Церкві» відповідь одразу створює або оновлює картку людини — і з нею можна працювати: дзвонити, додавати в групу, запускати сценарій." },
           { q: "Чи можна заповнити форму без реєстрації в системі?", a: "Так. Публічні форми відкриваються за посиланням або QR-кодом, людина вводить лише те, що ви запитали. Система сама знайде наявну картку за телефоном чи поштою і не створить дублікат." },
           { q: "Чи є вкладення файлів і оплата?", a: "Файли — так: довідки, фото, документи для табору. Оплату приймають модулі «Організатор подій» і «Табори», а форма передає туди дані учасника." },
           { q: "Що робити з паперовими анкетами, які вже є?", a: "Рецепція вносить їх через ту саму форму з планшета — поля ті самі, а картка з'являється в базі одразу." },
@@ -133,7 +133,7 @@ export const toolsModules: ModuleDetail[] = [
   },
   {
     id: "applications",
-    group: "tools",
+    group: "outreach",
     related: ["forms", "telegram-bot", "automations", "people"],
     copy: {
       ua: {
@@ -294,7 +294,7 @@ export const toolsModules: ModuleDetail[] = [
   },
   {
     id: "links",
-    group: "tools",
+    group: "outreach",
     related: ["forms", "events", "campaigns", "telegram-bot"],
     copy: {
       ua: {
@@ -435,7 +435,7 @@ export const toolsModules: ModuleDetail[] = [
   },
   {
     id: "automations",
-    group: "tools",
+    group: "platform",
     related: ["onboarding", "campaigns", "people", "telegram-bot"],
     copy: {
       ua: {
@@ -484,20 +484,6 @@ export const toolsModules: ModuleDetail[] = [
             { value: "1 день", label: "щоб помітити, що людина зникає", text: "Замість трьох тижнів, коли хтось випадково згадує «а де Ігор?». Лідер має задачу вже в понеділок." },
             { value: "0", label: "повідомлень «не забудь» у чатах", text: "Служителі отримують нагадування напряму від системи — лідер більше не пише кожному окремо." },
           ],
-        },
-        day: {
-          title: "Один день автоматизацій",
-          text: "Неділя в церкві на 200 людей. Усе нижче відбувається саме — адміністратор у цей час на служінні, а не в чатах.",
-          items: [
-            { time: "07:00", title: "Нагадування служителям", text: "Команді прославлення, зустрічі гостей і «Дитячому містечку» — «сьогодні ви на служінні о 10:00» у Telegram, із посиланням на порядок служіння.", count: "14 повідомлень" },
-            { time: "08:30", title: "Дні народження", text: "Двом іменинникам — привітання від імені церкви. Пастору й лідеру групи — нагадування подзвонити.", count: "4 дії" },
-            { time: "10:05", title: "Явка записана", text: "Хто відмітився в боті або на планшеті рецепції — явка вже в картках. Ніхто не переносить списки з паперу.", count: "163 відмітки" },
-            { time: "12:40", title: "Новенький заповнив анкету", text: "Привітання в Telegram за хвилину, тег «новенький», задача лідеру найближчої групи «подзвонити до вівторка».", count: "4 гості" },
-            { time: "14:00", title: "Хто не був три неділі", text: "Сценарій знайшов шістьох. Лідерам груп — задачі «зв'язатися», пастору — список одним повідомленням.", count: "6 задач" },
-            { time: "18:00", title: "Підтвердження на наступну неділю", text: "Служителям — запит «підтвердіть участь». Хто не відповість до середи, отримає SMS, а лідер побачить, кого шукати на заміну.", count: "22 запити" },
-            { time: "21:00", title: "Зведення дня пастору", text: "Явка, новенькі, відсутні, відкриті задачі та заявки — одним повідомленням перед сном.", count: "1 зведення" },
-          ],
-          footer: "Разом за день: близько 210 дій. Часу адміністратора — 0 хвилин.",
         },
         mock: {
           kind: "timeline",
@@ -560,20 +546,6 @@ export const toolsModules: ModuleDetail[] = [
             { value: "0", label: "\"don't forget\" messages in chats", text: "Volunteers get reminders straight from the system — the leader no longer writes to each one separately." },
           ],
         },
-        day: {
-          title: "One day of automations",
-          text: "A Sunday at a church of 200 people. Everything below happens on its own — the administrator is at the service, not in chats.",
-          items: [
-            { time: "07:00", title: "Volunteer reminders", text: "Worship, welcome team and Kids Town — \"you're serving today at 10:00\" in Telegram, with a link to the service plan.", count: "14 messages" },
-            { time: "08:30", title: "Birthdays", text: "Two birthday greetings in the church's name. A reminder to call for the pastor and the group leader.", count: "4 actions" },
-            { time: "10:05", title: "Attendance recorded", text: "Whoever checked in via the bot or the reception tablet is already in their profile. Nobody copies lists from paper.", count: "163 check-ins" },
-            { time: "12:40", title: "A newcomer filled in the card", text: "A Telegram greeting within a minute, a \"newcomer\" tag, a task for the nearest group's leader: \"call by Tuesday\".", count: "4 guests" },
-            { time: "14:00", title: "Missing for three Sundays", text: "The scenario found six people. Tasks \"get in touch\" for group leaders, a list for the pastor in one message.", count: "6 tasks" },
-            { time: "18:00", title: "Confirmations for next Sunday", text: "A \"please confirm\" request to volunteers. Anyone silent by Wednesday gets an SMS, and the leader sees who needs cover.", count: "22 requests" },
-            { time: "21:00", title: "Daily digest for the pastor", text: "Attendance, newcomers, absentees, open tasks and requests — one message before bed.", count: "1 digest" },
-          ],
-          footer: "Around 210 actions in a day. Administrator time: 0 minutes.",
-        },
         mock: {
           kind: "timeline",
           title: "Newcomer: first week",
@@ -592,7 +564,7 @@ export const toolsModules: ModuleDetail[] = [
   },
   {
     id: "campaigns",
-    group: "tools",
+    group: "outreach",
     related: ["telegram", "viber", "turbosms", "people"],
     copy: {
       ua: {
@@ -644,20 +616,6 @@ export const toolsModules: ModuleDetail[] = [
           ],
           input: "Відповісти Олені…",
         },
-        day: {
-          title: "Один день розсилок",
-          text: "Субота перед служінням. Кожне повідомлення йде своєму списку, а не «всім підряд».",
-          items: [
-            { time: "08:00", title: "Дайджест лідерам", text: "Кожен лідер отримує список своєї групи: хто не був минулої неділі й хто новенький у районі.", count: "18 лідерів" },
-            { time: "10:30", title: "Підтвердження служителям", text: "Прославлення, звук і «Дитяче містечко» отримують запит на неділю з кнопками «буду» і «не зможу».", count: "22 запити" },
-            { time: "12:00", title: "Відповіді повертаються", text: "Хто натиснув «не зможу», одразу видно лідеру служіння — є пів дня знайти заміну.", count: "3 заміни" },
-            { time: "14:15", title: "Нагадування зареєстрованим", text: "Тим, хто записався на молодіжну конференцію: час, адреса й що взяти з собою.", count: "96 осіб" },
-            { time: "17:00", title: "Батькам у «Дитячому містечку»", text: "Недільна група для 6–10 років починається о 9:45. Ім'я дитини підставляється з бази.", count: "41 сім'я" },
-            { time: "18:00", title: "Запрошення на служіння", text: "Усій церкві — тема неділі й посилання на трансляцію. Telegram, а кому немає — Viber або SMS.", count: "186 адресатів" },
-            { time: "21:30", title: "Звіт по доставці", text: "Доставлено, прочитано, хто відписався і чиї номери не працюють.", count: "12 недоставлених" },
-          ],
-          footer: "Кому не дійшло жодним каналом — окремий список для рецепції на понеділок.",
-        },
       },
       en: {
         seoTitle: "Campaigns — MyChurch module",
@@ -708,26 +666,12 @@ export const toolsModules: ModuleDetail[] = [
           ],
           input: "Reply to Olena…",
         },
-        day: {
-          title: "One day of campaigns",
-          text: "The Saturday before the service. Every message goes to its own list, not to \"everyone\".",
-          items: [
-            { time: "08:00", title: "Digest for leaders", text: "Each leader gets a list for their group: who missed last Sunday and who is new in the district.", count: "18 leaders" },
-            { time: "10:30", title: "Confirmations for volunteers", text: "Worship, sound and Kids Town get the Sunday request with \"I'll be there\" and \"can't make it\" buttons.", count: "22 requests" },
-            { time: "12:00", title: "Replies come back", text: "Anyone who tapped \"can't make it\" shows up for the ministry leader — half a day to find cover.", count: "3 swaps" },
-            { time: "14:15", title: "Reminders for those signed up", text: "Everyone registered for the youth conference: time, address and what to bring.", count: "96 people" },
-            { time: "17:00", title: "For Kids Town parents", text: "The Sunday group for 6–10-year-olds starts at 9:45. The child's name comes from the database.", count: "41 families" },
-            { time: "18:00", title: "Invitation to the service", text: "The whole church gets Sunday's theme and the stream link. Telegram, or Viber and SMS for the rest.", count: "186 recipients" },
-            { time: "21:30", title: "Delivery report", text: "Delivered, read, who opted out and whose numbers no longer work.", count: "12 undelivered" },
-          ],
-          footer: "Anyone unreachable on every channel goes on a separate list for reception on Monday.",
-        },
       },
     },
   },
   {
     id: "knowledge",
-    group: "tools",
+    group: "team",
     related: ["learning", "ministries", "notion", "org"],
     copy: {
       ua: {
@@ -762,7 +706,7 @@ export const toolsModules: ModuleDetail[] = [
         ],
         faq: [
           { q: "У нас усе в Google Диску. Навіщо переносити?", a: "Диск зберігає файли, але не знає, що документ стосується звукового служіння, і не покаже його новому служителю сам. У базі знань документ прив'язаний до ролі, служіння чи події — і відкривається там, де потрібен." },
-          { q: "Чи можна тримати документи в Notion і бачити їх тут?", a: "Так. Інтеграція з Notion синхронізує обрані сторінки, і вони відкриваються в MyChurch з тими самими правами доступу." },
+          { q: "Чи можна тримати документи в Notion і бачити їх тут?", a: "Так. Інтеграція з Notion синхронізує обрані сторінки, і вони відкриваються в «Моїй Церкві» з тими самими правами доступу." },
           { q: "Хто може редагувати?", a: "Ви призначаєте редакторів на кожен розділ. Решта читає, а зміни бачать із позначкою, хто й коли їх зробив." },
           { q: "Чи шукає пошук у вкладених файлах?", a: "Так — у PDF, Word і презентаціях. Пошук працює по тексту документа, а не лише по назві." },
         ],
@@ -778,20 +722,6 @@ export const toolsModules: ModuleDetail[] = [
             { title: "Політика захисту дітей", sub: "Дитяче містечко · лише команда", meta: "версія 3", badge: { label: "Обмежений", tone: "amber" } },
           ],
           footer: "Пошук: «ключ від звукової»",
-        },
-        day: {
-          title: "Один день бази знань",
-          text: "Звичайна неділя. Ніхто не шукає файл у чатах — документ відкривається там, де він потрібен.",
-          items: [
-            { time: "07:30", title: "Відкриття зали", text: "Черговий відкриває чек-лист: світло, опалення, двері, скринька для пожертв.", count: "9 пунктів" },
-            { time: "08:45", title: "Пульт у звуковій", text: "Новий служитель читає інструкцію з телефона — з фото й позначками, де що вмикати.", count: "1 інструкція" },
-            { time: "09:40", title: "Зустріч гостей", text: "Команда рецепції перечитує сценарій: що сказати, куди провести, яку анкету дати.", count: "6 волонтерів" },
-            { time: "09:55", title: "Дитяче містечко", text: "Служителі відмічають, що прочитали політику захисту дітей. Без цього зміна не починається.", count: "11 підтверджень" },
-            { time: "13:20", title: "Питання з телефона", text: "Хтось шукає «ключ від звукової» — документ знаходиться по тексту всередині, а не по назві.", count: "37 пошуків" },
-            { time: "16:00", title: "Правка регламенту", text: "Ірина змінює порядок зустрічі гостей. Попередня версія лишається в історії.", count: "версія 4" },
-            { time: "20:00", title: "Матеріали на тиждень", text: "Лідери груп відкривають сценарій зустрічі та питання для розбору в четвер.", count: "18 лідерів" },
-          ],
-          footer: "Новий служитель бачить лише документи своєї ролі — решта розділів для нього закрита.",
         },
       },
       en: {
@@ -843,26 +773,12 @@ export const toolsModules: ModuleDetail[] = [
           ],
           footer: "Search: \"sound room key\"",
         },
-        day: {
-          title: "One day of the knowledge base",
-          text: "An ordinary Sunday. Nobody hunts for a file in the chats — the document opens where it's needed.",
-          items: [
-            { time: "07:30", title: "Opening the hall", text: "The person on duty opens the checklist: lights, heating, doors, the offering box.", count: "9 items" },
-            { time: "08:45", title: "The sound desk", text: "A new volunteer reads the guide on their phone — with photos marking what to switch on where.", count: "1 guide" },
-            { time: "09:40", title: "Welcoming guests", text: "The reception team reads the outline again: what to say, where to walk them, which card to hand over.", count: "6 volunteers" },
-            { time: "09:55", title: "Kids Town", text: "Volunteers confirm they've read the safeguarding policy. The shift doesn't start without it.", count: "11 confirmations" },
-            { time: "13:20", title: "A question from a phone", text: "Someone searches for \"sound room key\" — found by the text inside the document, not its title.", count: "37 searches" },
-            { time: "16:00", title: "Editing a policy", text: "Iryna changes the order of the welcome. The previous version stays in the history.", count: "version 4" },
-            { time: "20:00", title: "Materials for the week", text: "Group leaders open the meeting outline and the discussion questions for Thursday.", count: "18 leaders" },
-          ],
-          footer: "A new volunteer sees only the documents for their role — the other sections stay closed.",
-        },
       },
     },
   },
   {
     id: "tables",
-    group: "tools",
+    group: "team",
     related: ["analytics", "inventory", "accounting", "forms"],
     copy: {
       ua: {
@@ -890,7 +806,7 @@ export const toolsModules: ModuleDetail[] = [
           { title: "Працюйте разом", text: "Кілька людей редагують одночасно, зміни зберігаються самі, а історія показує, хто що змінив." },
         ],
         audience: [
-          { role: "pastor", text: "Бачить усі обліки церкви в одній системі, а не в десятку файлів у різних людей." },
+          { role: "pastor", text: "Бачить усі обліки церкви в одному місці, а не в десятку файлів у різних людей." },
           { role: "leader", text: "Веде чергування, списки на виїзд чи збір коштів у групі без окремого Excel." },
           { role: "accountant", text: "Тримає бюджети служінь і проєктів у таблицях, пов'язаних із витратами в бухгалтерії." },
           { role: "volunteer", text: "Відкриває чергування або список закупівель з телефона й відмічає своє." },
@@ -913,20 +829,6 @@ export const toolsModules: ModuleDetail[] = [
             { cells: ["Марко П.", "11", "М'яч", "Василь П."], badge: { label: "Очікує", tone: "neutral" } },
             { cells: ["Єва Ш.", "7", "Пазл", "Ірина Ш."], badge: { label: "Куплено", tone: "green" } },
           ],
-        },
-        day: {
-          title: "Один день у таблицях",
-          text: "Грудень, підготовка до Різдва. Кілька обліків, з якими за день працюють різні люди.",
-          items: [
-            { time: "08:10", title: "Чергування прибирання", text: "Василь відмічає свою суботу — решта команди бачить зміну одразу, без повідомлення в чат.", count: "12 змін" },
-            { time: "09:30", title: "Подарунки дітям", text: "Олена ставить «куплено» навпроти фарб для Соломії. Підсумковий рядок перераховує суму сам.", count: "₴19 200" },
-            { time: "11:00", title: "Облік ключів", text: "Рецепція записує, що ключ від звукової в Дмитра. Колонка «Людина» тягне його телефон із бази.", count: "24 ключі" },
-            { time: "13:45", title: "Бюджет виїзду", text: "Лідер молодіжки додає рядок «автобус». Формула показує, скільки лишилось до межі бюджету.", count: "8 статей" },
-            { time: "16:20", title: "Список закупівель", text: "Волонтер відкриває таблицю з телефона просто в магазині й відмічає куплене в проході.", count: "31 позиція" },
-            { time: "18:00", title: "Імпорт торішнього списку", text: "Адміністратор завантажує Excel із сім'ями — імена в колонці зіставляються з картками.", count: "64 рядки" },
-            { time: "21:00", title: "Вивантаження для ради", text: "Бухгалтер експортує різдвяний бюджет в Excel, не зводячи чотири файли докупи.", count: "1 файл" },
-          ],
-          footer: "Усі працювали в таблицях одночасно — жодної «фінальна_версія_2.xlsx» у чаті.",
         },
       },
       en: {
@@ -954,7 +856,7 @@ export const toolsModules: ModuleDetail[] = [
           { title: "Work together", text: "Several people edit at once, changes save themselves, and the history shows who changed what." },
         ],
         audience: [
-          { role: "pastor", text: "Sees every church record in one system, not in a dozen files held by different people." },
+          { role: "pastor", text: "Sees every church record in one place, not in a dozen files held by different people." },
           { role: "leader", text: "Runs the rota, trip lists or a group collection without a separate Excel file." },
           { role: "accountant", text: "Keeps ministry and project budgets in tables linked to expenses in Accounting." },
           { role: "volunteer", text: "Opens the rota or shopping list on a phone and ticks off their part." },
@@ -978,26 +880,12 @@ export const toolsModules: ModuleDetail[] = [
             { cells: ["Yeva S.", "7", "Puzzle", "Iryna S."], badge: { label: "Bought", tone: "green" } },
           ],
         },
-        day: {
-          title: "One day in the tables",
-          text: "December, getting ready for Christmas. Several records, worked on by different people in one day.",
-          items: [
-            { time: "08:10", title: "Cleaning rota", text: "Vasyl ticks off his Saturday — the rest of the team sees the change at once, with no chat message.", count: "12 shifts" },
-            { time: "09:30", title: "Gifts for the kids", text: "Olena marks the paints for Solomiia as bought. The totals row recalculates on its own.", count: "₴19,200" },
-            { time: "11:00", title: "Key register", text: "Reception logs that Dmytro has the sound room key. The \"Person\" column pulls his phone from the database.", count: "24 keys" },
-            { time: "13:45", title: "Trip budget", text: "The youth leader adds a \"coach hire\" row. The formula shows what's left before the budget cap.", count: "8 line items" },
-            { time: "16:20", title: "Shopping list", text: "A volunteer opens the table on a phone in the shop and ticks items off in the aisle.", count: "31 items" },
-            { time: "18:00", title: "Importing last year's list", text: "The administrator uploads an Excel file of families — names in the column are matched to profiles.", count: "64 rows" },
-            { time: "21:00", title: "Export for the board", text: "The accountant exports the Christmas budget to Excel without merging four files first.", count: "1 file" },
-          ],
-          footer: "Everyone worked in the tables at the same time — not one \"final_version_2.xlsx\" in the chat.",
-        },
       },
     },
   },
   {
     id: "projects",
-    group: "tools",
+    group: "team",
     related: ["events", "ministries", "tables", "requests"],
     copy: {
       ua: {

@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "activities": ministries, service-planning, groups, learning, onboarding, camps */
+/* Module pages: ministries, service-planning, groups, learning, onboarding, camps — their catalogue group is the `group` field below. */
 export const activitiesModules: ModuleDetail[] = [
   {
     id: "ministries",
-    group: "activities",
+    group: "serving",
     related: ["service-planning", "people", "groups", "telegram-bot"],
     copy: {
       ua: {
@@ -57,20 +57,6 @@ export const activitiesModules: ModuleDetail[] = [
             { cells: ["Ірина Шевчук", "Кафе", "Бариста"], badge: { label: "Підтвердила", tone: "green" } },
           ],
         },
-        day: {
-          title: "Неділя команд служіння",
-          text: "Що відбувається саме в день служіння. Лідер у цей час на майданчику, а не в чатах.",
-          items: [
-            { time: "07:40", title: "Нагадування служителям", text: "Кожному, хто сьогодні в графіку, бот надсилає роль і час збору.", count: "23 повідомлення" },
-            { time: "08:30", title: "Хто не підтвердив", text: "Лідер відкриває графік і бачить двох мовчунів. Поряд — вільні люди команди на ці ролі.", count: "2 без відповіді" },
-            { time: "09:10", title: "Заміна на звуці", text: "Дмитро попросив заміну через хворобу. Система показує тих, у кого є роль «пульт» і хто сьогодні вільний.", count: "3 кандидати" },
-            { time: "09:55", title: "Команда на місці", text: "Служителі відмічають прихід у боті. Лідер бачить, які ролі вже закриті.", count: "21 з 23" },
-            { time: "12:30", title: "Явка записана", text: "Після служіння лідер відмічає, хто справді служив. Дані йдуть у картку людини." },
-            { time: "18:00", title: "Графік на наступну неділю", text: "Бот розсилає запит на підтвердження. Хто мовчить до середи — отримує ще одне нагадування.", count: "24 запити" },
-            { time: "21:00", title: "Навантаження за тиждень", text: "Пастор отримує список: хто служив чотири неділі поспіль, а хто жодної за місяць.", count: "5 імен" },
-          ],
-          footer: "Ролі, підтвердження, заміни та явка — в одному графіку, без окремих чатів.",
-        },
       },
       en: {
         seoTitle: "Ministries — MyChurch module",
@@ -122,26 +108,12 @@ export const activitiesModules: ModuleDetail[] = [
             { cells: ["Iryna Shevchuk", "Café", "Barista"], badge: { label: "Confirmed", tone: "green" } },
           ],
         },
-        day: {
-          title: "A Sunday for the ministry teams",
-          text: "What happens on its own on a service day. The leader is on site, not in chats.",
-          items: [
-            { time: "07:40", title: "Volunteer reminders", text: "Everyone on today's rota gets their role and call time from the bot.", count: "23 messages" },
-            { time: "08:30", title: "Who hasn't confirmed", text: "The leader opens the rota and sees two silent names. Beside them, free team members for those roles.", count: "2 no reply" },
-            { time: "09:10", title: "Cover on sound", text: "Dmytro asked for cover because he's ill. The system shows who has the desk role and is free today.", count: "3 options" },
-            { time: "09:55", title: "Team on site", text: "Volunteers check in through the bot. The leader sees which roles are already covered.", count: "21 of 23" },
-            { time: "12:30", title: "Attendance recorded", text: "After the service the leader marks who actually served. It lands in each person's profile." },
-            { time: "18:00", title: "Rota for next Sunday", text: "The bot sends the confirmation request. Anyone silent by Wednesday gets one more reminder.", count: "24 requests" },
-            { time: "21:00", title: "Workload for the week", text: "The pastor gets the list: who served four Sundays in a row, and who hasn't served at all this month.", count: "5 names" },
-          ],
-          footer: "Roles, confirmations, cover and attendance live in one rota, not in separate chats.",
-        },
       },
     },
   },
   {
     id: "service-planning",
-    group: "activities",
+    group: "serving",
     related: ["ministries", "calendar", "templates", "knowledge"],
     copy: {
       ua: {
@@ -175,7 +147,7 @@ export const activitiesModules: ModuleDetail[] = [
           { role: "volunteer", text: "Бачить свій блок, час виходу й матеріали в телефоні — і підтверджує участь одним натисканням." },
         ],
         faq: [
-          { q: "Ми вже плануємо служіння в Google Документі. Навіщо змінювати?", a: "Документ не знає, хто підтвердив участь, і не нагадує служителям. У MyChurch план пов'язаний з людьми: команда бачить свої блоки, підтверджує, отримує нагадування, а історія служінь накопичується сама." },
+          { q: "Ми вже плануємо служіння в Google Документі. Навіщо змінювати?", a: "Документ не знає, хто підтвердив участь, і не нагадує служителям. У «Моїй Церкві» план пов'язаний з людьми: команда бачить свої блоки, підтверджує, отримує нагадування, а історія служінь накопичується сама." },
           { q: "Чи можна планувати кілька служінь на одну неділю?", a: "Так: ранкове й вечірнє або служіння на різних кемпусах — кожне зі своїм порядком і командою. Система попередить, якщо одна людина стоїть у двох планах одночасно." },
           { q: "Що бачить звукорежисер, а що ведучий?", a: "Один і той самий план, але кожен бачить підсвіченими свої блоки. Матеріали до блоку доступні всім, хто в команді цього служіння." },
           { q: "Чи можна змінити план у неділю вранці?", a: "Так. Змінили порядок або тривалість — оновлений план одразу в усіх на телефонах, а бот повідомить тих, кого зміна стосується." },
@@ -212,20 +184,6 @@ export const activitiesModules: ModuleDetail[] = [
             { value: "94%", label: "підтверджень до суботи", text: "Запит іде одразу після публікації плану, нагадування — за день. Ведучий бачить, хто ще мовчить." },
             { value: "±2 хв", label: "відхилення від таймінгу", text: "Блоки перераховуються на ходу, тому служіння завершується тоді, коли на нього розраховують батьки з дітьми." },
           ],
-        },
-        day: {
-          title: "Тиждень одного плану",
-          text: "Від вівторка до неділі. Ведучий відкриває план тричі — решту робить система.",
-          items: [
-            { time: "Вт · 09:00", title: "Чернетка з шаблону", text: "Ведучий бере шаблон «Недільне ранкове»: блоки, тривалість і потреба на служіння вже в плані.", count: "9 блоків" },
-            { time: "Вт · 11:20", title: "Потреба закривається", text: "Команда підтягується з графіка служінь. Видно, які позиції ще відкриті.", count: "2 відкриті" },
-            { time: "Ср · 18:30", title: "Наповнення блоків", text: "Прославлення додає чотири пісні з нотами, адміністратор — текст оголошень і слайди.", count: "4 пісні" },
-            { time: "Чт · 12:00", title: "Публікація команді", text: "План іде в бот. Кожен бачить свої блоки й підтверджує участь одним натисканням.", count: "27 запитів" },
-            { time: "Пт · 20:00", title: "Хто ще мовчить", text: "Двоє не відповіли. Бот нагадує ще раз, а ведучий бачить вільних людей на ці позиції.", count: "2 без відповіді" },
-            { time: "Нд · 09:30", title: "План у руках", text: "Ведучий і звукорежисер відкривають план у телефоні. Проповідь довша на десять хвилин — час решти блоків перерахований.", count: "9 з 9" },
-            { time: "Нд · 12:40", title: "В архів", text: "План лишається з явкою команди й списком пісень — наступного тижня видно, що вже співали." },
-          ],
-          footer: "На весь план ведучий витратив 25 хвилин за тиждень.",
         },
       },
       en: {
@@ -297,26 +255,12 @@ export const activitiesModules: ModuleDetail[] = [
             { value: "±2 min", label: "drift from the timing", text: "Blocks recalculate as you go, so the service ends when the parents with kids expect it to." },
           ],
         },
-        day: {
-          title: "One plan, one week",
-          text: "From Tuesday to Sunday. The host opens the plan three times — the system does the rest.",
-          items: [
-            { time: "Tue · 09:00", title: "Draft from a template", text: "The host takes the Sunday morning template: blocks, durations and staffing needs are already in the plan.", count: "9 blocks" },
-            { time: "Tue · 11:20", title: "Positions fill up", text: "The team comes in from the ministry rota. It is clear which positions are still open.", count: "2 open" },
-            { time: "Wed · 18:30", title: "Filling in the blocks", text: "Worship adds four songs with sheet music, the administrator adds the announcement text and the slides.", count: "4 songs" },
-            { time: "Thu · 12:00", title: "Published to the team", text: "The plan goes to the bot. Everyone sees their blocks and confirms with one tap.", count: "27 requests" },
-            { time: "Fri · 20:00", title: "Who is still silent", text: "Two have not answered. The bot reminds them again and the host sees who else is free for those positions.", count: "2 pending" },
-            { time: "Sun · 09:30", title: "The plan in hand", text: "The host and the sound engineer open the plan on their phones. The sermon runs ten minutes long and the rest of the blocks are already recalculated.", count: "9 of 9" },
-            { time: "Sun · 12:40", title: "Into the archive", text: "The plan stays with the team attendance and the song list — next week you can see what was sung." },
-          ],
-          footer: "Twenty-five minutes of the host's week went into the whole plan.",
-        },
       },
     },
   },
   {
     id: "groups",
-    group: "activities",
+    group: "serving",
     related: ["people", "onboarding", "analytics", "telegram-bot"],
     copy: {
       ua: {
@@ -368,20 +312,6 @@ export const activitiesModules: ModuleDetail[] = [
           ],
           footer: "Фільтр: усі · за районом · без лідера",
         },
-        day: {
-          title: "Четвер домашньої групи",
-          text: "Зустріч о 19:00. Лідер робить тільки те, чого не робить система.",
-          items: [
-            { time: "09:00", title: "Нагадування учасникам", text: "Бот пише всім у групі: час, адреса й тема зустрічі. Хто не зможе — натискає «не буду».", count: "18 повідомлень" },
-            { time: "13:20", title: "Двоє не прийдуть", text: "Відповіді збираються в списку лідера. Він знає, на кого чекати ввечері.", count: "2 відмови" },
-            { time: "18:30", title: "Підказка лідеру", text: "Перед виходом з дому бот показує склад групи й нотатки з минулої зустрічі." },
-            { time: "19:00", title: "Зустріч", text: "Гість, якого привела Тетяна, реєструється за QR і одразу з'являється в базі церкви.", count: "1 гість" },
-            { time: "20:50", title: "Явка за хвилину", text: "Лідер відмічає присутніх у боті просто за столом. Дані падають у картки людей.", count: "16 з 18" },
-            { time: "21:15", title: "Хто пропадає", text: "Система підсвічує Ірину: третя пропущена зустріч поспіль. У лідера з'являється задача подзвонити.", count: "1 задача" },
-            { time: "22:00", title: "Зведення кураторам", text: "Пастор і куратор напрямку бачать явку всіх груп, що збирались цього вечора.", count: "6 груп" },
-          ],
-          footer: "Наступного четверга все повториться — без нагадувань у загальному чаті.",
-        },
       },
       en: {
         seoTitle: "Small groups — MyChurch module",
@@ -432,26 +362,12 @@ export const activitiesModules: ModuleDetail[] = [
           ],
           footer: "Filter: all · by district · no leader",
         },
-        day: {
-          title: "Thursday in the Obolon group",
-          text: "The meeting is at 19:00. The leader only does what the system doesn't.",
-          items: [
-            { time: "09:00", title: "Reminder to members", text: "The bot writes to everyone in the group: time, address and topic. Anyone who can't come taps \"not this week\".", count: "18 messages" },
-            { time: "13:20", title: "Two can't make it", text: "The replies collect in the leader's list. He knows who to expect tonight.", count: "2 declines" },
-            { time: "18:30", title: "Prompt for the leader", text: "Before he leaves home the bot shows the group's members and the notes from last meeting." },
-            { time: "19:00", title: "The meeting", text: "The guest Tetiana brought signs in by QR and appears in the church database straight away.", count: "1 guest" },
-            { time: "20:50", title: "Attendance in a minute", text: "The leader ticks who came from the bot, right at the table. It lands in people's profiles.", count: "16 of 18" },
-            { time: "21:15", title: "Who is drifting", text: "The system highlights Iryna: a third meeting missed in a row. The leader gets a task to call her.", count: "1 task" },
-            { time: "22:00", title: "Digest for the coaches", text: "The pastor and the coach see the attendance of every group that met this evening.", count: "6 groups" },
-          ],
-          footer: "Next Thursday it all repeats — with no chasing in the group chat.",
-        },
       },
     },
   },
   {
     id: "learning",
-    group: "activities",
+    group: "serving",
     related: ["onboarding", "knowledge", "people", "ministries"],
     copy: {
       ua: {
@@ -596,7 +512,7 @@ export const activitiesModules: ModuleDetail[] = [
   },
   {
     id: "onboarding",
-    group: "activities",
+    group: "people",
     related: ["people", "forms", "automations", "groups"],
     copy: {
       ua: {
@@ -757,7 +673,7 @@ export const activitiesModules: ModuleDetail[] = [
   },
   {
     id: "camps",
-    group: "activities",
+    group: "serving",
     related: ["events", "forms", "accounting", "family"],
     copy: {
       ua: {
@@ -811,20 +727,6 @@ export const activitiesModules: ModuleDetail[] = [
           ],
           submit: "Зареєструвати",
         },
-        day: {
-          title: "День заїзду",
-          text: "Субота, 14 липня. Молодіжний табір у Карпатах, 84 учасники.",
-          items: [
-            { time: "07:30", title: "Списки на місці", text: "Керівник відкриває табір у телефоні: хто їде, хто сплатив, від кого ще немає згоди батьків.", count: "3 без згоди" },
-            { time: "08:00", title: "Нагадування перед виїздом", text: "Учасникам — час і місце збору, список речей і контакт вожатого їхнього загону.", count: "84 повідомлення" },
-            { time: "09:15", title: "Посадка в автобуси", text: "Вожатий відмічає прибулих у боті. Кого немає — видно одразу, телефон батьків у картці.", count: "82 з 84" },
-            { time: "13:40", title: "Заїзд і кімнати", text: "На базі учасники розходяться за готовим розселенням. Списки на двері роздруковані із системи.", count: "21 кімната" },
-            { time: "14:10", title: "Медик отримує доступ", text: "Алергії, ліки та екстрені контакти відкриті медику й керівнику на час заїзду.", count: "9 приміток" },
-            { time: "19:00", title: "Зміна в розкладі", text: "Керівник посунув ранковий блок на пів години — команда бачить оновлений день у боті." },
-            { time: "22:30", title: "Відбій і перекличка", text: "Вожаті відмічають свої загони. Керівник бачить, що всі на місці, не обходячи корпуси.", count: "6 загонів" },
-          ],
-          footer: "Реєстрація, оплати й згоди зібрані до заїзду — на базі лишається сам табір.",
-        },
       },
       en: {
         seoTitle: "Camps — MyChurch module",
@@ -876,20 +778,6 @@ export const activitiesModules: ModuleDetail[] = [
             { label: "Parental consent received", type: "check" },
           ],
           submit: "Register",
-        },
-        day: {
-          title: "Arrival day",
-          text: "Saturday 14 July. A youth camp in the Carpathians, 84 participants.",
-          items: [
-            { time: "07:30", title: "The lists are ready", text: "The director opens the camp on their phone: who is coming, who has paid, whose consent form is still missing.", count: "3 without consent" },
-            { time: "08:00", title: "Reminder before departure", text: "Participants get the meeting time and place, the packing list and their squad leader's contact.", count: "84 messages" },
-            { time: "09:15", title: "Boarding the coaches", text: "The leader ticks off arrivals in the bot. Anyone missing shows at once, with the parents' phone on the card.", count: "82 of 84" },
-            { time: "13:40", title: "Check-in and rooms", text: "At the site people go to the rooms they were already placed in. Door lists print from the system.", count: "21 rooms" },
-            { time: "14:10", title: "The medic gets access", text: "Allergies, medication and emergency contacts open to the medic and the director for the duration of the camp.", count: "9 notes" },
-            { time: "19:00", title: "Schedule change", text: "The director moved the morning session half an hour later — the team sees the updated day in the bot." },
-            { time: "22:30", title: "Lights out and roll call", text: "Leaders mark their squads. The director sees everyone is in without walking the buildings.", count: "6 squads" },
-          ],
-          footer: "Sign-ups, payments and consents are collected before arrival — on site only the camp is left.",
         },
       },
     },

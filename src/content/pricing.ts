@@ -6,26 +6,17 @@ import type { Lang } from "@/lib/i18n";
    Тариф веде не перелік модулів, а проблема, яку він знімає, і час,
    який церква отримує назад. Модулі — деталь під цим.
 
-   Ціна названа в чашках кави. Заповнено лише «Старт» (від 4 чашок).
-   Решта — COFFEE_TODO, який видно на сторінці, щоб випадково не
-   опублікувати порожнечу. `uah` поруч порожній: коли з'являться
-   гривні, вони самі стануть під кавою.
+   Сум тут немає свідомо: ціну називаємо до початку робіт, після
+   розмови про розмір громади й набір модулів. Сторінка показує, за
+   що саме платять, а не скільки.
 
    Усе про гроші й строки має збігатися з `legal.ts` (умови, розділи
-   6–7), з відповіддю `sys-4` у FAQ і з блоком «Консалтинг».
+   6–7) і з блоком «Консалтинг».
    ──────────────────────────────────────────────────────────────── */
-
-/** Видно на сторінці, поки не названо кількість чашок. */
-const COFFEE_TODO_UA = "[ скільки чашок? ]";
-const COFFEE_TODO_EN = "[ how many cups? ]";
 
 export interface PricingTier {
   id: string;
   name: string;
-  /** Ціна «в каві» — головний рядок. */
-  coffee: string;
-  /** Та сама ціна в гривнях. Порожній рядок — не показуємо. */
-  uah: string;
   /** Кому цей щабель. */
   who: string;
   /** Проблема, яку знімає саме цей щабель. */
@@ -79,7 +70,7 @@ export interface PricingCopy {
 const ua: PricingCopy = {
   seoTitle: "Скільки коштує система для церкви — тарифи «Моя Церква»",
   seoDescription:
-    "Чотири щаблі «Моєї Церкви»: Старт, База, Ріст і Преміум. Що знімає кожен, скільки часу повертає церкві й скільки це коштує — у чашках кави на місяць.",
+    "Чотири щаблі «Моєї Церкви»: Старт, База, Ріст і Преміум. Що знімає кожен і скільки часу повертає церкві. Точну суму називаємо до початку робіт.",
   navLabel: "Вартість",
 
   eyebrow: "Вартість",
@@ -109,8 +100,6 @@ const ua: PricingCopy = {
     {
       id: "start",
       name: "Старт",
-      coffee: "від 4 чашок кави на місяць",
-      uah: "",
       who: "Громада, яка щойно вирішила вести облік по-людськи",
       problem: "Люди перестають губитися між чатами, таблицями й записниками",
       time: "Знайти людину — три секунди замість пошуку в трьох місцях",
@@ -119,8 +108,6 @@ const ua: PricingCopy = {
     {
       id: "base",
       name: "База",
-      coffee: COFFEE_TODO_UA,
-      uah: "",
       who: "Церква з кількома служіннями й регулярними зустрічами",
       problem: "Лідери перестають вести облік руками й писати нагадування самі",
       time: "Явка за хвилину з телефона, нагадування йдуть без вас",
@@ -129,8 +116,6 @@ const ua: PricingCopy = {
     {
       id: "growth",
       name: "Ріст",
-      coffee: COFFEE_TODO_UA,
-      uah: "",
       who: "Церква, у якої більше подій, ніж вільних вечорів",
       problem: "Події, навчання й дитяче служіння живуть у системі, а не в чиїйсь голові",
       time: "Звіт для ради — за кілька хвилин замість цілого вечора",
@@ -148,8 +133,6 @@ const ua: PricingCopy = {
     {
       id: "premium",
       name: "Преміум",
-      coffee: COFFEE_TODO_UA,
-      uah: "",
       who: "Велика церква або мережа кемпусів",
       problem: "Кілька локацій, команда й фінанси видно як одне ціле",
       time: "Пастор бачить усю мережу з одного екрана, без зведення таблиць",
@@ -167,7 +150,7 @@ const ua: PricingCopy = {
     },
   ],
   tiersNote:
-    "Чашка кави — це приблизно те, що церква витрачає на одну каву після служіння. Точну суму в гривнях ми називаємо до початку робіт і не змінюємо її заднім числом. Telegram нічого не коштує; SMS і Viber ви оплачуєте оператору напряму — ці гроші йдуть не нам, і ми на них не заробляємо.",
+    "Суму в гривнях ми називаємо до початку робіт — після короткої розмови про розмір громади й набір модулів — і не змінюємо її заднім числом. Telegram нічого не коштує; SMS і Viber ви оплачуєте оператору напряму — ці гроші йдуть не нам, і ми на них не заробляємо.",
 
   ambassadorEyebrow: "Окремо",
   ambassadorTitle: "Амбасадор — це не щабель, його не можна купити",
@@ -216,7 +199,7 @@ const ua: PricingCopy = {
 const en: PricingCopy = {
   seoTitle: "What a church management system costs — MyChurch plans",
   seoDescription:
-    "Four steps of MyChurch: Start, Base, Growth and Premium. What each one takes off your hands, how much time it gives back, and what it costs — in cups of coffee a month.",
+    "Four steps of MyChurch: Start, Base, Growth and Premium. What each one takes off your hands and how much time it gives back. We name the exact figure before work starts.",
   navLabel: "Pricing",
 
   eyebrow: "Pricing",
@@ -246,8 +229,6 @@ const en: PricingCopy = {
     {
       id: "start",
       name: "Start",
-      coffee: "from 4 cups of coffee a month",
-      uah: "",
       who: "A congregation that has just decided to keep proper records",
       problem: "People stop falling through the gaps between chats, spreadsheets and notebooks",
       time: "Finding someone takes three seconds instead of searching in three places",
@@ -256,8 +237,6 @@ const en: PricingCopy = {
     {
       id: "base",
       name: "Base",
-      coffee: COFFEE_TODO_EN,
-      uah: "",
       who: "A church with several ministries and regular meetings",
       problem: "Leaders stop keeping records by hand and writing every reminder themselves",
       time: "Attendance in a minute from a phone; reminders go out without you",
@@ -266,8 +245,6 @@ const en: PricingCopy = {
     {
       id: "growth",
       name: "Growth",
-      coffee: COFFEE_TODO_EN,
-      uah: "",
       who: "A church with more events than free evenings",
       problem: "Events, courses and children's ministry live in the system, not in someone's head",
       time: "A report for the board in minutes instead of a whole evening",
@@ -276,8 +253,6 @@ const en: PricingCopy = {
     {
       id: "premium",
       name: "Premium",
-      coffee: COFFEE_TODO_EN,
-      uah: "",
       who: "A large church or a network of campuses",
       problem: "Several locations, the team and the finances read as one whole",
       time: "The pastor sees the whole network on one screen, with no spreadsheets to merge",
@@ -295,7 +270,7 @@ const en: PricingCopy = {
     },
   ],
   tiersNote:
-    "A cup of coffee is roughly what a church spends on one coffee after the service. We name the exact figure before work starts and never change it retroactively. Telegram costs nothing; SMS and Viber you pay to the carrier directly — that money does not come to us and we make nothing on it.",
+    "We name the figure before work starts — after a short conversation about the size of the congregation and the set of modules — and never change it retroactively. Telegram costs nothing; SMS and Viber you pay to the carrier directly — that money does not come to us and we make nothing on it.",
 
   ambassadorEyebrow: "Separately",
   ambassadorTitle: "Ambassador is not a step, and it cannot be bought",

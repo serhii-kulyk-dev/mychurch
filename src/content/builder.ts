@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   UserPlus, Activity, Inbox, Send, Flame, Home, Blocks, Ticket,
   Network, GraduationCap, Calculator, DoorOpen, ClipboardList, Zap, BarChart3, Building2,
+  FolderInput,
 } from "lucide-react";
 
 /* ────────────────────────────────────────────────────────────────
@@ -57,6 +58,7 @@ export const BUILDER_GROUPS: BuilderGroup[] = [
   {
     id: "order",
     goals: [
+      { id: "gather", Icon: FolderInput, modules: ["tables", "knowledge"] },
       { id: "forms", Icon: ClipboardList, modules: ["forms", "links", "tables"] },
       { id: "routine", Icon: Zap, modules: ["automations", "templates", "assistant"] },
       { id: "numbers", Icon: BarChart3, modules: ["analytics", "goals", "seasons"] },

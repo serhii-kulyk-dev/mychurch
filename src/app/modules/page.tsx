@@ -6,7 +6,6 @@ import ModulesGrid from "@/components/sections/modules-grid";
 import ModuleBuilder from "@/components/sections/module-builder";
 import ChurchBrief from "@/components/sections/church-brief";
 import { BuilderProvider } from "@/context/builder-context";
-import Cta from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
 import JsonLd from "@/components/shared/json-ld";
 import { breadcrumbSchema, graph } from "@/lib/schema";
@@ -34,7 +33,6 @@ export default function ModulesPage() {
           <ModuleBuilder />
           <ChurchBrief />
         </BuilderProvider>
-        <Cta />
       </main>
       <Footer />
     </>

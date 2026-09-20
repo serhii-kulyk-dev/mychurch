@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
-import IllustratedAvatar, { type AvatarLook } from "@/components/shared/illustrated-avatar";
+import PersonAvatar, { type AvatarLook } from "@/components/shared/person-avatar";
 import { prefersReducedMotion } from "@/components/shared/fade-in";
 import { cn } from "@/lib/utils";
 
@@ -219,7 +219,7 @@ export default function CursorDemo({
                відтінок того самого кольору тримає 4.5:1. */
             style={{ background: accent ? `color-mix(in oklab, ${accent} 78%, #04121f)` : "var(--ink)" }}
           >
-            {look && <IllustratedAvatar look={look} size={20} className="rounded-full ring-[1.5px] ring-white/50" />}
+            {look && <PersonAvatar look={look} size={20} className="rounded-full ring-[1.5px] ring-white/50" />}
             {label}
           </span>
         )}

@@ -79,6 +79,12 @@
   --brand-soft: #eaf3ff;
   --glow: rgba(0, 122, 255, 0.18);
   --grid-line: rgba(0, 0, 0, 0.045);
+  /* Проводи розгортки підключень: оболонка, осердя, тінь і «під напругою». */
+  --wire: #ced4de;
+  --wire-core: #f2f4f8;
+  --wire-edge: #aab3c2;
+  --wire-hot: #9ecdff;
+  --wire-shade: rgba(9, 20, 45, 0.16);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -130,6 +136,11 @@
   --brand-soft: rgba(61, 155, 255, 0.14);
   --glow: rgba(61, 155, 255, 0.22);
   --grid-line: rgba(255, 255, 255, 0.05);
+  --wire: #232a37;
+  --wire-core: #2f3849;
+  --wire-edge: #0c1017;
+  --wire-hot: #b6dbff;
+  --wire-shade: rgba(0, 0, 0, 0.55);
 
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -715,20 +726,64 @@
   background-repeat: repeat, no-repeat, no-repeat, no-repeat;
 }
 
-/* Корпус телефона довкола макета: рамка, острівець і статусбар —
-   щоб з першого погляду було видно, що це екран у руці, а не картка. */
-.tg-phone {
-  background: #11151b;
+/* Корпус iPhone довкола макета: титанова грань, чорна рамка, бічні кнопки.
+   Пропорції й радіуси задані в самому компоненті — тут лише матеріал. */
+.tg-device {
+  /* Грань: світло по лівому ребру, тінь по правому — як на титані. */
+  background: linear-gradient(100deg, #8a919c 0%, #454c56 12%, #2a2f37 50%, #454c56 88%, #8a919c 100%);
   box-shadow:
     0 50px 90px -50px rgba(0, 50, 120, 0.6),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 14px 34px -26px rgba(0, 30, 80, 0.45);
 }
-.dark .tg-phone {
-  background: #05080d;
+.dark .tg-device {
+  background: linear-gradient(100deg, #6a7280 0%, #2d333c 12%, #14181f 50%, #2d333c 88%, #6a7280 100%);
   box-shadow:
-    0 50px 90px -50px rgba(0, 0, 0, 0.8),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    0 50px 90px -50px rgba(0, 0, 0, 0.85),
+    0 14px 34px -26px rgba(0, 0, 0, 0.6);
 }
+.tg-bezel {
+  background: #05080d;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* Бічні кнопки — планки завтовшки з реальні, виступають за грань. */
+.tg-key {
+  position: absolute;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #7d848f, #30363f);
+}
+.tg-key-left {
+  left: -3px;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.25), -1px 0 3px rgba(0, 0, 0, 0.45);
+}
+.tg-key-right {
+  right: -3px;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.25), 1px 0 3px rgba(0, 0, 0, 0.45);
+}
+
+/* Стрічка чату всередині телефона гортається, але без товстого скролбара. */
+.tg-chat { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.35) transparent; }
+.tg-chat::-webkit-scrollbar { width: 4px; }
+.tg-chat::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.35); border-radius: 4px; }
+
+/* Кнопка клавіатури, яку справді можна натиснути. */
+.tg-key-btn:hover:not(:disabled) { background: color-mix(in oklab, var(--brand) 7%, var(--surface)); }
+
+/* Три крапки «бот друкує». */
+@keyframes tgDot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30%           { opacity: 1;   transform: translateY(-2px); }
+}
+.tg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ink-3);
+  animation: tgDot 1.2s ease-in-out infinite;
+}
+.tg-dot:nth-child(2) { animation-delay: 0.18s; }
+.tg-dot:nth-child(3) { animation-delay: 0.36s; }
 
 /* Вхідна бульбашка з хвостиком — біла на шпалерах, як у застосунку. */
 .tg-bubble {
@@ -750,6 +805,28 @@
   background: inherit;
   clip-path: polygon(100% 0, 100% 100%, 0 100%);
   border-bottom-left-radius: 2px;
+}
+
+/* Вихідна бульбашка — зеленувата й з хвостиком праворуч, як у Telegram. */
+.tg-bubble-out {
+  position: relative;
+  background: #effdde;
+  box-shadow: 0 1px 2px rgba(16, 35, 60, 0.18);
+}
+.dark .tg-bubble-out {
+  background: #2b5278;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.tg-bubble-out::before {
+  content: "";
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  width: 12px;
+  height: 13px;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  border-bottom-right-radius: 2px;
 }
 
 /* Reply-клавіатура лежить на сірому тлі клавіатури месенджера. */
@@ -809,18 +886,9 @@ a.chip-module:hover {
 }
 
 /* ============================================================
-   AUTOMATION FLOW CANVAS (home → automations)
-   Nodes light in column order, wires draw + pulse, ticks land.
+   FLOW — a wire that draws itself (import mapping) and rows that
+   land one after another (the automations run log).
    ============================================================ */
-@keyframes flowNodeOn {
-  0%   { opacity: 0.55; border-color: var(--hairline); box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent); }
-  40%  { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 5px color-mix(in oklab, var(--accent) 22%, transparent); }
-  100% { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent); }
-}
-@keyframes flowTickIn {
-  from { opacity: 0; transform: scale(0.4); }
-  to   { opacity: 1; transform: scale(1); }
-}
 @keyframes flowWireDraw {
   from { stroke-dashoffset: 1; }
   to   { stroke-dashoffset: 0; }
@@ -829,27 +897,42 @@ a.chip-module:hover {
   from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: none; }
 }
-.flow-node { opacity: 0.55; border-color: var(--hairline); }
-.flow-node.is-on { animation: flowNodeOn 0.8s var(--ease-out-soft) both; }
-.flow-tick { opacity: 0; }
-.flow-tick.is-on { animation: flowTickIn 0.35s var(--ease-pop) both; }
-.flow-port {
-  width: 10px; height: 10px; border-radius: 9999px;
-  background: var(--surface); border: 2px solid var(--hairline-strong);
-  transition: border-color 0.3s ease;
-}
-.flow-node.is-on .flow-port { border-color: var(--accent); }
 .flow-wire-on {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: flowWireDraw 0.55s ease-in-out both;
 }
 .flow-status { opacity: 0; animation: flowStatusIn 0.4s ease both; }
+
+/* ============================================================
+   AUTOMATION STRIKE (home → automations)
+   The event flashes, and the messages it sent land one after
+   another — fast, with a little overshoot, like a phone catching
+   three notifications in half a second.
+   ============================================================ */
+@keyframes zapFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  25%  { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0.28); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+@keyframes zapNoteIn {
+  from { opacity: 0; transform: translate3d(26px, -10px, 0) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes zapValueIn {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.zap-hit { animation: zapFlash 0.7s ease-out both; }
+.zap-note { opacity: 0; animation: zapNoteIn 0.26s var(--ease-pop) both; }
+.zap-in { opacity: 0; animation: zapValueIn 0.3s var(--ease-out-soft) both; }
 @media (prefers-reduced-motion: reduce) {
-  .flow-node, .flow-tick, .flow-status { opacity: 1; animation: none !important; }
-  .flow-node.is-on { border-color: var(--accent); }
+  .zap-hit { animation: none; }
+  .zap-note, .zap-in { opacity: 1; animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-status { opacity: 1; animation: none !important; }
   .flow-wire-on { stroke-dashoffset: 0; animation: none; }
-  .flow-pulse-dot { display: none; }
 }
 
 /* ============================================================
@@ -942,8 +1025,11 @@ a.chip-module:hover {
   to   { opacity: 1; transform: none; }
 }
 @keyframes planRowFlash {
-  0%   { background-color: color-mix(in oklab, var(--brand) 11%, transparent); }
-  100% { background-color: transparent; }
+  0%   {
+    background-color: color-mix(in oklab, var(--brand) 13%, var(--surface-2));
+    border-color: color-mix(in oklab, var(--brand) 55%, transparent);
+  }
+  100% { background-color: var(--surface-2); border-color: var(--hairline); }
 }
 @keyframes planSlotIn {
   from { opacity: 0; transform: scale(0.4); }
@@ -1037,3 +1123,325 @@ main:focus {
 }
 
 /* rebuild ping */
+
+
+/* ============================================================
+   GRID PULSE — ледь помітне життя у фоновій сітці героя
+   ============================================================ */
+:root {
+  /* Сила світла у сітці — темна тема з'їдає слабкі відтінки, тож там більша. */
+  --pulse-cell: 11%;
+  --pulse-hover: 9%;
+  --pulse-glow: 9%;
+  --pulse-flip: 16%;
+  --pulse-glow-line: 28%;
+  --pulse-cell-tail: 3%;
+  --pulse-beam: 55%;
+  --pulse-head: 80%;
+}
+.dark {
+  --pulse-cell: 20%;
+  --pulse-hover: 16%;
+  --pulse-glow: 16%;
+  --pulse-flip: 30%;
+  --pulse-glow-line: 55%;
+  --pulse-cell-tail: 5%;
+  --pulse-beam: 85%;
+  --pulse-head: 100%;
+}
+
+.grid-cell {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--brand) var(--pulse-cell), transparent),
+    color-mix(in oklab, var(--brand) var(--pulse-cell-tail), transparent) 70%,
+    transparent
+  );
+  will-change: opacity;
+}
+
+/* Обгортка лише повертає доріжку — рух завжди вздовж власного +X. */
+.grid-trace {
+  position: absolute;
+  height: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.grid-beam {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 2px;
+  opacity: 0;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--brand) calc(var(--pulse-beam) / 3) , transparent) 60%,
+    color-mix(in oklab, var(--brand) var(--pulse-beam), transparent)
+  );
+  will-change: transform, opacity;
+}
+/* Голова променя — крапка, що веде лінію, як вістря курсора. */
+.grid-beam::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--brand) var(--pulse-head), transparent);
+  box-shadow: 0 0 9px 2px color-mix(in oklab, var(--brand) calc(var(--pulse-head) / 2.4), transparent);
+  opacity: var(--beam-head, 1);
+}
+
+/* ── Курсор у сітці ──────────────────────────────────────────
+   Жодного різкого квадрата: м'яке світло тягнеться за курсором, а маска
+   ріже його по самих клітинках, тож лінії лишаються лініями. */
+.grid-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: color-mix(in oklab, var(--brand) var(--pulse-glow), transparent);
+  transition: opacity 0.55s ease;
+  -webkit-mask-image: radial-gradient(
+    circle 210px at var(--mx, -999px) var(--my, -999px),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.55) 38%,
+    rgba(0, 0, 0, 0.18) 62%,
+    transparent 80%
+  );
+  mask-image: radial-gradient(
+    circle 210px at var(--mx, -999px) var(--my, -999px),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.55) 38%,
+    rgba(0, 0, 0, 0.18) 62%,
+    transparent 80%
+  );
+}
+/* Клітинка світиться цілком, а сама лінія сітки лишається порожньою. */
+.grid-snap .grid-glow {
+  mask-image:
+    radial-gradient(
+      circle 210px at var(--mx, -999px) var(--my, -999px),
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.55) 38%,
+      rgba(0, 0, 0, 0.18) 62%,
+      transparent 80%
+    ),
+    repeating-linear-gradient(90deg, transparent 0 1px, #000 1px 56px),
+    repeating-linear-gradient(180deg, transparent 0 1px, #000 1px 56px);
+  mask-composite: intersect, intersect;
+}
+/* Клітинка, яку курсор «перевернув» на своєму шляху. */
+.grid-flip {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--brand) var(--pulse-flip), transparent),
+    color-mix(in oklab, var(--brand) calc(var(--pulse-flip) / 2.6), transparent)
+  );
+  will-change: transform, opacity;
+}
+
+/* Самі лінії сітки теж наливаються кольором під курсором. */
+.grid-glow-lines {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--brand) var(--pulse-glow-line), transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--brand) var(--pulse-glow-line), transparent) 1px,
+      transparent 1px
+    );
+  background-size: 56px 56px;
+  transition: opacity 0.55s ease;
+  -webkit-mask-image: radial-gradient(
+    circle 190px at var(--mx, -999px) var(--my, -999px),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.45) 45%,
+    transparent 76%
+  );
+  mask-image: radial-gradient(
+    circle 190px at var(--mx, -999px) var(--my, -999px),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.45) 45%,
+    transparent 76%
+  );
+}
+.grid-hot .grid-glow,
+.grid-hot .grid-glow-lines { opacity: 1; }
+
+@media (hover: none), (pointer: coarse) {
+  .grid-glow,
+  .grid-glow-lines { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-cell,
+  .grid-trace { display: none; }
+}
+
+/* ============================================================
+   РОЗГОРТКА ПІДКЛЮЧЕНЬ (home → integrations)
+   Кабель протягується від сервісу до порту ядра, далі йдуть пакети.
+   ============================================================ */
+@keyframes cableDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes portPulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand) 30%, transparent); }
+  70%  { box-shadow: 0 0 0 9px color-mix(in oklab, var(--brand) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand) 0%, transparent); }
+}
+@keyframes portSrcIn {
+  from { opacity: 0; transform: scale(0.55); }
+  to   { opacity: 1; transform: none; }
+}
+/* Джгут світить одну спільну тінь — інакше перетини темніли б удвічі. */
+.wire-bundle { filter: drop-shadow(0 3px 2.5px var(--wire-shade)); }
+.cable { transition: stroke 0.3s ease, fill 0.3s ease, opacity 0.3s ease, stroke-width 0.3s ease; }
+.cable-live { transition: opacity 0.3s ease; }
+/* Спершу вилка сідає в розетку — і лише тоді кабелем іде «напруга». */
+.cable-draw { stroke-dasharray: 1; animation: cableDraw 0.48s var(--ease-out-soft) 0.3s both; }
+.cable-undraw { stroke-dasharray: 1; animation: cableDraw 0.36s ease-in reverse both; }
+.plug { transition: transform 0.42s var(--ease-pop); }
+.plug.is-dragging { transition: none; }
+/* Невстромлена вилка легенько гойдається — запрошує взяти її. */
+@keyframes plugNudge {
+  0%, 62%, 100% { transform: translateX(0); }
+  78%           { transform: translateX(7px); }
+}
+.plug-nudge { animation: plugNudge 2.4s var(--ease-out-soft) infinite; }
+.socket { transition: stroke 0.3s ease; transform-box: fill-box; transform-origin: center; }
+.socket.is-live { animation: socketClick 0.5s var(--ease-pop); }
+@keyframes socketClick {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.cable-dot { filter: drop-shadow(0 0 5px color-mix(in oklab, var(--brand) 55%, transparent)); }
+.port-pulse { animation: portPulse 1.2s ease-out; }
+.port-src { display: inline-flex; animation: portSrcIn 0.32s var(--ease-pop) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cable-draw,
+  .cable-undraw { animation: none; stroke-dasharray: none; }
+  .plug { transition: none; }
+  .plug-nudge { animation: none; }
+  .socket.is-live { animation: none; }
+  .cable-dot { display: none; }
+  .port-pulse,
+  .port-src { animation: none; }
+}
+
+
+/* ============================================================
+   CLICK HERE — величезний курсор у синьому колі, саме в цій зоні
+   Рух малює rAF (щокадрове наздоганяння), тому transform тут без transition:
+   інакше плавність билася б із переходом. Точка відліку — центр кола.
+   ============================================================ */
+.click-here {
+  --ch: 66px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-left: calc(var(--ch) / -2);
+  margin-top: calc(var(--ch) / -2);
+  z-index: 14;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out-soft);
+  will-change: transform;
+}
+.click-here[data-on="0"] { opacity: 0; }
+.click-here-in {
+  position: relative;
+  display: block;
+  width: var(--ch);
+  height: var(--ch);
+  transition: transform 0.2s var(--ease-pop);
+}
+.click-here[data-on="0"] .click-here-in { transform: scale(0.5); }
+.click-here-in[data-press="1"] { transform: scale(0.84); }
+.click-here-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--brand);
+  border: 3px solid var(--surface);
+  box-shadow: 0 18px 34px -14px color-mix(in oklab, var(--brand) 85%, transparent);
+}
+.click-here-arrow {
+  display: block;
+  width: calc(var(--ch) * 0.52);
+  height: calc(var(--ch) * 0.52);
+  color: #fff;
+  /* Оптичний центр стрілки — не геометричний: вістря важче за хвіст. */
+  margin: -1px 0 0 -2px;
+}
+/* М'який ореол навколо кола — дихає, поки курсор чекає на клік. */
+.click-here-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--ch) * 2);
+  height: calc(var(--ch) * 2);
+  margin: calc(var(--ch) * -1) 0 0 calc(var(--ch) * -1);
+  border-radius: 9999px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--brand) 34%, transparent) 0%, transparent 58%);
+  animation: clickHereHalo 1.9s var(--ease-out-soft) infinite;
+}
+.click-here-in[data-press="1"] .click-here-halo { animation-duration: 0.6s; }
+
+@keyframes clickHereHalo {
+  0%, 100% { opacity: 0.5; transform: scale(0.78); }
+  55%      { opacity: 0.9; transform: scale(1); }
+}
+
+/* У зоні показу системний курсор ховається — його роботу перебирає великий.
+   Лише там, де курсор узагалі є: на тачскрині ховати нічого. */
+@media (hover: hover) and (pointer: fine) {
+  [data-big-cursor="1"],
+  [data-big-cursor="1"] * { cursor: none !important; }
+}
+
+@media (max-width: 520px) {
+  .click-here { --ch: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .click-here { display: none; }
+}
+
+
+
+
+
+
+
+
+

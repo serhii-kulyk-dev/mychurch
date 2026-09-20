@@ -2,15 +2,14 @@ import type { Metadata } from "next";
 import Navbar from "@/components/sections/navbar";
 import Hero from "@/components/sections/hero";
 import Capabilities from "@/components/sections/capabilities";
-import Journey from "@/components/sections/journey";
-import Problems from "@/components/sections/problems";
+import Solved from "@/components/sections/solved";
 import Features from "@/components/sections/features";
 import ServicePlanning from "@/components/sections/service-planning";
 import Automations from "@/components/sections/automations";
+import Assistant from "@/components/sections/assistant";
 import ForWhom from "@/components/sections/for-whom";
 import Integrations from "@/components/sections/integrations";
 import Proof from "@/components/sections/proof";
-import Consulting from "@/components/sections/consulting";
 import Cta from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
 import JsonLd from "@/components/shared/json-ld";
@@ -18,7 +17,7 @@ import { graph, softwareSchema } from "@/lib/schema";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
-  title: "Система управління церквою «Моя Церква» — облік людей і служінь",
+  title: "Моя Церква — система управління церквою: облік людей і служінь",
   description:
     "Досягай людей. Українська система обліку та управління церквою: люди, сім'ї, малі групи, служіння, події, відвідуваність, заявки й аналітика в одному просторі.",
   path: "/",
@@ -39,16 +38,15 @@ export default function Home() {
         <JsonLd data={graph(softwareSchema())} />
         <Hero />
         <Capabilities />
-        <Journey />
-        <Problems />
         <Features />
         <ServicePlanning />
         <Automations />
+        <Assistant />
         <ForWhom />
         <Integrations />
+        <Solved />
         <Proof />
-        <Consulting />
-        <Cta />
+        <Cta rollout />
       </main>
       <Footer />
     </>

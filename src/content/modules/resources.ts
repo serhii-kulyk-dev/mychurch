@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "resources": rooms, inventory, infrastructure */
+/* Module pages: rooms, inventory, infrastructure — their catalogue group is the `group` field below. */
 export const resourcesModules: ModuleDetail[] = [
   {
     id: "rooms",
-    group: "resources",
+    group: "property",
     related: ["calendar", "events", "groups", "infrastructure"],
     copy: {
       ua: {
@@ -58,20 +58,6 @@ export const resourcesModules: ModuleDetail[] = [
             { day: 6, start: 4, span: 1, title: "Рада церкви", tone: "neutral" },
           ],
         },
-        day: {
-          title: "Один четвер у будівлі церкви",
-          text: "Звичайний будній день: шість бронювань, дві заявки й жодного дзвінка в офіс із питанням «а зал вільний?».",
-          items: [
-            { time: "07:30", title: "Ранкова молитва", text: "Кімната 1 за постійним бронюванням. Тому, хто відкриває будівлю, нагадування прийшло ще звечора.", count: "1 бронювання" },
-            { time: "09:00", title: "Розклад дня на рецепції", text: "На екрані — хто і коли займає кожне приміщення. Вільні вікна до обіду видно одразу.", count: "6 на сьогодні" },
-            { time: "11:15", title: "Лідер бронює кімнату з телефону", text: "Зустріч із гостем о 13:00, Кімната 2. Підтвердження одразу — на свої кімнати команда не чекає погодження." },
-            { time: "13:40", title: "Накладку зупинено", text: "Заявка на Великий зал о 19:00, але там репетиція. Система пропонує Кімнату 3 на той самий час.", count: "1 конфлікт" },
-            { time: "16:00", title: "Нагадування перед зустрічами", text: "Лідерам вечірніх груп і тому, хто відкриває кімнати, — повідомлення в Telegram.", count: "4 нагадування" },
-            { time: "19:00", title: "Три зустрічі паралельно", text: "Репетиція у великому залі, молодіжка в дитячій, група «Центр» у Кімнаті 2. Ніхто не перетнувся в дверях." },
-            { time: "21:30", title: "Будівля зачиняється", text: "Останнє бронювання завершилось. У розкладі видно, що всі кімнати вільні до ранку." },
-          ],
-          footer: "Наступного дня розклад уже готовий — постійні бронювання стоять на весь сезон.",
-        },
       },
       en: {
         seoTitle: "Rooms — MyChurch module",
@@ -124,26 +110,12 @@ export const resourcesModules: ModuleDetail[] = [
             { day: 6, start: 4, span: 1, title: "Church board", tone: "neutral" },
           ],
         },
-        day: {
-          title: "One Thursday in the church building",
-          text: "An ordinary weekday: six bookings, two requests and not a single call to the office asking \"is the hall free?\".",
-          items: [
-            { time: "07:30", title: "Morning prayer", text: "Room 1 on a recurring booking. Whoever opens the building got the reminder the evening before.", count: "1 booking" },
-            { time: "09:00", title: "The day's schedule at reception", text: "On screen: who has each space and when. Free slots before lunch are visible at a glance.", count: "6 today" },
-            { time: "11:15", title: "A leader books from a phone", text: "A meeting with a guest at 13:00, Room 2. Confirmed instantly — a team's own rooms need no approval." },
-            { time: "13:40", title: "A clash is blocked", text: "A request for the main hall at 19:00, but a rehearsal has it. The system offers Room 3 at the same time.", count: "1 clash" },
-            { time: "16:00", title: "Reminders before the evening", text: "To the leaders of the evening groups and to whoever unlocks the rooms — a message in Telegram.", count: "4 reminders" },
-            { time: "19:00", title: "Three meetings at once", text: "A rehearsal in the main hall, youth in the kids room, the Centre group in Room 2. Nobody met at the same door." },
-            { time: "21:30", title: "The building closes", text: "The last booking is over. The schedule shows every room free until morning." },
-          ],
-          footer: "The next day's schedule is already in place — recurring bookings are set for the whole season.",
-        },
       },
     },
   },
   {
     id: "inventory",
-    group: "resources",
+    group: "property",
     related: ["infrastructure", "rooms", "ministries", "tables"],
     copy: {
       ua: {
@@ -270,7 +242,7 @@ export const resourcesModules: ModuleDetail[] = [
   },
   {
     id: "infrastructure",
-    group: "resources",
+    group: "property",
     related: ["rooms", "inventory", "campuses", "projects"],
     copy: {
       ua: {
@@ -321,19 +293,6 @@ export const resourcesModules: ModuleDetail[] = [
             { time: "10 жов", title: "Огляд даху перед зимою", who: "Андрій Мельник", done: false },
           ],
         },
-        day: {
-          title: "Один день технічної команди",
-          text: "Будівля на 400 місць. Заявки й планові роботи живуть у системі, а не в чаті на п'ятьох.",
-          items: [
-            { time: "07:50", title: "Заявка з рецепції", text: "«Не гріє батарея в дитячій» — заявка з фото за хвилину. Черга технічної команди поповнилась.", count: "1 заявка" },
-            { time: "09:10", title: "Нагадування про котел", text: "До планової перевірки тиждень. Система створила задачу відповідальному й підняла контакт підрядника.", count: "за 7 днів" },
-            { time: "11:20", title: "Заявку взяли в роботу", text: "Служитель технічної команди відкрив картку, вказав себе виконавцем і термін — до вечора.", count: "3 в роботі" },
-            { time: "14:30", title: "Приїхав електрик", text: "Замінили автомат у щитовій. Сума й акт — одразу в картку системи «Електрика».", count: "₴1 450" },
-            { time: "17:00", title: "Заявку закрито", text: "Фото «до» і «після» в картці. Рецепція отримала повідомлення, що батарея працює." },
-            { time: "20:00", title: "Зведення адміністратору", text: "Відкриті заявки, прострочене обслуговування й витрати на утримання за тиждень.", count: "1 зведення" },
-          ],
-          footer: "Через рік у картці будівлі видно, що ламалось найчастіше і на що пішли гроші.",
-        },
       },
       en: {
         seoTitle: "Infrastructure — MyChurch module",
@@ -382,19 +341,6 @@ export const resourcesModules: ModuleDetail[] = [
             { time: "3 Oct", title: "Fire extinguisher check", who: "Contractor", done: false },
             { time: "10 Oct", title: "Roof check before winter", who: "Andrii Melnyk", done: false },
           ],
-        },
-        day: {
-          title: "One day with the tech team",
-          text: "A 400-seat building. Requests and planned work live in the system, not in a chat between five people.",
-          items: [
-            { time: "07:50", title: "A request from reception", text: "\"The radiator in the kids room is cold\" — a request with a photo in a minute. The tech team's queue grows.", count: "1 request" },
-            { time: "09:10", title: "Boiler reminder", text: "A week until the scheduled inspection. The system created a task for the owner and pulled up the contractor's contact.", count: "in 7 days" },
-            { time: "11:20", title: "The request is picked up", text: "A tech team member opened the card, put their name on it and set a deadline for the evening.", count: "3 in progress" },
-            { time: "14:30", title: "The electrician arrives", text: "A breaker replaced in the switchboard. The amount and the certificate go straight into the Wiring record.", count: "₴1,450" },
-            { time: "17:00", title: "The request is closed", text: "Before and after photos in the card. Reception was notified that the radiator is warm again." },
-            { time: "20:00", title: "Digest for the administrator", text: "Open requests, overdue maintenance and the week's upkeep costs.", count: "1 digest" },
-          ],
-          footer: "A year on, the building's record shows what broke most often and where the money went.",
         },
       },
     },

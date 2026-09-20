@@ -68,12 +68,9 @@ export default function TelegramSpeed() {
           {/* Правила бота — числами, без іконкових карток */}
           <FadeIn delay={2} variant="scale" className="rounded-[22px] border border-hairline bg-surface divide-y divide-[color:var(--hairline)] overflow-hidden">
             {t.rules.map((r) => (
-              <div key={r.label} className="px-5 py-5 flex flex-col gap-1.5">
-                <span className="flex items-baseline gap-2">
-                  <span className="text-[26px] font-semibold text-ink leading-none tracking-[-0.8px] tabular-nums">{r.value}</span>
-                  <span className="text-[13px] font-medium text-brand leading-none">{r.label}</span>
-                </span>
-                <span className="text-[13.5px] text-ink-3 leading-[1.45]">{r.text}</span>
+              <div key={r.label} className="px-5 py-4 flex items-baseline gap-3">
+                <span className="w-[74px] shrink-0 text-[24px] font-semibold text-ink leading-none tracking-[-0.8px] tabular-nums">{r.value}</span>
+                <span className="text-[13.5px] text-ink-2 leading-[1.4]">{r.label}</span>
               </div>
             ))}
           </FadeIn>

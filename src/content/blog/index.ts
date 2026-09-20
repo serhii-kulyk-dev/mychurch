@@ -1,27 +1,13 @@
 import type { Lang } from "@/lib/i18n";
 import type { BlogCategoryId, BlogPost } from "./types";
 
-import { post as dosiahaiLiudei } from "./posts/dosiahai-liudei";
-import { post as yakVestyLiudei } from "./posts/yak-vesty-liudei";
-import { post as yakNeZahubyty } from "./posts/yak-ne-zahubyty-liudei-u-velykii-tserkvi";
-import { post as zaiavky } from "./posts/zaiavky-ta-zvernennia";
-import { post as oblikVidviduvanosti } from "./posts/oblik-vidviduvanosti";
-import { post as maliHrupy } from "./posts/mali-hrupy";
-import { post as noviLiudy } from "./posts/novi-liudy-pershi-90-dniv";
-import { post as peredachaSluzhinnia } from "./posts/peredacha-sluzhinnia";
-import { post as planuvannia } from "./posts/planuvannia-nedilnoho-sluzhinnia";
-import { post as komandaBezVyhorannia } from "./posts/komanda-bez-vyhorannia";
+import { post as piatPytan } from "./posts/piat-pytan-pro-systemu";
 import { post as vashaTserkvaUnikalna } from "./posts/vasha-tserkva-unikalna";
-import { post as stavteTsili } from "./posts/stavte-tsili";
-import { post as analizuite } from "./posts/analizuite";
-import { post as skilkyLiudei } from "./posts/skilky-liudei-u-tserkvi";
 import { post as daniVRiznykhMistsiakh } from "./posts/dani-v-riznykh-mistsiakh";
-import { post as perenestyDani } from "./posts/perenesty-dani-z-excel";
-import { post as zakhystDanykh } from "./posts/zakhyst-personalnykh-danykh";
+import { post as vidVidviduvachaDoLidera } from "./posts/vid-vidviduvacha-do-lidera";
 import { post as aiAhent } from "./posts/yak-nalashtuvaty-ai-ahenta";
-import { post as telegramBot } from "./posts/telegram-bot-dlia-tserkvy";
+import { post as stavteTsili } from "./posts/stavte-tsili";
 import { post as yakObratySystemu } from "./posts/yak-obraty-systemu-dlia-tserkvy";
-import { post as prohramaObliku } from "./posts/prohrama-dlia-obliku-chleniv-tserkvy";
 
 export type { BlogPost, BlogCopy, BlogBlock, BlogSection, BlogCategoryId } from "./types";
 
@@ -33,27 +19,13 @@ export type { BlogPost, BlogCopy, BlogBlock, BlogSection, BlogCategoryId } from 
    ──────────────────────────────────────────────────────────────── */
 
 const ALL: BlogPost[] = [
-  dosiahaiLiudei,
+  piatPytan,
   vashaTserkvaUnikalna,
-  yakObratySystemu,
-  yakNeZahubyty,
+  vidVidviduvachaDoLidera,
   aiAhent,
-  peredachaSluzhinnia,
-  yakVestyLiudei,
-  prohramaObliku,
-  stavteTsili,
-  zaiavky,
-  telegramBot,
-  analizuite,
-  oblikVidviduvanosti,
+  yakObratySystemu,
   daniVRiznykhMistsiakh,
-  maliHrupy,
-  perenestyDani,
-  planuvannia,
-  noviLiudy,
-  komandaBezVyhorannia,
-  zakhystDanykh,
-  skilkyLiudei,
+  stavteTsili,
 ];
 
 /** Усі статті, найновіші зверху. */
@@ -82,10 +54,6 @@ export function getRelated(post: BlogPost, limit = 3): BlogPost[] {
   return picked.slice(0, limit);
 }
 
-export function postsByCategory(id: BlogCategoryId): BlogPost[] {
-  return BLOG_POSTS.filter((p) => p.category === id);
-}
-
 /** Запити, за якими люди шукають ці теми: беремо з самих статей. */
 export function searchQueries(lang: Lang, limit = 24): { query: string; slug: string }[] {
   const seen = new Set<string>();
@@ -98,6 +66,50 @@ export function searchQueries(lang: Lang, limit = 24): { query: string; slug: st
       out.push({ query, slug: post.slug });
       if (out.length >= limit) return out;
     }
+  }
+  return out;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   «З чого почати» — сім статей, які закривають те, з чим церкви
+   приходять найчастіше. Це не найновіше і не найпопулярніше, а
+   порядок читання: спершу перевірка, далі правило, потім люди,
+   процеси, цифри і аж наприкінці — вибір системи.
+   ──────────────────────────────────────────────────────────────── */
+
+export interface BlogStarterItem {
+  slug: string;
+  /** Одне речення: чому саме цю статтю варто прочитати зараз. */
+  why: string;
+}
+
+export const BLOG_STARTER: Record<Lang, BlogStarterItem[]> = {
+  ua: [
+    { slug: "piat-pytan-pro-systemu", why: "Перевірка на п'ять хвилин: у вас уже система чи просто люди, які все пам'ятають." },
+    { slug: "vasha-tserkva-unikalna", why: "Головне правило: спершу ваш порядок, і лише потім налаштування під нього." },
+    { slug: "dani-v-riznykh-mistsiakh", why: "Звідки береться відчуття, що ніхто нічого не знає напевно." },
+    { slug: "vid-vidviduvacha-do-lidera", why: "Шлях людини від першого візиту до служіння — по етапах, а не навмання." },
+    { slug: "yak-nalashtuvaty-ai-ahenta", why: "Що можна віддати помічнику, а що має залишитись за людьми." },
+    { slug: "stavte-tsili", why: "Які цифри показують рух, а які просто заспокоюють." },
+    { slug: "yak-obraty-systemu-dlia-tserkvy", why: "Питання, які варто поставити будь-якій системі — і нам теж — перед рішенням." },
+  ],
+  en: [
+    { slug: "piat-pytan-pro-systemu", why: "A five-minute check: do you have a system, or people who remember everything." },
+    { slug: "vasha-tserkva-unikalna", why: "The rule that saves the rollout: your order first, settings after it." },
+    { slug: "dani-v-riznykh-mistsiakh", why: "Where the feeling that nobody knows anything for sure comes from." },
+    { slug: "vid-vidviduvacha-do-lidera", why: "The path from a first visit to serving, stage by stage." },
+    { slug: "yak-nalashtuvaty-ai-ahenta", why: "What you can hand to the assistant and what must stay with people." },
+    { slug: "stavte-tsili", why: "Which numbers show movement and which merely reassure." },
+    { slug: "yak-obraty-systemu-dlia-tserkvy", why: "The questions to ask any system, ours included, before you decide." },
+  ],
+};
+
+/** Статті «з чого почати» в порядку читання. */
+export function starterPosts(lang: Lang): { post: BlogPost; why: string }[] {
+  const out: { post: BlogPost; why: string }[] = [];
+  for (const item of BLOG_STARTER[lang]) {
+    const post = BY_SLUG.get(item.slug);
+    if (post) out.push({ post, why: item.why });
   }
   return out;
 }
@@ -134,16 +146,12 @@ export interface BlogChrome {
   seoKeywords: string[];
   hero: { eyebrow: string; title: string; lead: string };
   stats: { posts: string; topics: string };
-  featuredLabel: string;
-  latestTitle: string;
-  latestText: string;
-  categoriesTitle: string;
-  categoriesText: string;
+  starterTitle: string;
+  starterText: string;
   queriesTitle: string;
   queriesText: string;
   readLabel: string;
   minutes: string;
-  emptyCategory: string;
   post: {
     breadcrumbHome: string;
     breadcrumbBlog: string;
@@ -182,21 +190,17 @@ export const BLOG_COPY: Record<Lang, BlogChrome> = {
       lead: "Пишемо про те, з чим церкви стикаються щотижня: як не втрачати людей, як вести групи й служіння, що вимірювати і як звести дані в одне місце.",
     },
     stats: { posts: "статей", topics: "тем" },
-    featuredLabel: "Головне",
-    latestTitle: "Усі статті",
-    latestText: "Від роботи з людьми до вибору системи — за датою публікації.",
-    categoriesTitle: "Теми",
-    categoriesText: "Оберіть напрям, який зараз болить найбільше.",
+    starterTitle: "З чого почати",
+    starterText: "Сім статей, які закривають те, що болить найчастіше, — у порядку, в якому їх варто читати.",
     queriesTitle: "Що шукають найчастіше",
     queriesText: "Реальні запити, з якими до нас приходять. Натисніть — відкриється стаття по темі.",
     readLabel: "Читати",
     minutes: "хв",
-    emptyCategory: "У цій темі поки немає статей.",
     post: {
       breadcrumbHome: "Головна",
       breadcrumbBlog: "Блог",
       back: "Усі статті",
-      author: "Команда MyChurch",
+      author: "Команда «Моєї Церкви»",
       published: "Опубліковано",
       updated: "Оновлено",
       contents: "У статті",
@@ -228,16 +232,12 @@ export const BLOG_COPY: Record<Lang, BlogChrome> = {
       lead: "About what churches face every week: not losing people, running groups and ministries, what to measure, and how to bring data into one place.",
     },
     stats: { posts: "articles", topics: "topics" },
-    featuredLabel: "Featured",
-    latestTitle: "All articles",
-    latestText: "From working with people to choosing a system, by publication date.",
-    categoriesTitle: "Topics",
-    categoriesText: "Pick the area that hurts most right now.",
+    starterTitle: "Start here",
+    starterText: "Seven articles covering what hurts most often, in the order worth reading them.",
     queriesTitle: "What people search for",
     queriesText: "Real questions churches bring us. Tap one to open the article.",
     readLabel: "Read",
     minutes: "min",
-    emptyCategory: "No articles in this topic yet.",
     post: {
       breadcrumbHome: "Home",
       breadcrumbBlog: "Blog",

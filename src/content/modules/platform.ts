@@ -1,6 +1,6 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "platform": customization, templates, telegram-bot */
+/* Module pages: customization, templates, telegram-bot — their catalogue group is the `group` field below. */
 export const platformModules: ModuleDetail[] = [
   {
     id: "customization",
@@ -296,7 +296,7 @@ export const platformModules: ModuleDetail[] = [
   },
   {
     id: "telegram-bot",
-    group: "platform",
+    group: "outreach",
     related: ["telegram", "events", "forms", "onboarding"],
     copy: {
       ua: {
@@ -312,14 +312,14 @@ export const platformModules: ModuleDetail[] = [
         ],
         features: [
           { icon: "Bot", title: "Свій бот, своя назва", text: "@YourChurchBot з логотипом і привітанням вашими словами. Люди бачать церкву, а не платформу." },
-          { icon: "CalendarDays", title: "Розклад завжди під рукою", text: "Служіння, зустрічі груп, події тижня — актуальні дані з календаря MyChurch, без ручного оновлення." },
+          { icon: "CalendarDays", title: "Розклад завжди під рукою", text: "Служіння, зустрічі груп, події тижня — актуальні дані з календаря «Моєї Церкви», без ручного оновлення." },
           { icon: "Ticket", title: "Реєстрація в два натискання", text: "Табір, конференція, курс — людина обирає подію, підтверджує дані з картки — і вже в списку учасників." },
           { icon: "ScanLine", title: "Відмітка приходу в боті", text: "QR на вході чи кнопка «Я тут» — явка на служінні або зустрічі групи записана без рецепції." },
           { icon: "HelpCircle", title: "Відповіді на запитання", text: "«Де припаркуватись?», «Чи є дитяча кімната?» — бот відповідає з бази знань церкви, а складне передає людині." },
           { icon: "UserPlus", title: "Перший контакт новенького", text: "Натиснув «Старт» — і людина вже в базі зі статусом «гість», а відповідальний отримав нагадування написати." },
         ],
         steps: [
-          { title: "Створіть бота", text: "Хвилина в BotFather: назва, логотип, токен — і бот з'явився в налаштуваннях MyChurch." },
+          { title: "Створіть бота", text: "Хвилина в BotFather: назва, логотип, токен — і бот з'явився в налаштуваннях «Моєї Церкви»." },
           { title: "Зберіть меню", text: "Увімкніть розділи: розклад, події, реєстрації, моя група, запитання. Тексти привітання — ваші." },
           { title: "Поставте QR на вході", text: "Роздрукуйте QR-код — гості реєструються, члени церкви відмічають прихід, і всі підписуються на нагадування." },
           { title: "Навчіть бота відповідати", text: "Додайте типові запитання й відповіді або підключіть базу знань — бот перекриє більшість «а де?» і «а коли?»." },
@@ -332,7 +332,7 @@ export const platformModules: ModuleDetail[] = [
         ],
         faq: [
           { q: "Чим бот церкви відрізняється від інтеграції з Telegram?", a: "Інтеграція з'єднує Telegram з базою для розсилок і сповіщень. Бот — це те, з чим взаємодіє людина: меню, розклад, реєстрації, відмітка приходу. Інтеграція працює всередині бота." },
-          { q: "Чи потрібно знати програмування?", a: "Ні. Ви створюєте бота в BotFather за інструкцією, вставляєте токен — а меню й тексти налаштовуєте в MyChurch." },
+          { q: "Чи потрібно знати програмування?", a: "Ні. Ви створюєте бота в BotFather за інструкцією, вставляєте токен — а меню й тексти налаштовуєте в «Моїй Церкві»." },
           { q: "Чи може бот відповідати на довільні запитання?", a: "На типові — з бази знань і ваших відповідей. Якщо не знає — передає повідомлення відповідальній людині й повідомляє про це користувача." },
           { q: "Чи можна кілька ботів для кемпусів?", a: "Так. Кожен кемпус може мати свій бот зі своїм розкладом — або один спільний, який запитує, яку локацію людина відвідує." },
         ],
@@ -349,20 +349,6 @@ export const platformModules: ModuleDetail[] = [
             { from: "bot", text: "Літній табір 14–20 липня. Ви в списку. Нагадаю за тиждень." },
           ],
           input: "Написати боту…",
-        },
-        day: {
-          title: "Неділя очима бота",
-          text: "Церква на 200 людей. Команда в цей час на служінні — бот відповідає сам.",
-          items: [
-            { time: "07:30", title: "Розклад на день", text: "Люди відкривають меню «Розклад» і бачать час служіння, тему й адресу — дані з календаря MyChurch.", count: "54 відкриття" },
-            { time: "09:35", title: "Відмітка приходу на вході", text: "Гості й члени церкви сканують QR у фойє або тиснуть «Я тут». Явка одразу в картках.", count: "163 відмітки" },
-            { time: "09:50", title: "Питання про парковку й дітей", text: "«Де припаркуватись?», «З якого віку «Дитяче містечко»?» — бот відповідає з бази знань церкви.", count: "28 відповідей" },
-            { time: "10:04", title: "Новенький натиснув «Старт»", text: "З'являється картка зі статусом «гість», а відповідальний отримує задачу написати до вівторка.", count: "4 гості" },
-            { time: "12:20", title: "Реєстрація на табір", text: "Людина обирає подію в меню, підтверджує дані з картки — і вже в списку учасників.", count: "11 записів" },
-            { time: "16:00", title: "Прохання про заміну", text: "Служитель пише «не зможу в неділю» — запит іде лідеру команди прямо з бота.", count: "2 запити" },
-            { time: "21:10", title: "Те, чого бот не знає", text: "Три повідомлення передано черговому служителю — з іменем людини й самим запитанням.", count: "3 передані" },
-          ],
-          footer: "Рецепція відповідала лише на ті три повідомлення.",
         },
       },
       en: {
@@ -415,20 +401,6 @@ export const platformModules: ModuleDetail[] = [
             { from: "bot", text: "Summer camp, 14–20 July. You're on the list. I'll remind you a week before." },
           ],
           input: "Message the bot…",
-        },
-        day: {
-          title: "A Sunday through the bot's eyes",
-          text: "A church of 200 people. The team is at the service — the bot answers on its own.",
-          items: [
-            { time: "07:30", title: "Today's schedule", text: "People open the Schedule menu and see the service time, topic and address — straight from the MyChurch calendar.", count: "54 opens" },
-            { time: "09:35", title: "Check-in at the door", text: "Guests and members scan the QR in the lobby or tap \"I'm here\". Attendance lands in their profiles.", count: "163 check-ins" },
-            { time: "09:50", title: "Parking and kids questions", text: "\"Where do I park?\", \"From what age is Kids Town?\" — the bot answers from the church knowledge base.", count: "28 answers" },
-            { time: "10:04", title: "A newcomer tapped Start", text: "A profile appears with the status \"guest\", and their owner gets a task to write by Tuesday.", count: "4 guests" },
-            { time: "12:20", title: "Camp sign-ups", text: "A person picks the event in the menu, confirms the details from their profile — and is on the list.", count: "11 sign-ups" },
-            { time: "16:00", title: "A request for cover", text: "A volunteer writes \"I can't make Sunday\" — the request goes to the team leader from inside the bot.", count: "2 requests" },
-            { time: "21:10", title: "What the bot doesn't know", text: "Three messages passed to the minister on duty — with the person's name and the question itself.", count: "3 passed on" },
-          ],
-          footer: "Reception answered only those three messages.",
         },
       },
     },

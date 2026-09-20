@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import CursorDemo from "@/components/shared/cursor-demo";
 import FadeIn from "@/components/shared/fade-in";
-import { AVATAR_LOOKS } from "@/components/shared/illustrated-avatar";
+import { lookFor } from "@/components/shared/person-avatar";
 import SectionHeading from "@/components/shared/section-heading";
 import { TgHeader, TgInline, TgMessage } from "@/components/shared/tg-screen";
 import { TELEGRAM_COPY } from "@/content/telegram";
@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
    Примарний курсор іде по активному кроці й сам передає хід далі. */
 
 const ACCENTS = ["#f05b8b", "#007aff", "#12a150"];
-const LOOKS = [AVATAR_LOOKS[1], AVATAR_LOOKS[3], AVATAR_LOOKS[5]];
 
 export default function TelegramJoin() {
   const { lang } = useLang();
@@ -68,7 +67,7 @@ export default function TelegramJoin() {
                   startDelay={900}
                   onDone={on ? next : undefined}
                   label={s.who.split(",")[0]}
-                  look={LOOKS[i % LOOKS.length]}
+                  look={lookFor(s.who)}
                   accent={accent}
                   mode="touch"
                   className={cn(
@@ -92,9 +91,8 @@ export default function TelegramJoin() {
 
                 <div className="flex flex-col gap-2">
                   <h3 className="text-[17px] font-semibold text-ink leading-[1.3]">{s.title}</h3>
-                  <p className="text-[14.5px] text-ink-2 leading-[1.5]">{s.text}</p>
                   <p
-                    className="mt-1 pl-3 border-l-2 text-[13px] text-ink-3 leading-[1.45]"
+                    className="pl-3 border-l-2 text-[13px] text-ink-3 leading-[1.45]"
                     style={{ borderColor: `color-mix(in oklab, ${accent} 50%, transparent)` }}
                   >
                     {s.screen.result}
@@ -104,8 +102,6 @@ export default function TelegramJoin() {
             );
           })}
         </div>
-
-        <FadeIn className="max-w-[720px] text-[14px] text-ink-3 leading-[1.55]">{t.footnote}</FadeIn>
       </div>
     </section>
   );

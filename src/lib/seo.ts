@@ -62,8 +62,14 @@ export const OG_IMAGE: OgImage = {
   alt: "Моя Церква — організація церковних процесів. Досягай людей.",
 };
 
+/* `trailingSlash: true` у next.config: канонічна адреса сторінки завжди
+   зі слешем на кінці. Карта сайту мусить вести туди ж — інакше кожен її
+   рядок це зайвий 301, а пошук бачить дві адреси однієї сторінки.
+   Файли (/sitemap.xml, /opengraph-image) слеша не отримують. */
 export function absoluteUrl(path = "/") {
-  return path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  const clean = path === "/" ? "/" : path.startsWith("/") ? path : `/${path}`;
+  const isFile = /\.[a-z0-9]+$/i.test(clean) || clean.endsWith("opengraph-image");
+  return `${SITE_URL}${clean.endsWith("/") || isFile ? clean : `${clean}/`}`;
 }
 
 interface PageMetaInput {

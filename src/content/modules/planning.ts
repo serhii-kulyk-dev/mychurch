@@ -1,10 +1,10 @@
 import type { ModuleDetail } from "./types";
 
-/* Group "planning": calendar, seasons, goals, events */
+/* Module pages: calendar, seasons, goals, events — their catalogue group is the `group` field below. */
 export const planningModules: ModuleDetail[] = [
   {
     id: "calendar",
-    group: "planning",
+    group: "schedule",
     related: ["rooms", "service-planning", "events", "groups"],
     copy: {
       ua: {
@@ -38,7 +38,7 @@ export const planningModules: ModuleDetail[] = [
           { role: "reception", text: "Відповідає на «а коли…?» за секунду і бачить усі бронювання на сьогодні." },
         ],
         faq: [
-          { q: "Чи можна синхронізувати з Google Календарем?", a: "Так. Розклад можна підключити до Google чи Apple Календаря за посиланням — зміни в MyChurch з'являються там автоматично." },
+          { q: "Чи можна синхронізувати з Google Календарем?", a: "Так. Розклад можна підключити до Google чи Apple Календаря за посиланням — зміни в «Моїй Церкві» з'являються там автоматично." },
           { q: "Що буде, якщо дві події претендують на один зал?", a: "Система попередить ще до збереження: покаже, хто вже забронював зал, і запропонує вільний час або іншу кімнату. Накладка не збережеться непомітно." },
           { q: "Чи бачить служитель чужі події?", a: "За замовчуванням — лише свої служіння та групи й публічні події церкви. Повний календар бачать пастор, адміністратор і ті, кому ви дали доступ." },
           { q: "Як перенести чи скасувати служіння?", a: "Змініть час або позначте скасування — учасники й команда отримають повідомлення в Telegram, а бронювання залу звільниться саме." },
@@ -59,19 +59,6 @@ export const planningModules: ModuleDetail[] = [
             { day: 6, start: 0, span: 2, title: "Служіння", tone: "brand" },
             { day: 6, start: 3, span: 1, title: "Зустріч гостей", tone: "green" },
           ],
-        },
-        day: {
-          title: "Будній день у календарі церкви",
-          text: "Четвер у церкві на 200 людей: три групи, репетиція і дві броні кімнат. Усе нижче календар робить сам.",
-          items: [
-            { time: "06:30", title: "Розклад на день у боті", text: "Служителі й лідери отримують свої події на сьогодні: час, зал і роль. Нічого зайвого — лише те, де вони задіяні.", count: "31 повідомлення" },
-            { time: "08:00", title: "Рецепція відкриває день", text: "На екрані рецепції — усі бронювання: хто в якій кімнаті й до котрої години. На питання «а коли…?» відповідь є одразу.", count: "9 броней" },
-            { time: "11:20", title: "Конфлікт залу", text: "Лідер бронює зал на четвер, а там репетиція. Система показує, ким зайнято, і пропонує вільну кімнату поруч.", count: "2 накладки" },
-            { time: "14:00", title: "Перенесення зустрічі", text: "Група переносить зустріч на годину пізніше. Учасники отримують оновлення, а стара бронь звільняється сама.", count: "12 учасників" },
-            { time: "17:45", title: "Нагадування за годину", text: "Учасникам вечірніх груп і команді репетиції — нагадування з адресою, кімнатою та ім'ям відповідального.", count: "44 нагадування" },
-            { time: "20:30", title: "Завтрашній день зібрано", text: "Відповідальним за події завтра надходить список: що готувати, у якому залі та о котрій починається.", count: "6 подій" },
-          ],
-          footer: "Жодного з цих повідомлень адміністратор не пише вручну.",
         },
       },
       en: {
@@ -127,25 +114,12 @@ export const planningModules: ModuleDetail[] = [
             { day: 6, start: 3, span: 1, title: "Guest welcome", tone: "green" },
           ],
         },
-        day: {
-          title: "A weekday in the church calendar",
-          text: "Thursday at a church of 200 people: three groups, a rehearsal and two room bookings. The calendar does everything below itself.",
-          items: [
-            { time: "06:30", title: "Today's schedule in the bot", text: "Volunteers and leaders get today's events: time, hall and role. Nothing extra — only what involves them.", count: "31 messages" },
-            { time: "08:00", title: "Reception opens the day", text: "Every booking is on the reception screen: who is in which room and until when. \"When is…?\" has an answer right away.", count: "9 bookings" },
-            { time: "11:20", title: "A hall clash", text: "A leader books the hall for Thursday, but a rehearsal has it. The system shows who took it and offers a free room nearby.", count: "2 clashes" },
-            { time: "14:00", title: "A meeting moves", text: "A group shifts its meeting an hour later. Members get the update and the old booking is released automatically.", count: "12 members" },
-            { time: "17:45", title: "One-hour reminders", text: "Evening groups and the rehearsal team get a reminder with the address, the room and the name of the person in charge.", count: "44 reminders" },
-            { time: "20:30", title: "Tomorrow is assembled", text: "Owners of tomorrow's events receive the list: what to prepare, in which hall and what time it starts.", count: "6 events" },
-          ],
-          footer: "The administrator types none of these messages by hand.",
-        },
       },
     },
   },
   {
     id: "seasons",
-    group: "planning",
+    group: "schedule",
     related: ["goals", "calendar", "events", "analytics"],
     copy: {
       ua: {
@@ -272,7 +246,7 @@ export const planningModules: ModuleDetail[] = [
   },
   {
     id: "goals",
-    group: "planning",
+    group: "insight",
     related: ["analytics", "seasons", "groups", "ministries"],
     copy: {
       ua: {
@@ -433,7 +407,7 @@ export const planningModules: ModuleDetail[] = [
   },
   {
     id: "events",
-    group: "planning",
+    group: "schedule",
     related: ["forms", "links", "calendar", "camps"],
     copy: {
       ua: {
@@ -487,20 +461,6 @@ export const planningModules: ModuleDetail[] = [
             { cells: ["Василь Панченко", "Стандарт", "3 вер"], badge: { label: "Скасовано", tone: "red" } },
           ],
         },
-        day: {
-          title: "День конференції година за годиною",
-          text: "Субота, конференція «Разом»: 186 зареєстрованих, 21 волонтер, чотири сесії. Координатор дивиться на один екран.",
-          items: [
-            { time: "07:30", title: "Команда збирається", text: "Волонтери отримали нагадування зі своєю зоною і часом зміни. Координатор бачить, хто вже на місці.", count: "18 із 21" },
-            { time: "08:45", title: "Рецепція відкриває відмітку приходу", text: "Планшет і телефони на вході готові: сканування QR із квитка або пошук за прізвищем.", count: "186 у списку" },
-            { time: "09:30", title: "Пік реєстрації", text: "Черга на вході рухається. Кожен скан одразу видно в списку, тож координатор знає, кого ще немає.", count: "142 відмітки" },
-            { time: "10:00", title: "Програма стартувала", text: "Розклад сесій — у боті в кожного учасника. Перенесли сесію в інший зал — люди отримали оновлення.", count: "4 сесії" },
-            { time: "13:00", title: "Місця, що звільнились", text: "Частина зареєстрованих не прийшла. Перші зі списку очікування отримують запрошення на вечірню сесію.", count: "9 із черги" },
-            { time: "17:00", title: "Подяка учасникам", text: "Після завершення — повідомлення з подякою, посиланням на записи та коротким опитуванням.", count: "186 повідомлень" },
-            { time: "21:00", title: "Звіт по події", text: "Реєстрації, явка, оплати квитків і нові гості в базі — на сторінці події, без зведення в таблиці.", count: "23 нові картки" },
-          ],
-          footer: "Наступного ранку гості конференції вже в базі — із задачами лідерам зателефонувати.",
-        },
       },
       en: {
         seoTitle: "Event organiser — MyChurch module",
@@ -552,20 +512,6 @@ export const planningModules: ModuleDetail[] = [
             { cells: ["Iryna Shevchuk", "Standard", "12 Sep"], badge: { label: "Waitlist", tone: "neutral" } },
             { cells: ["Vasyl Panchenko", "Standard", "3 Sep"], badge: { label: "Cancelled", tone: "red" } },
           ],
-        },
-        day: {
-          title: "Conference day, hour by hour",
-          text: "Saturday at the Together conference: 186 registered, 21 volunteers, four sessions. The coordinator watches one screen.",
-          items: [
-            { time: "07:30", title: "The team arrives", text: "Volunteers got a reminder with their zone and shift time. The coordinator sees who is already on site.", count: "18 of 21" },
-            { time: "08:45", title: "Reception opens check-in", text: "The tablet and phones at the door are ready: scan the QR code on the ticket or search by surname.", count: "186 on the list" },
-            { time: "09:30", title: "Peak registration", text: "The queue at the door keeps moving. Every scan shows in the list at once, so the coordinator knows who is missing.", count: "142 checked in" },
-            { time: "10:00", title: "The programme starts", text: "Every attendee has the session schedule in the bot. Move a session to another hall and they get the update.", count: "4 sessions" },
-            { time: "13:00", title: "Seats that freed up", text: "Some registered people did not come. The first on the waiting list are invited to the evening session.", count: "9 from the list" },
-            { time: "17:00", title: "Thank-you to attendees", text: "After the closing — a message with thanks, a link to the recordings and a short survey.", count: "186 messages" },
-            { time: "21:00", title: "Event report", text: "Registrations, attendance, ticket payments and new guests in the database — on the event page, with no spreadsheet.", count: "23 new profiles" },
-          ],
-          footer: "By the next morning the conference guests are in the database, with calls assigned to leaders.",
         },
       },
     },

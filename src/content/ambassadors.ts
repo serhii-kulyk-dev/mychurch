@@ -48,20 +48,9 @@ export interface AmbassadorCopy {
   photoCredit: string;
   photoCreditCta: string;
 
-  voicesEyebrow: string;
-  voicesTitle: string;
-  voicesText: string;
-  /** Short lines quoted verbatim from the church's own site, each paired
-      with our note on what stands behind it in MyChurch. `href` is the
-      exact page the line comes from; `photo` sits in the same folder. */
-  voices: { quote: string; source: string; href: string; photo: string; alt: string; note: string }[];
-  voicesNoteLabel: string;
-
-  ministriesEyebrow: string;
-  ministriesTitle: string;
-  ministriesText: string;
-  /** The church's real ministries, as they are named on its own site. */
-  ministries: { name: string; text: string; meta: string; photo: string; alt: string }[];
+  /** One line quoted verbatim from the church's own site. `href` is the
+      exact page it comes from — we never write a quote ourselves. */
+  quote: { text: string; source: string; href: string };
 
   timelineEyebrow: string;
   timelineTitle: string;
@@ -104,21 +93,21 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         seoDescription:
           "Як черкаська церква «Нове Життя» працює в «Моїй Церкві»: які модулі використовує щодня, що змінилось у служіннях і як проходило впровадження.",
         eyebrow: "Головний амбасадор",
-        title: "«Нове Життя» — перша церква, яка перевела своє служіння в MyChurch",
+        title: "«Нове Життя» — перша церква, яка перевела своє служіння в «Мою Церкву»",
         lead:
-          "Черкаська церква з двома недільними служіннями, дитячим містечком, спортивним клубом і двома підлітковими служіннями. Поки що це наш головний і єдиний амбасадор: церква користується всіма модулями системи, і саме на її процесах ми перевіряємо кожен з них, перш ніж віддати іншим церквам.",
+          "Черкаська церква з двома недільними служіннями, дитячим містечком, спортивним клубом і двома підлітковими служіннями. Наш перший і поки що єдиний амбасадор.",
         facts: [
           { label: "Місто", value: "Черкаси" },
           { label: "Адреса", value: "проспект Перемоги, 13/5" },
           { label: "Служіння", value: "Неділя, 10:00 і 12:00" },
-          { label: "У MyChurch", value: "понад рік — з березня 2025" },
+          { label: "У «Моїй Церкві»", value: "понад рік — з березня 2025" },
         ],
         siteCta: "Сайт церкви",
         backLabel: "Про нас",
 
         changeEyebrow: "Що змінилось",
         changeTitle: "Було і стало",
-        beforeLabel: "До MyChurch",
+        beforeLabel: "До «Моєї Церкви»",
         afterLabel: "Зараз",
         change: [
           {
@@ -146,8 +135,8 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         modulesEyebrow: "Модулі в роботі",
         modulesTitle: "Церква користується всіма модулями системи",
         modulesText:
-          "«Нове Життя» — єдина церква, у якій увімкнено MyChurch повністю: від карток людей до бухгалтерії, інтеграцій та ШІ-помічника. Ось ті модулі, які працюють у ній щодня.",
-        modulesCta: "Усі модулі MyChurch",
+          "«Нове Життя» — єдина церква, у якій «Моя Церква» ввімкнена повністю: від карток людей до бухгалтерії, інтеграцій та ШІ-помічника. Ось ті модулі, які працюють у ній щодня.",
+        modulesCta: "Усі модулі «Моєї Церкви»",
         modules: [
           { id: "people", name: "Люди", text: "Серце системи: картки з контактами, родинами, статусами й історією участі." },
           { id: "groups", name: "Малі групи", text: "У кожної групи свій лідер і відмітки явки з телефона після зустрічі." },
@@ -168,50 +157,11 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         photoCredit: "Фото — церкви «Нове Життя»",
         photoCreditCta: "newlife.ck.ua",
 
-        voicesEyebrow: "Голос церкви",
-        voicesTitle: "Як церква говорить про себе — і що за цим у системі",
-        voicesText:
-          "Ліворуч — рядки з сайту «Нового Життя», слово в слово. Праворуч — наша нотатка: що саме тримає цю обіцянку в MyChurch щодня.",
-        voices: [
-          {
-            quote: "Ми віримо, що церква — це не будівля, а люди.",
-            source: "«Нове Життя», сторінка «Про нас»",
-            href: "https://www.newlife.ck.ua/about-us/",
-            photo: "/ambassadors/nove-zhyttia/spilnota.webp",
-            alt: "Люди спілкуються після служіння, чоловік тримає дитину на руках",
-            note: "Картка людини й сім'ї: історія служіння, група, контакт — замість рядка в таблиці.",
-          },
-          {
-            quote: "У Kid\u2019s Town кожна дитина — це унікальна особистість.",
-            source: "«Нове Життя», сторінка Kid\u2019s Town",
-            href: "https://www.newlife.ck.ua/prostir_dlia_pokolin/kids-town/",
-            photo: "/ambassadors/nove-zhyttia/kids-town-zal.webp",
-            alt: "Діти сидять колом у дитячій кімнаті Kid\u2019s Town",
-            note: "Бейджик з іменем і код для батьків на вході — це відмітка приходу дитячого служіння в системі.",
-          },
-          {
-            quote: "Тут ми дружимо, молимося і підтримуємо один одного.",
-            source: "«Нове Життя», сторінка малих груп",
-            href: "https://www.newlife.ck.ua/next-steps/small-groups/",
-            photo: "/ambassadors/nove-zhyttia/mala-grupa-2.webp",
-            alt: "Учасники малої групи розмовляють у домашній обстановці",
-            note: "Групи з розкладом і явкою: лідер бачить свою групу, пастор — усю мережу.",
-          },
-        ],
-        voicesNoteLabel: "У MyChurch",
-
-        ministriesEyebrow: "Служіння церкви",
-        ministriesTitle: "Простір для поколінь — і кожне покоління в системі",
-        ministriesText:
-          "«Нове Життя» веде служіння для всіх вікових груп. Кожне з них має в MyChurch свій склад, графік і явку.",
-        ministries: [
-          { name: "Kid's Town", text: "Дитяче служіння із записом і відміткою приходу на вході.", meta: "Щонеділі на обох служіннях", photo: "/ambassadors/nove-zhyttia/kids-town.webp", alt: "Діти за столиками на занятті Kid\u2019s Town" },
-          { name: "Awana", text: "Спортивний клуб: команди, тренування та облік участі.", meta: "Щотижневі тренування", photo: "/ambassadors/nove-zhyttia/awana.webp", alt: "Збір спортивного клубу Awana у залі з прапорцями" },
-          { name: "YL Cliff", text: "Підліткове служіння зі своїм розкладом і командою лідерів.", meta: "Свій розклад зустрічей", photo: "/ambassadors/nove-zhyttia/cliff.webp", alt: "Спільне фото підлітків і лідерів YL Cliff" },
-          { name: "WL West", text: "Друге підліткове служіння — окремий склад і своя явка.", meta: "Окремий склад і явка", photo: "/ambassadors/nove-zhyttia/west.webp", alt: "Зустріч WL West: підлітки перед екраном Young Life" },
-          { name: "Малі групи", text: "Мережа домашніх груп із зустрічами протягом тижня.", meta: "Зустрічі протягом тижня", photo: "/ambassadors/nove-zhyttia/mala-grupa.webp", alt: "Мала група за столом з Бібліями" },
-          { name: "Прославлення й медіа", text: "Графіки команд на два недільні служіння та онлайн-трансляцію.", meta: "2 служіння щонеділі", photo: "/ambassadors/nove-zhyttia/sluzhinnia.webp", alt: "Зал під час недільного служіння, команда прославлення на сцені" },
-        ],
+        quote: {
+          text: "Ми віримо, що церква — це не будівля, а люди.",
+          source: "«Нове Життя», сторінка «Про нас»",
+          href: "https://www.newlife.ck.ua/about-us/",
+        },
 
         timelineEyebrow: "Впровадження",
         timelineTitle: "Як церква переходила в систему",
@@ -235,7 +185,7 @@ export const AMBASSADORS: AmbassadorDetail[] = [
           {
             when: "Вересень 2025",
             title: "Уся система в роботі",
-            text: "Kid's Town, Awana та двоє підліткових служінь отримали власні склади й відмітку приходу — і церква ввімкнула решту модулів, аж до бухгалтерії та ШІ-помічника.",
+            text: "Дитяче служіння та двоє підліткових отримали власні склади й відмітку приходу — і церква ввімкнула решту модулів, аж до бухгалтерії та ШІ-помічника.",
           },
           {
             when: "Вересень 2026",
@@ -252,7 +202,7 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         eyebrow: "Lead ambassador",
         title: "New Life — the first church to move its ministry into MyChurch",
         lead:
-          "A Cherkasy church with two Sunday services, a kids' town, a sports club and two teen ministries. It is still our lead and only ambassador: the church uses every module in the system, and it is their processes we test each one against before other churches get it.",
+          "A Cherkasy church with two Sunday services, a kids' town, a sports club and two teen ministries. Our first and, so far, only ambassador.",
         facts: [
           { label: "City", value: "Cherkasy" },
           { label: "Address", value: "13/5 Peremohy Avenue" },
@@ -314,50 +264,11 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         photoCredit: "Photos by New Life church",
         photoCreditCta: "newlife.ck.ua",
 
-        voicesEyebrow: "The church's own words",
-        voicesTitle: "How the church describes itself — and what backs it in the system",
-        voicesText:
-          "On the left, lines from New Life's own site, word for word. On the right, our note: what actually keeps that promise running in MyChurch.",
-        voices: [
-          {
-            quote: "We believe the church is not a building, but people.",
-            source: "New Life, “About us” page",
-            href: "https://www.newlife.ck.ua/about-us/",
-            photo: "/ambassadors/nove-zhyttia/spilnota.webp",
-            alt: "People talking after a service, a man holding a baby",
-            note: "A profile per person and family: ministry history, group and contact instead of a spreadsheet row.",
-          },
-          {
-            quote: "In Kid\u2019s Town every child is a unique person.",
-            source: "New Life, Kid\u2019s Town page",
-            href: "https://www.newlife.ck.ua/prostir_dlia_pokolin/kids-town/",
-            photo: "/ambassadors/nove-zhyttia/kids-town-zal.webp",
-            alt: "Children sitting in a circle in the Kid\u2019s Town room",
-            note: "A name badge and a parent code at the door — that is the children's ministry check-in in the system.",
-          },
-          {
-            quote: "This is where we make friends, pray and support each other.",
-            source: "New Life, small groups page",
-            href: "https://www.newlife.ck.ua/next-steps/small-groups/",
-            photo: "/ambassadors/nove-zhyttia/mala-grupa-2.webp",
-            alt: "Small group members talking in a living room",
-            note: "Groups with schedules and attendance: a leader sees their group, the pastor sees the whole network.",
-          },
-        ],
-        voicesNoteLabel: "In MyChurch",
-
-        ministriesEyebrow: "Church ministries",
-        ministriesTitle: "A space for every generation — and every generation in the system",
-        ministriesText:
-          "New Life runs ministries for every age group. Each one has its own members, schedule and attendance in MyChurch.",
-        ministries: [
-          { name: "Kid's Town", text: "Children's ministry with registration and check-in at the door.", meta: "Every Sunday, both services", photo: "/ambassadors/nove-zhyttia/kids-town.webp", alt: "Children at tables during a Kid\u2019s Town session" },
-          { name: "Awana", text: "A sports club: teams, practice and participation records.", meta: "Weekly practice", photo: "/ambassadors/nove-zhyttia/awana.webp", alt: "An Awana sports club gathering in a hall with bunting" },
-          { name: "YL Cliff", text: "A teen ministry with its own schedule and team of leaders.", meta: "Its own meeting schedule", photo: "/ambassadors/nove-zhyttia/cliff.webp", alt: "A group photo of YL Cliff teens and leaders" },
-          { name: "WL West", text: "The second teen ministry — separate members and its own attendance.", meta: "Separate members and attendance", photo: "/ambassadors/nove-zhyttia/west.webp", alt: "A WL West meeting: teens in front of a Young Life screen" },
-          { name: "Small groups", text: "A network of home groups meeting through the week.", meta: "Meeting through the week", photo: "/ambassadors/nove-zhyttia/mala-grupa.webp", alt: "A small group around a table with Bibles" },
-          { name: "Worship and media", text: "Team schedules for two Sunday services and the live stream.", meta: "2 services a Sunday", photo: "/ambassadors/nove-zhyttia/sluzhinnia.webp", alt: "The hall during a Sunday service with the worship team on stage" },
-        ],
+        quote: {
+          text: "We believe the church is not a building, but people.",
+          source: "New Life, \u201cAbout us\u201d page",
+          href: "https://www.newlife.ck.ua/about-us/",
+        },
 
         timelineEyebrow: "Rollout",
         timelineTitle: "How the church moved into the system",
@@ -381,7 +292,7 @@ export const AMBASSADORS: AmbassadorDetail[] = [
           {
             when: "September 2025",
             title: "The whole system switched on",
-            text: "Kid's Town, Awana and both teen ministries got their own members and check-in — and the church turned on the remaining modules, right through to finance and the AI assistant.",
+            text: "The children's ministry and both teen ministries got their own members and check-in — and the church turned on the remaining modules, right through to finance and the AI assistant.",
           },
           {
             when: "September 2026",

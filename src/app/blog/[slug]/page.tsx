@@ -24,7 +24,7 @@ function postImage(slug: string, title: string) {
     url: `/blog/${slug}/opengraph-image`,
     width: 1200,
     height: 630,
-    alt: `${title} — блог MyChurch`,
+    alt: `${title} — блог «Моєї Церкви»`,
   };
 }
 

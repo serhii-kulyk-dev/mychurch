@@ -16,12 +16,15 @@
 # next.js
 /.next/
 /out/
+# статичний експорт (output: export, distDir)
+/.static/
 
 # production
 /build
 
-# випадково збережена сторінка збірки в корені — не в репозиторій
+# випадково збережені шматки збірки в корені — не в репозиторій
 /404.html
+/__next.*.txt
 
 # analytics (свої події — не в репозиторій)
 /.data
@@ -49,3 +52,7 @@ next-env.d.ts
 
 # claude code
 /.claude/worktrees
+
+# python bytecode
+__pycache__/
+*.pyc

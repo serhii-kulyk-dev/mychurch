@@ -67,7 +67,7 @@ export function softwareSchema(): Json {
     applicationCategory: "BusinessApplication",
     applicationSubCategory: "Church Management Software",
     /* Тільки браузер: система адаптована під телефон, але окремого застосунку
-       для iOS та Android ще немає — він у розробці (див. /terms, FAQ, /compare). */
+       для iOS та Android ще немає — він у розробці (див. /terms, FAQ). */
     operatingSystem: "Web browser",
     inLanguage: "uk",
     description: SITE_DESCRIPTION,

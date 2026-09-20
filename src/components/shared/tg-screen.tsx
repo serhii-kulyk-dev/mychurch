@@ -1,4 +1,4 @@
-import { BatteryFull, Bot, ChevronLeft, Menu, MoreVertical, Paperclip, Signal, Smile, Wifi } from "lucide-react";
+import { Bot, ChevronLeft, Menu, MoreVertical, Paperclip, Smile } from "lucide-react";
 import type { TgButton, TgLine } from "@/content/telegram";
 import { cn } from "@/lib/utils";
 
@@ -28,44 +28,34 @@ export function TgMark({ className }: { className?: string }) {
   );
 }
 
-/** Корпус телефона: рамка, острівець і статусбар iOS.
-    Потрібен там, де треба показати не «схему бота», а сам телефон у руці. */
-export function TgPhone({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cn("tg-phone relative w-full max-w-[368px] mx-auto rounded-[46px] p-[10px]", className)}>
-      <div className="relative rounded-[37px] overflow-hidden bg-surface">
-        {/* Статусбар: час зліва, зв'язок і батарея справа — як в iOS. */}
-        <div className="relative flex items-end justify-between h-[36px] px-6 pb-1.5 bg-surface">
-          <span className="text-[12.5px] font-semibold text-ink leading-none tabular-nums">9:41</span>
-          <span className="flex items-center gap-1.5 text-ink">
-            <Signal className="w-[14px] h-[14px]" strokeWidth={2.4} />
-            <Wifi className="w-[14px] h-[14px]" strokeWidth={2.4} />
-            <BatteryFull className="w-[17px] h-[17px]" strokeWidth={2} />
-          </span>
-        </div>
-        {/* Острівець камери. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-[7px] left-1/2 -translate-x-1/2 w-[82px] h-[22px] rounded-full bg-[#11151b] dark:bg-[#05080d]"
-        />
-        {children}
-      </div>
-    </div>
-  );
-}
-
 export function TgHeader({
   title,
   sub,
   right,
+  onBack,
+  backLabel,
 }: {
   title: string;
   sub?: string;
   right?: React.ReactNode;
+  /** Є що згорнути — стрілка стає справжньою кнопкою «назад». */
+  onBack?: () => void;
+  backLabel?: string;
 }) {
   return (
-    <div className="flex items-center gap-2 px-2.5 py-2.5 border-b border-hairline bg-surface">
-      <ChevronLeft className="w-[18px] h-[18px] text-brand shrink-0" strokeWidth={2.4} />
+    <div className="shrink-0 flex items-center gap-2 px-2.5 py-2.5 border-b border-hairline bg-surface">
+      {onBack ? (
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label={backLabel}
+          className="-ml-1 w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors hover:bg-surface-3"
+        >
+          <ChevronLeft className="w-[18px] h-[18px] text-brand" strokeWidth={2.4} />
+        </button>
+      ) : (
+        <ChevronLeft className="w-[18px] h-[18px] text-brand shrink-0" strokeWidth={2.4} />
+      )}
       <span className="w-9 h-9 rounded-full bg-brand flex items-center justify-center shrink-0">
         <Bot className="w-[18px] h-[18px] text-white" strokeWidth={2.2} />
       </span>
@@ -160,19 +150,49 @@ export function TgInline({
 }
 
 /** Reply-клавіатура: сірі кнопки під полем вводу, головне меню бота. */
-export function TgKeyboard({ rows, className }: { rows: string[][]; className?: string }) {
+export function TgKeyboard({
+  rows,
+  className,
+  onTap,
+  active,
+  disabled,
+}: {
+  rows: string[][];
+  className?: string;
+  /** Передали — кнопки справді натискаються (герой /telegram). */
+  onTap?: (label: string) => void;
+  /** Підпис кнопки, яку щойно натиснули. */
+  active?: string | null;
+  disabled?: boolean;
+}) {
+  const base =
+    "flex-1 min-w-0 h-10 rounded-[10px] bg-surface border border-hairline-strong flex items-center justify-center px-2 text-[13.5px] font-medium text-ink leading-none truncate shadow-[0_1px_1px_rgba(0,0,0,0.05)]";
   return (
     <div className={cn("tg-keyboard flex flex-col gap-2 p-3 border-t border-hairline", className)}>
       {rows.map((row, r) => (
         <div key={r} className="flex gap-2">
-          {row.map((label) => (
-            <span
-              key={label}
-              className="flex-1 min-w-0 h-10 rounded-[10px] bg-surface border border-hairline-strong flex items-center justify-center px-2 text-[13.5px] font-medium text-ink leading-none truncate shadow-[0_1px_1px_rgba(0,0,0,0.05)]"
-            >
-              {label}
-            </span>
-          ))}
+          {row.map((label) =>
+            onTap ? (
+              <button
+                key={label}
+                type="button"
+                onClick={() => onTap(label)}
+                disabled={disabled}
+                aria-pressed={active === label}
+                className={cn(
+                  base,
+                  "tg-key-btn transition-transform duration-100 active:scale-[0.97] disabled:cursor-default",
+                  active === label && "border-brand/60 text-brand"
+                )}
+              >
+                {label}
+              </button>
+            ) : (
+              <span key={label} className={base}>
+                {label}
+              </span>
+            )
+          )}
         </div>
       ))}
     </div>
@@ -182,7 +202,7 @@ export function TgKeyboard({ rows, className }: { rows: string[][]; className?: 
 /** Поле вводу: кнопка меню бота, скріпка, смайл і синій літачок. */
 export function TgInput({ placeholder }: { placeholder: string }) {
   return (
-    <div className="px-3 py-2.5 border-t border-hairline bg-surface flex items-center gap-2">
+    <div className="shrink-0 px-3 py-2.5 border-t border-hairline bg-surface flex items-center gap-2">
       <span className="w-9 h-9 rounded-full bg-surface-3 flex items-center justify-center shrink-0">
         <Menu className="w-[17px] h-[17px] text-ink-3" strokeWidth={2.2} />
       </span>
