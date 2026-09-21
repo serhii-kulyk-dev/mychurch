@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Mail, Phone, Send } from "lucide-react";
 import LogoLink from "@/components/shared/logo-link";
 import PreferenceToggles from "@/components/shared/preference-toggles";
 import { useLang, useT } from "@/lib/lang";
 import { LEAD_AMBASSADOR_HREF } from "@/content/ambassadors";
-import { sectionClick } from "@/lib/scroll";
+import { homeClick } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 import { SITE_TELEGRAM, SITE_TELEGRAM_HANDLE } from "@/lib/seo";
 import { TELEGRAM_COPY } from "@/content/telegram";
@@ -81,9 +82,10 @@ function Contact({
 export default function Footer() {
   const t = useT();
   const { lang } = useLang();
+  const pathname = usePathname();
 
   const PRODUCT = [
-    { label: t.nav.product, href: "/#product" },
+    { label: t.nav.product, href: "/" },
     { label: t.nav.modules, href: "/modules" },
     { label: t.nav.ai, href: "/ai" },
     { label: TELEGRAM_COPY[lang].navLabel, href: "/telegram" },
@@ -143,8 +145,15 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-10 lg:w-[620px] lg:shrink-0 lg:gap-x-8">
             <Column title={t.footer.product}>
               {PRODUCT.map(({ label, href }) => (
-                /* «Головна» — якір на головну: на ній гортаємо без #hash в адресі. */
-                <Link key={href} href={href} onClick={sectionClick(href)} className={linkCls}>
+                /* «Головна» веде на «/», а не на якір огляду: інакше з іншої
+                   сторінки вона відкривала головну посеред «Все просто». На
+                   самій головній гортаємо вгору, без перезавантаження. */
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={href === "/" ? homeClick(pathname === "/") : undefined}
+                  className={linkCls}
+                >
                   {label}
                 </Link>
               ))}

@@ -1,26 +1,34 @@
 /* ────────────────────────────────────────────────────────────────
-   Demo videos per module, hosted on Google Drive (folder
-   «Готове відео»). Key = module id, value = Drive file id; the
-   page embeds https://drive.google.com/file/d/<id>/preview.
+   Демо-записи по модулях. Ключ — id модуля, значення — id ролика на
+   YouTube (те, що в посиланні після `v=` або `youtu.be/`).
+
+   Раніше тут лежали id файлів Google Drive, і сторінка вбудовувала
+   drive.google.com/file/d/<id>/preview. На телефоні той плеєр нікуди
+   не годився: контроли під мишку, другий тап по чужій кнопці, а в
+   кого інший Google-акаунт — «запросити доступ» замість відео. Плюс
+   вихідні файли по 140 МБ на дві хвилини.
+
+   Порожній рядок (або відсутній ключ) = модуль просто без відео:
+   секція на сторінці модуля і картка на сторінці амбасадора зникають.
    ──────────────────────────────────────────────────────────────── */
 export const MODULE_VIDEOS: Record<string, string> = {
-  people: "1Lch0m1YFJVIltcaR2DaGk5Z2VGhuy9HB", // Люди і сім'ї.mp4
-  family: "1Lch0m1YFJVIltcaR2DaGk5Z2VGhuy9HB", // Люди і сім'ї.mp4
-  groups: "1ll6SfQsRuf6w6ak9PK5HxJLuSK6KQ5Hw", // Малі групи.mp4
-  learning: "1YbKrvL13DYKZNF_EnKFO5a_6HQOBwJtk", // Навчання.mp4
-  onboarding: "1sBPP3wrxl82io_LLoByljIVZFngR-PED", // Онбординг.mp4
-  forms: "1dsBIaqxg3vIpa82kqGq1A5vNDLVSrv4c", // Форми.mp4
-  links: "1L1QKJQM3JTg2yXLihrRJIPnxk72eC0W5", // Посилання.mp4
-  automations: "1Zwo6C32WXWdpOQtT2cei_SO0JRMb7K4M", // Автоматизація.mp4
-  org: "1-Mn5iHqle-wNmxs1bCUBtVBxts4xzCeT", // Структура.mp4
+  people: "", // Люди і сім'ї
+  family: "", // Люди і сім'ї
+  groups: "", // Малі групи
+  learning: "", // Навчання
+  onboarding: "", // Онбординг
+  forms: "", // Форми
+  links: "", // Посилання
+  automations: "", // Автоматизація
+  org: "", // Структура
 };
 
 export function getModuleVideo(id: string): string | undefined {
-  return MODULE_VIDEOS[id];
+  return MODULE_VIDEOS[id] || undefined;
 }
 
-/* Poster frames grabbed from the same recordings and stored locally, so a
-   clip costs one small image until the visitor actually presses play. */
+/* Кадр із того ж запису, збережений у себе: до тапу сторінка не
+   робить жодного запиту до YouTube — ні плеєра, ні cookies. */
 const MODULE_VIDEO_POSTERS: Record<string, string> = {
   people: "/ambassadors/video/people.webp",
   family: "/ambassadors/video/people.webp",

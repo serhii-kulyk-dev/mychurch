@@ -97,10 +97,10 @@ export interface AmbassadorDetail {
   logo?: string;
   initials: string;
   website: string;
-  /** Промо-ролик для головної: id файлу на Google Drive (вбудовується як
-      /file/<id>/preview) і локальний постер, щоб до натискання нічого
-      не вантажилось. */
-  promo?: { fileId: string; poster: string };
+  /** Промо-ролик для головної: id ролика на YouTube (те, що в посиланні
+      після `v=` або `youtu.be/`) і локальний постер, щоб до натискання
+      нічого не вантажилось. Порожній id = блок просто без відео. */
+  promo?: { videoId: string; poster: string };
   copy: Record<Lang, AmbassadorCopy>;
 }
 
@@ -113,9 +113,10 @@ export const AMBASSADORS: AmbassadorDetail[] = [
     logo: "/new-life-logo.png",
     initials: "НЖ",
     website: "https://newlife.ck.ua/",
-    /* TODO: замінити на власний ролик церкви, коли його запишуть.
-       Поки що це справжній запис «Люди і сім'ї» з її системи. */
-    promo: { fileId: "1Lch0m1YFJVIltcaR2DaGk5Z2VGhuy9HB", poster: "/ambassadors/video/people.webp" },
+    /* TODO: сюди — id запису на YouTube. Раніше тут лежав файл Drive
+       (1Lch0m1YFJVIltcaR2DaGk5Z2VGhuy9HB) — справжній запис «Люди і
+       сім'ї» з системи церкви; його треба перезалити. */
+    promo: { videoId: "", poster: "/ambassadors/video/people.webp" },
     copy: {
       ua: {
         seoTitle: "Церква «Нове Життя», Черкаси — амбасадор «Моєї Церкви»",

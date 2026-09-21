@@ -479,6 +479,11 @@ function crm_phone(string $phone): string
     if (strlen($digits) === 12 && strpos($digits, '380') === 0) {
         return '+' . $digits;
     }
+    /* Поле підставляє «+380», а людина за звичкою додає свій нуль — «+3800931234567».
+       Зайвий нуль прибираємо, інакше в CRM з'явиться двійник. */
+    if (strlen($digits) === 13 && strpos($digits, '3800') === 0) {
+        return '+38' . substr($digits, 3);
+    }
     return strpos($phone, '+') === 0 ? '+' . $digits : $digits;
 }
 

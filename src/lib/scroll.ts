@@ -41,3 +41,16 @@ export function sectionClick(href: string) {
     scrollToSection(id);
   };
 }
+
+/** Обробник кліку для посилання на головну («Головна» в меню й у підвалі).
+    Веде саме на «/», а не на якір секції: «Головна» мусить відкривати головну
+    згори, а не висаджувати людину посеред сторінки — з іншої сторінки перехід
+    на «/#product» кидав читача одразу в «Все просто», через голову першого
+    екрана. Якщо ми вже на головній — гортаємо вгору самі, без перезавантаження. */
+export function homeClick(onHome: boolean) {
+  return (e: { preventDefault: () => void }) => {
+    if (!onHome) return;
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+}

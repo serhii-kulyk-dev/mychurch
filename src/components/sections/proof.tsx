@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import ClipPlayer from "@/components/shared/clip-player";
 import CursorDemo from "@/components/shared/cursor-demo";
 import FadeIn from "@/components/shared/fade-in";
 import SectionHeading from "@/components/shared/section-heading";
@@ -23,7 +24,9 @@ export default function Proof() {
   const church = LEAD_AMBASSADOR;
   const copy = church.copy[lang];
   const accent = church.accent;
-  const promo = church.promo;
+  /* Поки ролик не перезалили на YouTube, блок просто без відео — як і
+     сторінки модулів. Чужий плеєр у рамці сюди більше не повертаємо. */
+  const promo = church.promo?.videoId ? church.promo : undefined;
   /* "Разом — 1,5 року будуємо процеси" is the last of the hero facts. */
   const since = copy.facts[copy.facts.length - 1];
 
@@ -48,50 +51,16 @@ export default function Proof() {
           <CursorDemo playKey={`proof-${playing}`} startDelay={1400} accent={accent} className="w-full">
           <article className="rounded-[24px] border border-hairline bg-surface overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
             {promo && (
-              <div className="relative w-full aspect-video bg-ink">
-                {playing ? (
-                  <iframe
-                    src={`https://drive.google.com/file/d/${promo.fileId}/preview?autoplay=1`}
-                    title={church.name}
-                    className="absolute inset-0 w-full h-full"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowFullScreen
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setPlaying(true)}
-                    aria-label={`${t.videoPlay}: ${church.name}`}
-                    className="group absolute inset-0 w-full h-full cursor-pointer"
-                  >
-                    <Image
-                      src={promo.poster}
-                      alt=""
-                      fill
-                      sizes="(max-width: 1120px) 100vw, 1120px"
-                      className="object-cover"
-                    />
-                    <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />
-                    <span className="absolute left-4 top-4 rounded-full bg-black/55 px-3 py-1 text-[12px] font-medium text-white leading-none backdrop-blur">
-                      {t.videoBadge}
-                    </span>
-                    <span className="absolute inset-0 flex items-center justify-center">
-                      <span
-                        data-demo="hover"
-                        className="demo-hot flex items-center gap-3 h-14 md:h-16 pl-3 pr-6 md:pl-3.5 md:pr-8 rounded-full text-white shadow-[0_14px_36px_-12px_rgba(0,0,0,0.65)] transition-transform duration-200 group-hover:scale-[1.03]"
-                        style={{ background: accent }}
-                      >
-                        <span className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                          <Play className="w-4 h-4 md:w-[18px] md:h-[18px] fill-current translate-x-[1px]" strokeWidth={0} />
-                        </span>
-                        <span className="font-semibold text-[16px] md:text-[18px] tracking-[-0.3px] whitespace-nowrap">
-                          {t.videoPlay}
-                        </span>
-                      </span>
-                    </span>
-                  </button>
-                )}
-              </div>
+              <ClipPlayer
+                videoId={promo.videoId}
+                poster={promo.poster}
+                title={church.name}
+                label={`${t.videoPlay}: ${church.name}`}
+                accent={accent}
+                badge={t.videoBadge}
+                cta={t.videoPlay}
+                onPlay={() => setPlaying(true)}
+              />
             )}
 
             <div className="flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:gap-8 md:px-7 md:py-6">

@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, ArrowUpRight, Check, ChevronRight, LayoutGrid, MonitorPlay, Play, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ChevronRight, LayoutGrid, MonitorPlay, Zap } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import SectionHeading from "@/components/shared/section-heading";
 import ModuleMock from "@/components/shared/module-mock";
+import ClipPlayer from "@/components/shared/clip-player";
 import ServiceNeeds from "@/components/sections/service-needs";
 import ServicePlanning from "@/components/sections/service-planning";
 import Ministries from "@/components/sections/ministries";
@@ -152,56 +152,25 @@ function Hero({ ctx, groupId, groupTitle, soon }: { ctx: Ctx; groupId: string; g
 }
 
 /* ── Video ──────────────────────────────────────────────────────── */
-function Video({ ctx, fileId }: { ctx: Ctx; fileId: string }) {
+function Video({ ctx, videoId }: { ctx: Ctx; videoId: string }) {
   const { id, name, accent, t } = ctx;
-  /* Плеєр Google Drive не вантажимо, поки не натиснули «грати»: інакше кожне
-     відкриття сторінки тягне чужі запити (і 401 у консоль) заради кадру, який
-     ми й так маємо своєю картинкою. Так само зроблено на сторінці амбасадора. */
-  const [playing, setPlaying] = useState(false);
-  const poster = getModuleVideoPoster(id);
   const title = t.modulePage.videoTitle.replace("{name}", name);
   return (
     <section id="video" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-[128px]">
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-14">
         <SectionHeading
           eyebrow={t.modulePage.videoEyebrow}
-          title={t.modulePage.videoTitle.replace("{name}", name)}
+          title={title}
           text={t.modulePage.videoText}
         />
         <FadeIn variant="scale" className="w-full">
-          <div
-            className="relative w-full max-w-[960px] mx-auto aspect-video overflow-hidden rounded-[20px] md:rounded-[28px] border border-hairline bg-ink shadow-[0_30px_60px_-40px_rgba(0,50,120,0.35)]"
-            style={{ boxShadow: `0 30px 60px -40px color-mix(in oklab, ${accent} 45%, transparent)` }}
-          >
-            {playing || !poster ? (
-              <iframe
-                src={`https://drive.google.com/file/d/${fileId}/preview${playing ? "?autoplay=1" : ""}`}
-                title={title}
-                className="absolute inset-0 w-full h-full"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setPlaying(true)}
-                aria-label={title}
-                className="group absolute inset-0 w-full h-full cursor-pointer"
-              >
-                <Image src={poster} alt="" fill sizes="(max-width: 1024px) 100vw, 960px" className="object-cover" />
-                <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/25" />
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <span
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] transition-transform duration-200 group-hover:scale-105"
-                    style={{ background: accent }}
-                  >
-                    <Play className="w-7 h-7 fill-current translate-x-[1px]" strokeWidth={0} />
-                  </span>
-                </span>
-              </button>
-            )}
-          </div>
+          <ClipPlayer
+            videoId={videoId}
+            poster={getModuleVideoPoster(id)}
+            title={title}
+            accent={accent}
+            className="max-w-[960px] mx-auto rounded-[20px] md:rounded-[28px] border border-hairline shadow-[0_30px_60px_-40px_rgba(0,50,120,0.35)]"
+          />
         </FadeIn>
       </div>
     </section>
@@ -653,7 +622,7 @@ export default function ModulePage({ id }: { id: string }) {
       <Hero ctx={ctx} groupId={groupId} groupTitle={groupTitle} soon={found?.item.soon} />
       <Rail items={rail} accent={accent} />
       <Features ctx={ctx} />
-      {videoId && <Video ctx={ctx} fileId={videoId} />}
+      {videoId && <Video ctx={ctx} videoId={videoId} />}
       <Steps ctx={ctx} />
       {needs && <ServicePlanning onModulePage />}
       {ministriesDemo && <Ministries onModulePage />}

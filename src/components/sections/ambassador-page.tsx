@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { ArrowUpRight, ChevronRight, Clock, LayoutGrid, MapPin, Play, Quote } from "lucide-react";
+import { useMemo } from "react";
+import { ArrowUpRight, ChevronRight, Clock, LayoutGrid, MapPin, Quote } from "lucide-react";
 import AmbassadorCard from "@/components/shared/ambassador-card";
 import FadeIn from "@/components/shared/fade-in";
 import { MODULE_ACCENTS, MODULE_ICONS } from "@/components/shared/module-icons";
 import { getAmbassador } from "@/content/ambassadors";
 import { getModuleVideo, getModuleVideoPoster } from "@/content/modules/videos";
+import ClipPlayer from "@/components/shared/clip-player";
 import type { AmbassadorCopy, AmbassadorDetail } from "@/content/ambassadors";
 import { useLang, useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
@@ -182,7 +183,6 @@ function Clip({
   flip?: boolean;
 }) {
   const c = useT().ambassadorPage;
-  const [playing, setPlaying] = useState(false);
 
   const Icon = MODULE_ICONS[id] ?? LayoutGrid;
   const tone = MODULE_ACCENTS[id] ?? accent;
@@ -192,40 +192,15 @@ function Clip({
 
   return (
     <figure className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 md:gap-12 items-center py-9 md:py-14 border-b border-hairline">
-      <div
-        className={cn(
-          "relative w-full aspect-video overflow-hidden rounded-[20px] md:rounded-[26px] border border-hairline bg-ink",
-          flip && "md:order-2"
-        )}
-      >
-        {playing ? (
-          <iframe
-            src={`https://drive.google.com/file/d/${file}/preview?autoplay=1`}
-            title={name}
-            className="absolute inset-0 w-full h-full"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPlaying(true)}
-            aria-label={`${c.clipPlay}: ${name}`}
-            className="group absolute inset-0 w-full h-full cursor-pointer"
-          >
-            <Image src={poster} alt="" fill sizes="(max-width: 768px) 100vw, 600px" className="object-cover" />
-            <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span
-                className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] transition-transform duration-200 group-hover:scale-105"
-                style={{ background: accent }}
-              >
-                <Play className="w-6 h-6 fill-current translate-x-[1px]" strokeWidth={0} />
-              </span>
-            </span>
-          </button>
-        )}
-      </div>
+      <ClipPlayer
+        videoId={file}
+        poster={poster}
+        title={name}
+        label={`${c.clipPlay}: ${name}`}
+        accent={accent}
+        size="md"
+        className={cn("rounded-[20px] md:rounded-[26px] border border-hairline", flip && "md:order-2")}
+      />
 
       <figcaption className={cn("flex flex-col gap-3", flip && "md:order-1")}>
         {/* Великим — назва модуля; хто говорить, стоїть акуратним рядком

@@ -53,10 +53,10 @@ export function Field({ kind, placeholder, value, error, onChange, label }: Fiel
           autoComplete={autoComplete}
           placeholder={placeholder}
           value={value}
-          /* Код країни ставимо самі: людина дотикається поля — і вже має «+38»,
+          /* Код країни ставимо самі: людина дотикається поля — і вже має «+380»,
              далі набирає тільки свій номер. Валідатор і лід бачать повний
              номер, як і раніше. */
-          onFocus={kind === "tel" && !value ? () => onChange("+38") : undefined}
+          onFocus={kind === "tel" && !value ? () => onChange("+380") : undefined}
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}

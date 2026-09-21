@@ -17,7 +17,7 @@ import { graph, softwareSchema } from "@/lib/schema";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
-  title: "Єдиний простір для обліку людей, груп і служінь у церкві",
+  title: "Єдиний простір для церкви",
   description:
     "Люди, сім'ї, малі групи, служіння, події, відвідуваність та заявки — в одному місці. Українською, з ботом у Telegram і впровадженням разом з вашою командою.",
   path: "/",

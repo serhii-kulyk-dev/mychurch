@@ -5,7 +5,7 @@ import { ChevronDown, Send } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { scrollToSection, sectionClick } from "@/lib/scroll";
+import { homeClick, scrollToSection, sectionClick } from "@/lib/scroll";
 import LogoLink from "@/components/shared/logo-link";
 import PreferenceToggles from "@/components/shared/preference-toggles";
 import { useLang, useT } from "@/lib/lang";
@@ -34,11 +34,13 @@ export default function Navbar() {
      займати місце в головному ряду.
      «Вартості» в меню поки немає: сторінка жива за /pricing, але сум там
      ще не названо, тож ми не ведемо на неї з навігації.
+     «Головна» веде на «/», а не на якір огляду: з іншої сторінки якір
+     відкривав головну посеред «Все просто», через голову першого екрана.
      «Імпорту» в меню немає зовсім: перенесення даних — це крок всередині
      модулів, тож він живе посиланням у /modules і в статтях блогу, де на
      нього виходять з питання, а не з рядка навігації. */
   const NAV_LINKS = [
-    { label: t.nav.product, href: "/#product", match: "/" },
+    { label: t.nav.product, href: "/", match: "/" },
     { label: t.nav.audience, href: "/for-whom", match: "/for-whom" },
     { label: t.nav.ai, href: "/ai", match: "/ai" },
     { label: t.nav.ambassadors, href: LEAD_AMBASSADOR_HREF, match: LEAD_AMBASSADOR_HREF },
@@ -161,6 +163,12 @@ export default function Navbar() {
 
   useEffect(() => cancelMoreClose, []);
 
+  /* Клік по пункту меню: «Головна» гортає вгору (або веде на «/» з іншої
+     сторінки), якір — до своєї секції, звичайне посилання — просто відкриває
+     сторінку. */
+  const navClick = (href: string) =>
+    href === "/" ? homeClick(pathname === "/") : sectionClick(href);
+
   /* Один рядок шухляди. */
   const drawerLink = (link: { label: string; href: string; match: string | null }) => (
     <Link
@@ -168,10 +176,13 @@ export default function Navbar() {
       href={link.href}
       onClick={(e) => {
         setOpen(false);
-        if (link.href.startsWith("/#") && document.getElementById(link.href.slice(2))) {
+        /* Спершу шухляда їде вгору, потім сторінка — інакше два рухи
+           накладаються і перехід виглядає смиканим. */
+        if (link.href === "/" && pathname === "/") {
           e.preventDefault();
-          /* Спершу шухляда їде вгору, потім сторінка — інакше два рухи
-             накладаються і перехід виглядає смиканим. */
+          setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 300);
+        } else if (link.href.startsWith("/#") && document.getElementById(link.href.slice(2))) {
+          e.preventDefault();
           setTimeout(() => scrollToSection(link.href.slice(2)), 300);
         }
       }}
@@ -210,7 +221,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              onClick={sectionClick(link.href)}
+              onClick={navClick(link.href)}
               className={cn(
                 "px-2 min-[1320px]:px-2.5 py-2 rounded-full text-[14px] min-[1320px]:text-[15px] leading-[1.2] tracking-[-0.16px] transition-colors duration-200 whitespace-nowrap",
                 link.match && pathname === link.match
