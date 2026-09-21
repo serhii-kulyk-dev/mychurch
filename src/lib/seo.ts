@@ -9,26 +9,30 @@ import type { Metadata } from "next";
    ──────────────────────────────────────────────────────────────── */
 
 /** Продакшн-домен. Переозначається через NEXT_PUBLIC_SITE_URL (прев'ю, стейджинг). */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://mychurch.com.ua").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://mychurch.com.ua").replace(/\/+$/, "");
 
 /* Бренд в усіх метаданих — українською: саме «Моя Церква» шукають церкви,
    і саме цю назву ми реєструємо. Латинка лишається лише як alternateName —
    нею нас знаходять ті, хто бачив логотип у застосунку. */
 export const SITE_NAME = "Моя Церква";
 /** Латинське написання — для структурованих даних (alternateName). */
-export const SITE_NAME_LATIN = "MyChurch";
+export const SITE_NAME_LATIN = "My Church";
 export const SITE_EMAIL = "team@mychurch.com.ua";
 export const SITE_PHONE = "+380965297375";
 
 /** Юзернейм у Telegram — без «@». Показуємо його як контакт поруч із поштою й телефоном. */
 export const SITE_TELEGRAM_HANDLE = "mychurch_team";
 
-/** Усі кнопки «Написати в Telegram» читають цю константу — правити в одному місці. */
-export const SITE_TELEGRAM = process.env.NEXT_PUBLIC_TELEGRAM_URL ?? `https://t.me/${SITE_TELEGRAM_HANDLE}`;
+/** Усі кнопки «Написати в Telegram» читають цю константу — правити в одному місці.
+
+    Порожній рядок у .env — це «не задано», а не «порожня адреса». З `??`
+    він проходив далі, і кнопка їхала в збірку як href="" — тобто вела на
+    саму себе. Тому тут `||`, а не `??`. */
+export const SITE_TELEGRAM = process.env.NEXT_PUBLIC_TELEGRAM_URL?.trim() || `https://t.me/${SITE_TELEGRAM_HANDLE}`;
 
 /** Загальний опис продукту — дефолт для головної та для сторінок без свого тексту. */
 export const SITE_DESCRIPTION =
-  "«Моя Церква» — українська система обліку та управління церквою: люди, сім'ї, малі групи, служіння, події, відвідуваність, заявки й аналітика в одному просторі. Досягай людей.";
+  "«Моя Церква» — український простір для церкви: люди, сім'ї, малі групи, служіння, події, відвідуваність, заявки й аналітика в одному місці.";
 
 /** Ключові запити, за якими церкви шукають таку систему. */
 export const SITE_KEYWORDS = [
@@ -41,13 +45,19 @@ export const SITE_KEYWORDS = [
   "малі групи облік",
   "планування служінь",
   "церковна аналітика",
-  "MyChurch",
+  "My Church",
   "Моя Церква",
 ];
 
 /* Картинка для соцмереж — генерується з src/app/opengraph-image.tsx.
    Її доводиться додавати в кожну сторінку явно: сторінка, яка задає свій
-   `openGraph`, повністю перекриває батьківський, разом із картинкою. */
+   `openGraph`, повністю перекриває батьківський, разом із картинкою.
+
+   Адреса обовʼязково закінчується на «.png». Next кладе згенерований
+   файл без розширення, і краулери месенджерів (Telegram, Viber,
+   WhatsApp) таку картинку просто пропускають — у стрічці лишається
+   голе посилання. Копію з розширенням робить `scripts/og-png.mjs`
+   одразу після збірки; стара адреса теж лишається живою. */
 export interface OgImage {
   url: string;
   width: number;
@@ -56,20 +66,39 @@ export interface OgImage {
 }
 
 export const OG_IMAGE: OgImage = {
-  url: "/opengraph-image",
+  url: "/opengraph-image.png",
   width: 1200,
   height: 630,
-  alt: "Моя Церква — організація церковних процесів. Досягай людей.",
+  alt: "Моя Церква — єдиний простір для вашої церкви",
 };
 
 /* `trailingSlash: true` у next.config: канонічна адреса сторінки завжди
    зі слешем на кінці. Карта сайту мусить вести туди ж — інакше кожен її
    рядок це зайвий 301, а пошук бачить дві адреси однієї сторінки.
-   Файли (/sitemap.xml, /opengraph-image) слеша не отримують. */
+   Файли (/sitemap.xml, /opengraph-image.png) слеша не отримують. */
 export function absoluteUrl(path = "/") {
   const clean = path === "/" ? "/" : path.startsWith("/") ? path : `/${path}`;
-  const isFile = /\.[a-z0-9]+$/i.test(clean) || clean.endsWith("opengraph-image");
+  const isFile = /\.[a-z0-9]+$/i.test(clean);
   return `${SITE_URL}${clean.endsWith("/") || isFile ? clean : `${clean}/`}`;
+}
+
+/* Абсолютна адреса + `og:image:type`: краулер бачить, що це саме PNG,
+   ще до того, як почне його качати. */
+export function ogImage(image: OgImage) {
+  return {
+    url: absoluteUrl(image.url),
+    secureUrl: absoluteUrl(image.url),
+    type: "image/png",
+    width: image.width,
+    height: image.height,
+    alt: image.alt,
+  };
+}
+
+/* Картка Twitter читає лише адресу й опис картинки — решту полів
+   з `ogImage()` вона б винесла в <head> зайвими тегами. */
+export function twitterImage(image: OgImage) {
+  return { url: absoluteUrl(image.url), alt: image.alt };
 }
 
 interface PageMetaInput {
@@ -120,14 +149,14 @@ export function pageMeta({
       siteName: SITE_NAME,
       locale: "uk_UA",
       alternateLocale: ["en_US"],
-      images: [image],
+      images: [ogImage(image)],
       ...(type === "article" ? { publishedTime, modifiedTime } : null),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [image.url],
+      images: [twitterImage(image)],
     },
   };
 }

@@ -1,8 +1,13 @@
 "use client";
 
+import { Fragment, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronRight, Info, Quote, Search } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
+import BlogVisual from "@/components/shared/blog-visual";
+import ModuleMock from "@/components/shared/module-mock";
+import BlogReadingBar from "@/components/shared/blog-reading-bar";
 import { BLOG_CATEGORIES, BLOG_COPY, getPost, getRelated } from "@/content/blog";
 import type { BlogBlock } from "@/content/blog";
 import { BLOG_CATEGORY_ACCENTS, BLOG_CATEGORY_ICONS } from "@/components/shared/blog-icons";
@@ -27,8 +32,106 @@ function sectionId(index: number) {
   return `r-${index + 1}`;
 }
 
-function Block({ block, accent }: { block: BlogBlock; accent: string }) {
+/* Екран продукту, картинка й таблиця виходять за колонку тексту: стаття
+   читається смугами різної ширини, а не однією стрічкою. Вилазимо лише
+   там, де поля сторінки це дозволяють. */
+function Wide({ children }: { children: ReactNode }) {
+  return <div className="lg:-mx-[70px] xl:-mx-[90px]">{children}</div>;
+}
+
+/* Який розділ зараз під очима — для ряду розділів збоку. Дивимось на
+   верхню третину екрана: заголовок вважається активним, щойно він до неї
+   доїхав, і лишається таким, поки не прийшов наступний. */
+function useActiveSection(count: number) {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    if (!count) return;
+    const read = () => {
+      let current = 0;
+      for (let i = 0; i < count; i += 1) {
+        const el = document.getElementById(`r-${i + 1}`);
+        if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.34) current = i;
+      }
+      setActive(current);
+    };
+    read();
+    window.addEventListener("scroll", read, { passive: true });
+    window.addEventListener("resize", read);
+    return () => {
+      window.removeEventListener("scroll", read);
+      window.removeEventListener("resize", read);
+    };
+  }, [count]);
+  return active;
+}
+
+function Block({
+  block,
+  accent,
+  Icon,
+  solutionLabel,
+}: {
+  block: BlogBlock;
+  accent: string;
+  Icon: LucideIcon;
+  solutionLabel: string;
+}) {
   switch (block.kind) {
+    case "visual":
+      return (
+        <Wide>
+          <BlogVisual visual={block.visual} caption={block.caption} accent={accent} Icon={Icon} />
+        </Wide>
+      );
+
+    /* Рішення: одразу після болю — той самий екран, що й на сторінці
+       модуля. Розкрій той самий, що в огляді на головній: екран у
+       кольоровій половині, підпис — у білій. */
+    case "solution":
+      return (
+        <Wide>
+          <div className="overflow-hidden rounded-[26px] border border-hairline bg-surface grid grid-cols-1 md:grid-cols-[1fr_1.25fr]">
+            <div className="flex flex-col justify-center gap-3 p-6 md:p-9 order-2 md:order-1">
+              <span className="flex items-center gap-2.5">
+                <span
+                  className="w-7 h-7 rounded-[9px] flex items-center justify-center shrink-0"
+                  style={{ background: `color-mix(in oklab, ${accent} 15%, var(--surface))`, color: accent }}
+                >
+                  <Icon className="w-[15px] h-[15px]" strokeWidth={2} />
+                </span>
+                <span className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: accent }}>
+                  {solutionLabel}
+                </span>
+              </span>
+              <h3 className="font-semibold text-ink text-[24px] md:text-[30px] leading-[1.13] tracking-[-0.7px]">
+                {block.title}
+              </h3>
+              <p className="text-[16px] text-ink-2 leading-[1.6]">{block.text}</p>
+              {block.link && (
+                <Link
+                  href={block.link.href}
+                  className="group mt-1 inline-flex items-center gap-1.5 text-[14.5px] font-medium text-ink-2 hover:text-ink transition-colors"
+                >
+                  {block.link.label}
+                  <ArrowUpRight
+                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    style={{ color: accent }}
+                  />
+                </Link>
+              )}
+            </div>
+            <div
+              className="relative flex items-center justify-center min-h-[300px] md:min-h-[420px] p-5 md:p-8 order-1 md:order-2"
+              style={{
+                background: `linear-gradient(140deg, color-mix(in oklab, ${accent} 13%, var(--surface)) 0%, color-mix(in oklab, ${accent} 5%, var(--surface)) 55%, var(--surface) 100%)`,
+              }}
+            >
+              <ModuleMock spec={block.spec} accent={accent} Icon={Icon} />
+            </div>
+          </div>
+        </Wide>
+      );
+
     case "text":
       return <p className="text-[16.5px] md:text-[17.5px] text-ink-2 leading-[1.7]">{block.text}</p>;
 
@@ -101,7 +204,8 @@ function Block({ block, accent }: { block: BlogBlock; accent: string }) {
 
     case "table":
       return (
-        <div className="-mx-5 px-5 md:mx-0 md:px-0 overflow-x-auto">
+        <Wide>
+          <div className="-mx-5 px-5 md:mx-0 md:px-0 overflow-x-auto">
           <table className="w-full min-w-[520px] border-collapse text-left">
             <thead>
               <tr>
@@ -131,17 +235,69 @@ function Block({ block, accent }: { block: BlogBlock; accent: string }) {
                   ))}
                 </tr>
               ))}
-            </tbody>
-          </table>
-        </div>
+              </tbody>
+            </table>
+          </div>
+        </Wide>
       );
   }
+}
+
+/* Посеред статті — одна дія й тихий лінк на сторінку теми. Далі читач
+   або їде до кінця, або вже знає, куди натиснути. */
+function MidCta({
+  accent,
+  title,
+  text,
+  demoLabel,
+  linkLabel,
+  linkHref,
+  onDemo,
+}: {
+  accent: string;
+  title: string;
+  text: string;
+  demoLabel: string;
+  linkLabel: string;
+  linkHref: string;
+  onDemo: () => void;
+}) {
+  return (
+    <FadeIn variant="scale">
+      <div
+        className="rounded-[22px] border border-hairline p-5 md:p-7 flex flex-col md:flex-row md:items-center gap-4 md:gap-7"
+        style={{ background: `linear-gradient(135deg, color-mix(in oklab, ${accent} 11%, var(--surface)), var(--surface) 68%)` }}
+      >
+        <div className="flex flex-col gap-1.5 flex-1">
+          <h3 className="font-semibold text-ink text-[19px] md:text-[23px] leading-[1.25] tracking-[-0.5px]">{title}</h3>
+          <p className="text-[15.5px] md:text-[16px] text-ink-2 leading-[1.55]">{text}</p>
+        </div>
+        <div className="flex items-center gap-4 shrink-0">
+          <button
+            type="button"
+            onClick={onDemo}
+            data-track="cta"
+            data-place="середина статті"
+            className="btn-primary btn-brand inline-flex items-center justify-center h-12 px-6 rounded-full"
+          >
+            <span className="text-white font-semibold text-[15.5px] tracking-[-0.2px] whitespace-nowrap">{demoLabel}</span>
+          </button>
+          <Link href={linkHref} className="inline-flex items-center gap-1.5 text-[15px] text-ink-3 hover:text-ink transition-colors whitespace-nowrap">
+            {linkLabel}
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    </FadeIn>
+  );
 }
 
 export default function BlogPostPage({ slug }: { slug: string }) {
   const { lang } = useLang();
   const { open } = useDemoModal();
   const post = getPost(slug);
+  /* Хук стоїть до виходу: розділів може не бути, кількість — нуль. */
+  const active = useActiveSection(post?.copy[lang].sections.length ?? 0);
   if (!post) return null;
 
   const t = BLOG_COPY[lang];
@@ -150,6 +306,8 @@ export default function BlogPostPage({ slug }: { slug: string }) {
   const Icon = BLOG_CATEGORY_ICONS[post.category];
   const category = BLOG_CATEGORIES[lang].find((c) => c.id === post.category);
   const related = getRelated(post);
+  /* Коротка стаття закривається власним фіналом — там смуга посередині зайва. */
+  const midCtaAfter = copy.sections.length >= 4 ? 1 : -1;
 
   return (
     <>
@@ -185,8 +343,10 @@ export default function BlogPostPage({ slug }: { slug: string }) {
               >
                 <Icon className="w-5 h-5" strokeWidth={2} />
               </span>
+              {/* Ведемо на сам блог: рубрики окремими секціями на /blog немає,
+                  і якір `#t-<рубрика>` нікуди не потрапляв. */}
               <Link
-                href={`/blog#t-${post.category}`}
+                href="/blog"
                 className="text-[12.5px] font-semibold uppercase tracking-[0.14em] hover:underline"
                 style={{ color: accent }}
               >
@@ -224,7 +384,40 @@ export default function BlogPostPage({ slug }: { slug: string }) {
 
       {/* ── Тіло статті ──────────────────────────────────────── */}
       <article className="w-full flex flex-col items-center bg-page pb-4">
-        <div className="w-full max-w-[820px] px-5 md:px-8 flex flex-col gap-10 md:gap-14 py-10 md:py-14">
+        <div className="relative w-full max-w-[820px] px-5 md:px-8 flex flex-col gap-10 md:gap-14 py-10 md:py-14">
+          {/* Ряд розділів у полі сторінки: видно, де ти зараз і скільки
+              лишилось. Тільки на широких екранах — на вужчих цю саму роль
+              грає картка «У статті» нижче. */}
+          <nav
+            aria-label={t.post.contents}
+            className="hidden 2xl:block absolute right-full top-0 h-full mr-8 w-[180px]"
+          >
+            <ol className="sticky top-28 flex flex-col gap-1 py-14">
+              {copy.sections.map((section, i) => (
+                <li key={section.heading}>
+                  <a
+                    href={`#${sectionId(i)}`}
+                    className="group flex gap-2.5 rounded-xl py-1.5 pl-2.5 pr-2 transition-colors hover:bg-surface-2"
+                  >
+                    <span
+                      aria-hidden
+                      className="mt-[7px] h-[2px] w-4 shrink-0 rounded-full transition-colors"
+                      style={{ background: i === active ? accent : "var(--hairline-strong)" }}
+                    />
+                    <span
+                      className={[
+                        "text-[13px] leading-[1.4] transition-colors",
+                        i === active ? "text-ink font-medium" : "text-ink-3 group-hover:text-ink-2",
+                      ].join(" ")}
+                    >
+                      {section.heading}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+
           {/* Проблема */}
           <FadeIn>
             <div className="rounded-[22px] border-l-4 border border-hairline bg-surface p-5 md:p-7 flex flex-col gap-2" style={{ borderLeftColor: accent }}>
@@ -235,7 +428,7 @@ export default function BlogPostPage({ slug }: { slug: string }) {
           </FadeIn>
 
           {/* Зміст */}
-          <FadeIn>
+          <FadeIn className="2xl:hidden">
             <nav aria-label={t.post.contents} className="rounded-[20px] border border-hairline bg-surface-2 p-5 md:p-6 flex flex-col gap-3">
               <span className="text-[12.5px] font-semibold uppercase tracking-[0.12em] text-ink-3">{t.post.contents}</span>
               <ol className="flex flex-col gap-2">
@@ -251,16 +444,29 @@ export default function BlogPostPage({ slug }: { slug: string }) {
             </nav>
           </FadeIn>
 
-          {/* Розділи */}
+          {/* Розділи. Після другого — одна дія посеред читання. */}
           {copy.sections.map((section, i) => (
-            <FadeIn key={section.heading} className="flex flex-col gap-5 scroll-mt-28" style={{ scrollMarginTop: "7rem" }}>
-              <h2 id={sectionId(i)} className="scroll-mt-28 font-semibold text-ink text-[24px] md:text-[30px] leading-[1.2] tracking-[-0.7px]">
-                {section.heading}
-              </h2>
-              {section.blocks.map((block, j) => (
-                <Block key={j} block={block} accent={accent} />
-              ))}
-            </FadeIn>
+            <Fragment key={section.heading}>
+              <FadeIn className="flex flex-col gap-5 scroll-mt-28" style={{ scrollMarginTop: "7rem" }}>
+                <h2 id={sectionId(i)} className="scroll-mt-28 font-semibold text-ink text-[24px] md:text-[30px] leading-[1.2] tracking-[-0.7px]">
+                  {section.heading}
+                </h2>
+                {section.blocks.map((block, j) => (
+                  <Block key={j} block={block} accent={accent} Icon={Icon} solutionLabel={t.post.solutionLabel} />
+                ))}
+              </FadeIn>
+              {i === midCtaAfter && (
+                <MidCta
+                  accent={accent}
+                  title={t.post.midTitle}
+                  text={t.post.midText}
+                  demoLabel={t.post.demoLabel}
+                  linkLabel={copy.cta.label}
+                  linkHref={copy.cta.href}
+                  onDemo={open}
+                />
+              )}
+            </Fragment>
           ))}
 
           {/* Коротко */}
@@ -317,6 +523,7 @@ export default function BlogPostPage({ slug }: { slug: string }) {
           {/* Куди далі в продукті */}
           <FadeIn variant="scale">
             <div
+              data-post-cta
               className="rounded-[24px] border border-hairline p-6 md:p-8 flex flex-col gap-4"
               style={{ background: `linear-gradient(140deg, color-mix(in oklab, ${accent} 10%, var(--surface)), var(--surface) 65%)` }}
             >
@@ -342,6 +549,8 @@ export default function BlogPostPage({ slug }: { slug: string }) {
           </FadeIn>
         </div>
       </article>
+
+      <BlogReadingBar title={copy.title} demoLabel={t.post.demoLabel} linkLabel={copy.cta.label} linkHref={copy.cta.href} />
 
       {/* ── Читати далі ──────────────────────────────────────── */}
       <section className="w-full flex flex-col items-center bg-page pb-14 md:pb-20">

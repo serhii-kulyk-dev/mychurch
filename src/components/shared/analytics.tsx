@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { flush, isOptedOut, setOptOut, startSession, track } from "@/lib/analytics/client";
+import { rememberLeadSource } from "@/lib/lead";
 
 /* Трекер кроків відвідувача. Стоїть у корені layout і працює сам:
 
@@ -147,6 +148,11 @@ export default function Analytics() {
 
   /* ── На кожну сторінку: вихід із попередньої, перегляд нової, блоки ── */
   useEffect(() => {
+    /* Мітки кампанії живуть лише в адресі першої сторінки — знімаємо їх до
+       перевірки на відмову від аналітики: це не статистика, а те, звідки
+       прийшла людина, яка сама надішле заявку (див. lib/lead.ts). */
+    rememberLeadSource();
+
     if (isOptedOut()) return;
 
     const previous = page.current;

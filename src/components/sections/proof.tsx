@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
+import CursorDemo from "@/components/shared/cursor-demo";
 import FadeIn from "@/components/shared/fade-in";
 import SectionHeading from "@/components/shared/section-heading";
 import { LEAD_AMBASSADOR, LEAD_AMBASSADOR_HREF } from "@/content/ambassadors";
@@ -23,15 +24,28 @@ export default function Proof() {
   const copy = church.copy[lang];
   const accent = church.accent;
   const promo = church.promo;
-  /* "У «Моїй Церкві» — понад рік, з березня 2025" is the last of the hero facts. */
+  /* "Разом — 1,5 року будуємо процеси" is the last of the hero facts. */
   const since = copy.facts[copy.facts.length - 1];
 
   return (
     <section id="proof" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-12">
-        <SectionHeading eyebrow={t.eyebrow} title={t.title} />
+        <SectionHeading
+          title={
+            <span className="block uppercase text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
+              {t.title}
+            </span>
+          }
+        />
 
-        <FadeIn variant="scale">
+        {/* Спробу зробити блок розрізаною карткою відхилено: відео на всю
+            ширину і рядок під ним читаються краще. */}
+        {/* Картка виїжджає знизу — відео має «під'їхати», а не просто
+            проявитись. Курсор-привид доходить до кнопки й зупиняється на
+            ній: справжній клік лишається за відвідувачем, інакше ролик
+            почав би вантажитись сам. */}
+        <FadeIn variant="up" className="reveal-rise">
+          <CursorDemo playKey={`proof-${playing}`} startDelay={1400} accent={accent} className="w-full">
           <article className="rounded-[24px] border border-hairline bg-surface overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
             {promo && (
               <div className="relative w-full aspect-video bg-ink">
@@ -63,10 +77,16 @@ export default function Proof() {
                     </span>
                     <span className="absolute inset-0 flex items-center justify-center">
                       <span
-                        className="w-16 h-16 md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] transition-transform duration-200 group-hover:scale-105"
+                        data-demo="hover"
+                        className="demo-hot flex items-center gap-3 h-14 md:h-16 pl-3 pr-6 md:pl-3.5 md:pr-8 rounded-full text-white shadow-[0_14px_36px_-12px_rgba(0,0,0,0.65)] transition-transform duration-200 group-hover:scale-[1.03]"
                         style={{ background: accent }}
                       >
-                        <Play className="w-7 h-7 fill-current translate-x-[1px]" strokeWidth={0} />
+                        <span className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                          <Play className="w-4 h-4 md:w-[18px] md:h-[18px] fill-current translate-x-[1px]" strokeWidth={0} />
+                        </span>
+                        <span className="font-semibold text-[16px] md:text-[18px] tracking-[-0.3px] whitespace-nowrap">
+                          {t.videoPlay}
+                        </span>
                       </span>
                     </span>
                   </button>
@@ -123,6 +143,7 @@ export default function Proof() {
               </div>
             </div>
           </article>
+          </CursorDemo>
         </FadeIn>
       </div>
     </section>

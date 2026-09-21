@@ -43,6 +43,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# токен бота для приймача заявок — живе на хостингу, не в репозиторії
+lead-secret.php
+
 # vercel
 .vercel
 

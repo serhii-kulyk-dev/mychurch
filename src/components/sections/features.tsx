@@ -4,31 +4,45 @@ import FadeIn from "@/components/shared/fade-in";
 import SectionHeading from "@/components/shared/section-heading";
 import { useT } from "@/lib/lang";
 import AnalyticsShowcase from "@/components/shared/analytics-showcase";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import PeopleExplorer from "@/components/shared/people-explorer";
+import ServingMini from "@/components/shared/serving-mini";
+import GroupsMini from "@/components/shared/groups-mini";
+import PlanningMini from "@/components/shared/planning-mini";
 
-/* Analytics (block 1) is a screen of its own — it rotates through five charts
-   instead of listing them, so it brings its own layout. */
-const ANALYTICS_BLOCK = 1;
+/* Аналітика йде останньою і має власний розкрій: це не картинка збоку, а
+   цілий екран, який сам перебирає п'ять поглядів. */
+const ANALYTICS_BLOCK = 4;
 
+/* Один і той самий розкрій на всі блоки: екран модуля в кольоровій половині,
+   назва модуля одним словом — у білій. Міняються тільки колір і сам екран,
+   а боки чергуються, щоб чотири картки не читались як таблиця. */
 const VISUALS = [
-  {
-    imageLeft: true,
-    tint: "linear-gradient(140deg, color-mix(in oklab, var(--brand) 12%, var(--surface)) 0%, color-mix(in oklab, var(--brand) 5%, var(--surface)) 55%, var(--surface) 100%)",
-  },
-  {
-    imageLeft: false,
-    tint: "linear-gradient(140deg, color-mix(in oklab, #8b5bf0 12%, var(--surface)) 0%, color-mix(in oklab, #8b5bf0 5%, var(--surface)) 55%, var(--surface) 100%)",
-  },
+  { imageLeft: true, accent: "var(--brand)", module: "people", Mock: PeopleExplorer },
+  { imageLeft: false, accent: "#f97316", module: "ministries", Mock: ServingMini },
+  { imageLeft: true, accent: "#0d9488", module: "groups", Mock: GroupsMini },
+  { imageLeft: false, accent: "#ea580c", module: "service-planning", Mock: PlanningMini },
+  { imageLeft: true, accent: "#8b5bf0", module: "analytics", Mock: null },
 ];
+
+const tint = (accent: string) =>
+  `linear-gradient(140deg, color-mix(in oklab, ${accent} 12%, var(--surface)) 0%, color-mix(in oklab, ${accent} 5%, var(--surface)) 55%, var(--surface) 100%)`;
 
 export default function Features() {
   const t = useT().features;
   return (
-    <section id="product" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-24">
+    <section id="product" className="w-full flex flex-col items-center pt-16 md:pt-24 pb-5 md:pb-6 scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-16">
-        <SectionHeading eyebrow={t.eyebrow} title={t.title} />
+        {/* Заголовок огляду — вивіска: два слова великими літерами й на всю
+            ширину. Рядок у словнику лишається звичайним, великі літери дає
+            css, щоб їх правильно читав скрінрідер. */}
+        <SectionHeading
+          eyebrow={t.eyebrow}
+          title={
+            <span className="block uppercase text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
+              {t.title}
+            </span>
+          }
+        />
 
         <div className="flex flex-col gap-5 md:gap-6">
           {t.blocks.map((block, i) => {
@@ -36,21 +50,40 @@ export default function Features() {
             if (i === ANALYTICS_BLOCK) {
               return (
                 <FadeIn key={block.title} variant="scale" delay={1}>
-                  <AnalyticsShowcase block={block} tint={v.tint} />
+                  <AnalyticsShowcase block={block} tint={tint(v.accent)} />
                 </FadeIn>
               );
             }
+            const Mock = v.Mock;
             return (
               <FadeIn key={block.title} variant="scale" delay={0}>
-                <article className="overflow-hidden rounded-[24px] md:rounded-[28px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)] grid grid-cols-1 md:grid-cols-[1.35fr_1fr]">
+                {/* Картка нікуди не веде: ні кліку, ні стрілки — сам екран
+                    і те, що в ньому рухається. Каталог модулів лишається
+                    внизу сторінки й у меню (2026-09-21). */}
+                <div
+                  style={
+                    {
+                      "--accent": v.accent,
+                      "--accent-soft": `color-mix(in oklab, ${v.accent} 12%, var(--surface))`,
+                      "--accent-line": `color-mix(in oklab, ${v.accent} 32%, var(--surface))`,
+                    } as React.CSSProperties
+                  }
+                  className={[
+                    "block overflow-hidden rounded-[24px] md:rounded-[28px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)] grid grid-cols-1",
+                    /* Ширша половина завжди під екраном, з якого боку він би не стояв. */
+                    v.imageLeft ? "md:grid-cols-[1.35fr_1fr]" : "md:grid-cols-[1fr_1.35fr]",
+                  ].join(" ")}
+                >
                   <div
                     className={[
-                      "relative flex items-center justify-center min-h-[260px] md:min-h-[400px] p-4 md:p-7",
+                      /* Висота половини з екраном однакова в усіх блоках
+                         огляду (аналітика, бот і телефон — теж 440). */
+                      "relative flex items-center justify-center min-h-[280px] md:min-h-[440px] p-4 md:p-7",
                       v.imageLeft ? "md:order-1" : "md:order-2",
                     ].join(" ")}
-                    style={{ background: v.tint }}
+                    style={{ background: tint(v.accent) }}
                   >
-                    <PeopleExplorer />
+                    {Mock && <Mock />}
                   </div>
 
                   <div
@@ -59,26 +92,16 @@ export default function Features() {
                       v.imageLeft ? "md:order-2" : "md:order-1",
                     ].join(" ")}
                   >
-                    {/* Одне слово, одне речення, одна дія. Перелік умінь був
-                        рядом чипів — його показує сам екран поруч, не підпис. */}
-                    <h3 className="font-semibold text-ink text-[44px] md:text-[64px] leading-[0.98] tracking-[-2px]">
+                    {/* Одне слово, одне речення — і стрілка. Перелік умінь був
+                        рядом чипів, його показує сам екран поруч, не підпис. */}
+                    <h3 className="font-semibold text-ink text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
                       {block.title}
                     </h3>
                     <p className="text-[16.5px] md:text-[18px] font-normal text-ink-2 leading-[1.5] max-w-[340px]">
                       {block.text}
                     </p>
-                    <Link
-                      href="/modules/people"
-                      className="btn-secondary relative mt-3 inline-flex items-center justify-center gap-2 h-12 w-fit px-7 rounded-full overflow-hidden border border-hairline-strong"
-                    >
-                      <span className="btn-secondary-bg absolute inset-0 bg-surface rounded-full transition-colors duration-150" />
-                      <span className="relative text-ink font-medium text-[16px] tracking-[-0.32px] leading-none">
-                        {t.open}
-                      </span>
-                      <ArrowRight className="relative w-[17px] h-[17px] text-brand" strokeWidth={2.2} />
-                    </Link>
                   </div>
-                </article>
+                </div>
               </FadeIn>
             );
           })}

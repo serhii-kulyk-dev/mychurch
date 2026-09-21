@@ -78,7 +78,9 @@ function plural(forms: readonly string[], n: number) {
 /* Near-constant speed — never a teleport, never a crawl. */
 const travelMs = (dist: number) => Math.round(Math.min(900, Math.max(360, dist * 1.25)));
 
-export default function ServicePlanning() {
+/* `onModulePage` — демо стоїть на власній сторінці модуля: посилання
+   «Детальніше про модуль» там вело б саме на себе, тож зникає. */
+export default function ServicePlanning({ onModulePage = false }: { onModulePage?: boolean }) {
   const t = useT().servicePlanning;
   const plan = t.plan;
   const lib = plan.library;
@@ -231,12 +233,17 @@ export default function ServicePlanning() {
 
         {/* ── Heading: one thought, set as large as it reads ─────── */}
         <FadeIn className="flex flex-col items-center text-center gap-5">
-          <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{t.eyebrow}</span>
+          {/* На сторінці модуля назва вже стоїть у шапці — не повторюємо. */}
+          {!onModulePage && (
+            <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-brand">{t.eyebrow}</span>
+          )}
           <h2 className="font-semibold text-ink text-[46px] sm:text-[66px] md:text-[88px] leading-[1.0] tracking-[-2px] md:tracking-[-3.6px]">{t.title}</h2>
-          <Link href={link} className="group inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand">
-            {t.link}
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.2} />
-          </Link>
+          {!onModulePage && (
+            <Link href={link} className="group inline-flex items-center gap-1.5 text-[15px] font-semibold text-brand">
+              {t.link}
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.2} />
+            </Link>
+          )}
         </FadeIn>
 
         {/* ── The composition: library + plan + the hands ─ */}

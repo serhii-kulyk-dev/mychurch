@@ -80,11 +80,6 @@
   --glow: rgba(0, 122, 255, 0.18);
   --grid-line: rgba(0, 0, 0, 0.045);
   /* Проводи розгортки підключень: оболонка, осердя, тінь і «під напругою». */
-  --wire: #ced4de;
-  --wire-core: #f2f4f8;
-  --wire-edge: #aab3c2;
-  --wire-hot: #9ecdff;
-  --wire-shade: rgba(9, 20, 45, 0.16);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -136,11 +131,6 @@
   --brand-soft: rgba(61, 155, 255, 0.14);
   --glow: rgba(61, 155, 255, 0.22);
   --grid-line: rgba(255, 255, 255, 0.05);
-  --wire: #232a37;
-  --wire-core: #2f3849;
-  --wire-edge: #0c1017;
-  --wire-hot: #b6dbff;
-  --wire-shade: rgba(0, 0, 0, 0.55);
 
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -194,6 +184,14 @@
     /* A long unbroken word (a URL, a long Ukrainian compound) breaks rather
        than pushing the layout wider than the screen. */
     overflow-wrap: break-word;
+  }
+  /* Після переходу роутер шукає, що підтягнути під верх вікна, і пропускає
+     все липке — тобто нашу шапку. Лишається <main>, а він у потоці стоїть
+     рівно на висоту шапки нижче: сторінка відкривалась прокрученою на 80px,
+     і надзаголовок ховався під меню. Відступ прокрутки повертає її вгору.
+     На телефоні шапка 64px — 80 просто впирається в нуль. */
+  main {
+    scroll-margin-top: 80px;
   }
   /* Theme swap should feel deliberate, not instant */
   html.theme-ready body,
@@ -283,6 +281,12 @@
 .reveal.is-visible,
 .fade-in.is-visible { animation-play-state: running; }
 
+@keyframes revealRise {
+  from { opacity: 0; transform: translate3d(0, 72px, 0) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+/* Виїзд знизу — для великих кадрів, які мають «під'їхати» в кадр. */
+.reveal-rise { animation-name: revealRise; animation-duration: 0.9s; }
 .reveal-scale { animation-name: revealScale; }
 .reveal-left  { animation-name: revealLeft; }
 .reveal-right { animation-name: revealRight; }
@@ -656,6 +660,20 @@
 }
 .pin-in { animation: pinIn 0.45s var(--ease-pop) both; }
 
+/* Головна, «Розмір»: поле людей проявляється групами, а не крапка за
+   крапкою — затримка йде на групу, тож плями «сідають» одна за одною.
+   transform-box потрібен, бо коло в svg крутиться навколо початку
+   координат, а не власного центру. */
+@keyframes seatIn {
+  from { opacity: 0; transform: scale(0.2); }
+  to   { opacity: 1; transform: none; }
+}
+.seat-in {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: seatIn 0.42s var(--ease-pop) both;
+}
+
 @keyframes tapHint {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-4px); }
@@ -874,6 +892,21 @@
   will-change: transform;
 }
 .marquee-track--reverse { animation-direction: reverse; }
+/* Стрічка фотографій: більші проміжки й спокійніший хід, ніж у чипів. */
+.photo-track { gap: 16px; animation-duration: 110s; }
+
+/* Курсори в плані служіння: підлітають до свого рядка, тиснуть і зникають.
+   Затримки різні, тож на екрані їх видно по кілька водночас. */
+@keyframes planCursor {
+  0%   { opacity: 0; transform: translate3d(14px, 10px, 0) scale(0.9); }
+  14%  { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  38%  { transform: translate3d(0, 0, 0) scale(0.9); }
+  48%  { transform: translate3d(0, 0, 0) scale(1); }
+  82%  { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(-6px, -8px, 0) scale(0.95); }
+}
+.plan-cursor { animation: planCursor 1500ms var(--ease-out-soft) both; }
+@media (prefers-reduced-motion: reduce) { .plan-cursor { display: none; } }
 .marquee:hover .marquee-track { animation-play-state: paused; }
 .chip-module { transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
 a.chip-module:hover {
@@ -915,9 +948,25 @@ a.chip-module:hover {
   25%  { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0.28); }
   100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
 }
+/* Блок не з'їжджає збоку: він спалахує там, де його вже дочекався провід. */
 @keyframes zapNoteIn {
-  from { opacity: 0; transform: translate3d(26px, -10px, 0) scale(0.97); }
+  from { opacity: 0; transform: scale(0.965); }
   to   { opacity: 1; transform: none; }
+}
+/* Провід малюється від події до блока — розряд іде кроком за кроком,
+   `pathLength="1"` у svg дає ту саму швидкість на будь-якій довжині. */
+@keyframes zapWireDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes zapSpark {
+  from { stroke-dashoffset: 1; opacity: 0.95; }
+  70%  { opacity: 0.95; }
+  to   { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes zapTipIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 @keyframes zapValueIn {
   from { opacity: 0; transform: translate3d(0, 8px, 0); }
@@ -926,9 +975,66 @@ a.chip-module:hover {
 .zap-hit { animation: zapFlash 0.7s ease-out both; }
 .zap-note { opacity: 0; animation: zapNoteIn 0.26s var(--ease-pop) both; }
 .zap-in { opacity: 0; animation: zapValueIn 0.3s var(--ease-out-soft) both; }
+/* Тло «Автоматизацій»: сітка, по якій час від часу пробігає розряд —
+   тонка світла смуга їде колонкою вгору або вниз. */
+@keyframes zapTraceDown {
+  0%   { transform: translateY(-160%); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateY(260%); opacity: 0; }
+}
+.zap-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 10%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 10%, transparent 85%);
+}
+.zap-trace { animation: zapTraceDown 7s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .zap-trace { display: none; }
+}
+
+/* Розряд дійшов до блока — блок підстрибує, наче його тригернули. */
+@keyframes zapLift {
+  0%   { transform: none; }
+  35%  { transform: translateY(-6px) scale(1.015); }
+  100% { transform: none; }
+}
+.zap-lift { animation: zapLift 0.55s var(--ease-pop); }
+@media (prefers-reduced-motion: reduce) {
+  .zap-lift { animation: none; }
+}
+
+.zap-wire { stroke-dasharray: 1; stroke-dashoffset: 1; animation: zapWireDraw 0.42s linear both; }
+.zap-spark { stroke-dasharray: 0.16 0.84; stroke-dashoffset: 1; animation: zapSpark 0.42s linear both; }
+
+/* Подія здригається перша — і аж тоді проводом біжить розряд. */
+@keyframes zapTrigger {
+  0%   { transform: none; }
+  12%  { transform: translate(-1.5px, 1px) rotate(-0.5deg); }
+  24%  { transform: translate(1.5px, -1px) rotate(0.5deg); }
+  36%  { transform: translate(-1.5px, 0) rotate(-0.4deg); }
+  48%  { transform: translate(1px, 1px) rotate(0.3deg); }
+  60%  { transform: none; }
+  74%  { transform: translateY(-5px) scale(1.02); }
+  100% { transform: none; }
+}
+.zap-trigger { animation: zapTrigger 0.9s var(--ease-pop) both; }
+
+/* Розряд між блоками схеми: риска проростає згори вниз. */
+@keyframes zapDrop { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .zap-trigger { animation: none; }
+  [style*="zapDrop"] { animation: none !important; transform: none; }
+}
+.zap-tip { opacity: 0; animation: zapTipIn 0.14s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
   .zap-hit { animation: none; }
   .zap-note, .zap-in { opacity: 1; animation: none; }
+  .zap-wire, .zap-tip { stroke-dashoffset: 0; opacity: 1; animation: none; }
+  .zap-spark { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .flow-status { opacity: 1; animation: none !important; }
@@ -1121,6 +1227,13 @@ main:focus {
   outline-offset: 2px;
   border-radius: 6px;
 }
+/* Поле у власній оболонці (<label> із рамкою) світиться саме — власне
+   кільце навколо input'а всередині давало другий контур усередині першого.
+   Фокус лишається видимим: оболонка реагує на :focus-within, зокрема й на
+   фокус із клавіатури. */
+.field-shell:focus-within :where(input, textarea):focus-visible {
+  outline: none;
+}
 
 /* rebuild ping */
 
@@ -1302,57 +1415,17 @@ main:focus {
 }
 
 /* ============================================================
-   РОЗГОРТКА ПІДКЛЮЧЕНЬ (home → integrations)
-   Кабель протягується від сервісу до порту ядра, далі йдуть пакети.
+   ІНТЕГРАЦІЇ (home → integrations)
+   Плюшка проступає в мить, коли сервіс увімкнули.
    ============================================================ */
-@keyframes cableDraw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
-}
-@keyframes portPulse {
-  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand) 30%, transparent); }
-  70%  { box-shadow: 0 0 0 9px color-mix(in oklab, var(--brand) 0%, transparent); }
-  100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand) 0%, transparent); }
-}
-@keyframes portSrcIn {
-  from { opacity: 0; transform: scale(0.55); }
+@keyframes perkIn {
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: none; }
 }
-/* Джгут світить одну спільну тінь — інакше перетини темніли б удвічі. */
-.wire-bundle { filter: drop-shadow(0 3px 2.5px var(--wire-shade)); }
-.cable { transition: stroke 0.3s ease, fill 0.3s ease, opacity 0.3s ease, stroke-width 0.3s ease; }
-.cable-live { transition: opacity 0.3s ease; }
-/* Спершу вилка сідає в розетку — і лише тоді кабелем іде «напруга». */
-.cable-draw { stroke-dasharray: 1; animation: cableDraw 0.48s var(--ease-out-soft) 0.3s both; }
-.cable-undraw { stroke-dasharray: 1; animation: cableDraw 0.36s ease-in reverse both; }
-.plug { transition: transform 0.42s var(--ease-pop); }
-.plug.is-dragging { transition: none; }
-/* Невстромлена вилка легенько гойдається — запрошує взяти її. */
-@keyframes plugNudge {
-  0%, 62%, 100% { transform: translateX(0); }
-  78%           { transform: translateX(7px); }
-}
-.plug-nudge { animation: plugNudge 2.4s var(--ease-out-soft) infinite; }
-.socket { transition: stroke 0.3s ease; transform-box: fill-box; transform-origin: center; }
-.socket.is-live { animation: socketClick 0.5s var(--ease-pop); }
-@keyframes socketClick {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-.cable-dot { filter: drop-shadow(0 0 5px color-mix(in oklab, var(--brand) 55%, transparent)); }
-.port-pulse { animation: portPulse 1.2s ease-out; }
-.port-src { display: inline-flex; animation: portSrcIn 0.32s var(--ease-pop) both; }
+.perk-in { animation: perkIn 0.34s var(--ease-out-soft) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .cable-draw,
-  .cable-undraw { animation: none; stroke-dasharray: none; }
-  .plug { transition: none; }
-  .plug-nudge { animation: none; }
-  .socket.is-live { animation: none; }
-  .cable-dot { display: none; }
-  .port-pulse,
-  .port-src { animation: none; }
+  .perk-in { animation: none; }
 }
 
 
@@ -1445,3 +1518,50 @@ main:focus {
 
 
 
+
+/* ============================================================
+   БЛОГ — картинки в тілі статті й липка смуга читання
+
+   Та сама домовленість, що й у продуктових макетах: клас `vis-on`
+   з'являється, коли картинка доїхала до екрана, і все всередині
+   малюється один раз. Без нього нічого не ховаємо — сторінка без
+   JavaScript лишається читабельною.
+   ============================================================ */
+@keyframes visBandIn {
+  from { opacity: 0; transform: scaleY(0.3); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes visSettle {
+  from { transform: rotate(var(--tilt, -2deg)); }
+  to   { transform: none; }
+}
+
+/* Смуга лійки «наливається» згори вниз. */
+.vis-on .vis-band { transform-origin: top; animation: visBandIn 0.62s var(--ease-out-soft) both; }
+/* Стовпчик графіка росте від осі. */
+.vis-on .vis-bar  { transform-origin: bottom; animation: barGrow 0.8s var(--ease-out-soft) both; }
+.vis-on .vis-row  { animation: rowIn 0.55s var(--ease-out-soft) both; }
+.vis-on .vis-pop  { animation: sparkleIn 0.45s var(--ease-pop) both; }
+/* Пунктир цілі розкреслюється зліва направо. */
+.vis-on .vis-line { transform-origin: left; animation: progressX 0.7s var(--ease-out-soft) both; }
+/* Розкидані джерела вирівнюються, коли їх зводять в один список. */
+.vis-on .vis-tilt { animation: visSettle 0.7s var(--ease-out-soft) both; }
+.vis-tilt { transform: rotate(var(--tilt, -2deg)); }
+
+/* Лінії від джерел до списку й сегменти кільця самоперевірки: обидва
+   малюються тим самим прийомом — дасть довжину, анімуємо зсув. */
+.vis-wire { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.vis-on .vis-wire { animation: lineDraw 1s var(--ease-out-soft) both; }
+.vis-ring { stroke-dashoffset: var(--ring-len); }
+.vis-on .vis-ring { animation: ringDraw 1.1s var(--ease-out-soft) both; }
+
+/* Липка смуга внизу статті. Ховається сама, коли доїхали до фінального
+   блоку, — дві однакові кнопки поруч не потрібні. */
+.read-bar {
+  transition: transform 0.32s var(--ease-out-soft), opacity 0.32s var(--ease-out-soft);
+}
+.read-bar[data-on="0"] {
+  opacity: 0;
+  transform: translateY(120%);
+  pointer-events: none;
+}

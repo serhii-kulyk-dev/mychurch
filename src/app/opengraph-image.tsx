@@ -1,50 +1,86 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { SITE_URL } from "@/lib/seo";
 
 /* Статичний експорт: файл генерується під час збірки, не на запит. */
 export const dynamic = "force-static";
 
 /* Картинка для соцмереж і месенджерів — одна на весь сайт.
 
-   Показуємо продукт, а не гасло: зліва слоган, справа фрагмент
-   дашборда церкви. Темна панель — той самий акцент, що й блок
-   заклику на головній, тому в стрічці картка читається одразу.
+   Це не окремий макет, а закривна панель сайту (`sections/cta.tsx`),
+   взята разом із її градієнтом, сяйвами й сіткою — той самий синій, та
+   сама плашка з блакитною крапкою. Текст — заголовок і речення героя.
 
-   Шрифт лежить у репозиторії (Geist, OFL — див. сусідній LICENSE),
-   бо satori не вміє woff2 з next/font, а кирилиця потрібна. */
+   Синя панель, а не тема сайту: вона однакова і в світлій, і в темній
+   темі, тож картка не залежить від того, що обрав відвідувач, і в
+   стрічці Telegram не зливається в чорний прямокутник.
 
-export const alt = "Моя Церква — організація церковних процесів. Досягай людей.";
+   Знака немає — як і в хедері (`shared/logo-link.tsx`), бренд тримає
+   сама словесна частина: Manrope 800, трекінг -0.04em, «Моя» синім.
+   Заголовок і текст — Inter, той самий, що на сайті. Шрифти лежать
+   статичними зрізами (див. brand/ogfonts.py): satori не вміє ні woff2
+   з next/font, ні варіативні осі. */
+
+export const alt = "Моя Церква — єдиний простір для вашої церкви";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const INK = "#0b0b0f";
-const MUTED = "rgba(11,11,15,0.5)";
-const BRAND = "#007aff";
+/* Кольори закривної панелі (`sections/cta.tsx`) — вона навмисне однакова
+   в обох темах, тому значення тут задані числами, а не токенами. */
+const PANEL = "linear-gradient(115deg, #0a1f3d 0%, #06356e 52%, #0b4f9e 100%)";
+const INK = "#ffffff";
+const INK_2 = "rgba(255,255,255,0.70)";
+/* Блакитний акцент панелі: крапка в плашці, хвіст заголовка. */
+const ACCENT = "#8cc2ff";
+const BADGE_BG = "rgba(255,255,255,0.10)";
+const HAIRLINE = "rgba(255,255,255,0.20)";
+const GRID_LINE = "rgba(255,255,255,0.07)";
 
-/* Відвідуваність за 8 тижнів — той самий приклад, що й у демо на сайті.
-   Висоти вже в пікселях: рядок під графік має рівно BARS_HEIGHT. */
-const BARS_HEIGHT = 64;
-const BARS = [40, 47, 43, 53, 50, 58, 54, 64];
-
-const KPI = [
-  { value: "428", label: "людей" },
-  { value: "24", label: "групи" },
-  { value: "11", label: "служінь" },
+/* Ті самі два сяйва, що в панелі: тепле синє зліва згори й блакитне
+   справа знизу. Координати перелічені з її 1120px на кадр 1200×630. */
+const AURORAS = [
+  { x: 240, y: 0, r: 620, a: "rgba(0,122,255,0.55)" },
+  { x: 1030, y: 620, r: 520, a: "rgba(140,194,255,0.30)" },
 ];
 
-const ATTENTION = [
-  { initials: "ОК", name: "Олена Ковальчук", note: "не була 3 тижні" },
-  { initials: "ДЛ", name: "Дмитро Лис", note: "не був 2 тижні" },
-];
+const GRID_STEP = 54; // як `backgroundSize: 54px` у панелі
+
+/* Плашка бере на себе те, чого не кажуть ні заголовок, ні рядок ролей:
+   що це за категорія і що вона українська — головна відмінність від
+   закордонних ChMS (BRAND.md). */
+const BADGE = "Допомагаємо досягати людей";
+/* Заголовок героя з зафіксованим хвостом: на сайті останній рядок
+   перебирає «вашої церкви / вашого служіння / вашої групи», на картці
+   стоїть перший варіант — і так само синім. */
+const HEADLINE_TOP = "Єдиний простір для";
+const HEADLINE_TAIL = "вашої церкви";
+/* Рядок під заголовком відповідає на «а це для кого» — ті самі ролі,
+   що й на /for-whom. */
+const SUBTITLE = "Для пасторів, лідерів, служителів, членів церкви, гостей";
+
+/* Сітку героя малюємо лініями, а не тлом: satori не вміє ні повторювати
+   градієнт через background-size, ні гасити його маскою по краях. */
+function grid() {
+  const lines = [];
+  for (let x = GRID_STEP; x < size.width; x += GRID_STEP) {
+    lines.push(
+      <div key={`v${x}`} style={{ position: "absolute", left: x, top: 0, width: 1, height: size.height, background: GRID_LINE }} />
+    );
+  }
+  for (let y = GRID_STEP; y < size.height; y += GRID_STEP) {
+    lines.push(
+      <div key={`h${y}`} style={{ position: "absolute", left: 0, top: y, width: size.width, height: 1, background: GRID_LINE }} />
+    );
+  }
+  return lines;
+}
 
 export default async function OpengraphImage() {
-  const [font, logo] = await Promise.all([
-    readFile(join(process.cwd(), "src/assets/fonts/Geist-Regular.ttf")),
-    readFile(join(process.cwd(), "public/logo.png")),
+  const [manrope, semibold, regular] = await Promise.all([
+    readFile(join(process.cwd(), "src/assets/fonts/Manrope-ExtraBold.ttf")),
+    readFile(join(process.cwd(), "src/assets/fonts/Inter-SemiBold.ttf")),
+    readFile(join(process.cwd(), "src/assets/fonts/Inter-Regular.ttf")),
   ]);
-  const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
 
   return new ImageResponse(
     (
@@ -54,167 +90,89 @@ export default async function OpengraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "56px 64px",
-          background: "linear-gradient(150deg, #0a1f3d 0%, #06356e 48%, #0b4f9e 100%)",
-          fontFamily: "Geist",
+          background: PANEL,
+          fontFamily: "Inter",
           position: "relative",
         }}
       >
-        {/* Бренд */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        {AURORAS.map((glow) => (
+          <div
+            key={`${glow.x}-${glow.y}`}
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `radial-gradient(circle ${glow.r}px at ${glow.x}px ${glow.y}px, ${glow.a} 0%, rgba(140,194,255,0) 100%)`,
+            }}
+          />
+        ))}
+
+        {grid()}
+
+        {/* Хедер: лише словесна частина, знака немає. */}
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            top: 44,
+            left: 64,
+            fontFamily: "Manrope",
+            fontSize: 36,
+            fontWeight: 800,
+            letterSpacing: -1.44,
+          }}
+        >
+          <span style={{ color: ACCENT }}>Моя</span>
+          <span style={{ color: INK }}>&nbsp;Церква</span>
+        </div>
+
+        {/* Перший екран */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 30,
+            width: "100%",
+            height: "100%",
+            padding: "0 64px",
+          }}
+        >
           <div
             style={{
-              width: 58,
-              height: 58,
-              borderRadius: 16,
-              background: "#ffffff",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              gap: 10,
+              background: BADGE_BG,
+              border: `1px solid ${HAIRLINE}`,
+              borderRadius: 999,
+              padding: "9px 18px 9px 13px",
             }}
           >
-            <img src={logoSrc} width={40} height={40} alt="" />
+            <div style={{ width: 9, height: 9, borderRadius: 999, background: ACCENT }} />
+            <span style={{ fontSize: 20, color: "rgba(255,255,255,0.85)", letterSpacing: -0.2 }}>{BADGE}</span>
           </div>
-          <span style={{ fontSize: 32, color: "#ffffff", letterSpacing: -0.8 }}>Моя Церква</span>
-          <span style={{ fontSize: 22, color: "rgba(255,255,255,0.45)" }}>· MyChurch</span>
-        </div>
 
-        {/* Слоган + фрагмент системи */}
-        <div style={{ display: "flex", alignItems: "center", gap: 44 }}>
-          <div style={{ display: "flex", flexDirection: "column", width: 540, gap: 18 }}>
-            <div style={{ display: "flex", fontSize: 74, color: "#ffffff", letterSpacing: -3, lineHeight: 1.04 }}>
-              Досягай людей
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", fontSize: 88, fontWeight: 600, color: INK, letterSpacing: -2.9, lineHeight: 1.06 }}>
+              {HEADLINE_TOP}
             </div>
-            <div style={{ display: "flex", fontSize: 28, color: "rgba(255,255,255,0.62)", letterSpacing: -0.6, lineHeight: 1.3 }}>
-              Організація церковних процесів
-            </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
-              {["Люди", "Малі групи", "Служіння", "Відвідуваність"].map((chip) => (
-                <div
-                  key={chip}
-                  style={{
-                    display: "flex",
-                    fontSize: 19,
-                    color: "rgba(255,255,255,0.8)",
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    borderRadius: 999,
-                    padding: "8px 16px",
-                  }}
-                >
-                  {chip}
-                </div>
-              ))}
+            <div style={{ display: "flex", fontSize: 88, fontWeight: 600, color: ACCENT, letterSpacing: -2.9, lineHeight: 1.06 }}>
+              {HEADLINE_TAIL}
             </div>
           </div>
 
-          {/* Дашборд церкви */}
-          <div
-            style={{
-              width: 452,
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-              background: "#ffffff",
-              borderRadius: 24,
-              padding: 22,
-              boxShadow: "0 30px 60px rgba(3,18,40,0.35)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 19, color: INK, letterSpacing: -0.4 }}>Дашборд церкви</span>
-              <span
-                style={{
-                  display: "flex",
-                  fontSize: 13,
-                  color: MUTED,
-                  background: "#f4f5f7",
-                  borderRadius: 999,
-                  padding: "5px 12px",
-                }}
-              >
-                Оновлено щойно
-              </span>
-            </div>
-
-            <div style={{ display: "flex", gap: 10 }}>
-              {KPI.map((kpi) => (
-                <div
-                  key={kpi.label}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flex: 1,
-                    gap: 2,
-                    background: "#f7f8fa",
-                    borderRadius: 14,
-                    padding: "12px 14px",
-                  }}
-                >
-                  <span style={{ fontSize: 26, color: INK, letterSpacing: -1 }}>{kpi.value}</span>
-                  <span style={{ fontSize: 13, color: MUTED }}>{kpi.label}</span>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 13, color: MUTED }}>Відвідуваність · 8 тижнів</span>
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 9, height: BARS_HEIGHT }}>
-                {BARS.map((value, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      height: value,
-                      borderRadius: 7,
-                      background: i === BARS.length - 1 ? BRAND : "rgba(0,122,255,0.24)",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-              <span style={{ fontSize: 13, color: MUTED }}>Потребують уваги · 3</span>
-              {ATTENTION.map((person) => (
-                <div key={person.name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 999,
-                      background: "#eaf3ff",
-                      color: BRAND,
-                      fontSize: 12,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {person.initials}
-                  </div>
-                  <span style={{ fontSize: 15, color: INK }}>{person.name}</span>
-                  <span style={{ fontSize: 13, color: MUTED }}>{person.note}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Підвал */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 22, color: "#8cc2ff" }}>{new URL(SITE_URL).host}</span>
-          <span style={{ display: "flex", fontSize: 19, color: "rgba(255,255,255,0.55)" }}>
-            Програма підключення відкрита
-          </span>
+          <div style={{ display: "flex", fontSize: 29, color: INK_2, letterSpacing: -0.3 }}>{SUBTITLE}</div>
         </div>
       </div>
     ),
     {
       ...size,
-      fonts: [{ name: "Geist", data: font, style: "normal", weight: 400 }],
+      fonts: [
+        { name: "Inter", data: semibold, style: "normal", weight: 600 },
+        { name: "Inter", data: regular, style: "normal", weight: 400 },
+        { name: "Manrope", data: manrope, style: "normal", weight: 800 },
+      ],
     }
   );
 }

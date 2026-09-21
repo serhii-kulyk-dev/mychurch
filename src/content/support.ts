@@ -11,6 +11,10 @@ import { SITE_TELEGRAM, SITE_TELEGRAM_HANDLE } from "@/lib/seo";
      • бекапи, ЄС, оновлення ... i18n → faq.categories (Системні, Технічні)
      • етап «Супровід» ......... i18n → consultingPage.stages[3]
    Якщо міняється щось там — міняємо і тут.
+
+   Кроки обробки звернення не переказуємо словами: їх показує
+   переписка в flow.chat — той самий шлях, але видно, як він
+   виглядає насправді.
    ──────────────────────────────────────────────────────────────── */
 
 /** Канал зв'язку: чим є, для чого, коли відповідаємо. */
@@ -24,10 +28,14 @@ export interface SupportChannel {
   when: string;
 }
 
-/** Крок обробки звернення. */
-export interface SupportStep {
-  title: string;
+/** Репліка в переписці з підтримкою. */
+export interface SupportTurn {
+  /** `you` — пише церква, `us` — відповідає підтримка. */
+  from: "you" | "us";
+  at: string;
   text: string;
+  /** Крок обробки, який видно саме в цій репліці. Без нього — просто репліка. */
+  step?: string;
 }
 
 /** Рядок блоку «про що можна не турбуватись». */
@@ -69,8 +77,15 @@ export interface SupportCopy {
     eyebrow: string;
     title: string;
     text: string;
-    steps: SupportStep[];
-    note: string;
+    chat: {
+      /** Назва чату в шапці — це ми, а не вигадана людина з іменем. */
+      title: string;
+      status: string;
+      placeholder: string;
+      /** Підпис під вікном: що це за кадр. */
+      caption: string;
+      turns: SupportTurn[];
+    };
   };
 
   care: {
@@ -78,12 +93,9 @@ export interface SupportCopy {
     title: string;
     text: string;
     items: SupportFact[];
-  };
-
-  self: {
-    title: string;
-    text: string;
-    links: SupportLink[];
+    /** Три місця, де відповідь уже є, — рядком під панеллю. */
+    selfText: string;
+    selfLinks: SupportLink[];
   };
 }
 
@@ -107,8 +119,8 @@ const ua: SupportCopy = {
     ctaSecondary: "Написати на пошту",
     note: "Без тікетів і номерів звернень. Просто напишіть, що сталось.",
     facts: [
-      { value: "протягом дня", label: "відповідь на звернення" },
-      { value: "до 14 днів", label: "запуск з нашою участю" },
+      { value: "швидка", label: "відповідь на звернення" },
+      { value: "до 7 днів", label: "запуск з нашою участю" },
       { value: "щотижня", label: "оновлення платформи" },
     ],
   },
@@ -116,7 +128,7 @@ const ua: SupportCopy = {
   channels: {
     eyebrow: "Куди писати",
     title: "Чотири канали — і жодного автовідповідача",
-    text: "Оберіть той, що зручніший вам. Усі ведуть до тієї самої команди, яка налаштовувала вашу систему.",
+    text: "Усі ведуть до тієї самої команди, яка налаштовувала вашу систему.",
     whenLabel: "Коли відповідаємо",
     items: [
       {
@@ -124,7 +136,7 @@ const ua: SupportCopy = {
         name: "Телеграм",
         handle: TELEGRAM_HANDLE,
         href: TELEGRAM_HREF,
-        text: "Найшвидший канал. Питання по ходу дня, скріншот екрана або голосове — як вам зручніше.",
+        text: "Найшвидший канал: питання по ходу дня, скріншот або голосове.",
         when: "Протягом робочого дня",
       },
       {
@@ -132,7 +144,7 @@ const ua: SupportCopy = {
         name: "Пошта",
         handle: MAIL,
         href: `mailto:${MAIL}`,
-        text: "Для докладних звернень: вивантаження, документи, доступи — усе, що варто зафіксувати текстом.",
+        text: "Коли варто зафіксувати текстом: вивантаження, документи, доступи.",
         when: "Протягом дня",
       },
       {
@@ -140,14 +152,14 @@ const ua: SupportCopy = {
         name: "Телефон",
         handle: PHONE,
         href: PHONE_HREF,
-        text: "Коли щось стало перед служінням і швидше пояснити голосом, ніж описувати.",
+        text: "Коли щось стало перед служінням і швидше пояснити голосом.",
         when: "Пн–Пт, 9:00–18:00",
       },
       {
         id: "team",
         name: "Спільний чат із вашою командою",
         handle: "окремий канал",
-        text: "Заводимо на етапі впровадження: там ваші адміністратори, лідери і ми. Лишається й після запуску.",
+        text: "Ваші адміністратори, лідери і ми. Лишається й після запуску.",
         when: "Створюємо під час впровадження",
       },
     ],
@@ -157,25 +169,43 @@ const ua: SupportCopy = {
     eyebrow: "Як це працює",
     title: "Що відбувається після вашого повідомлення",
     text: "Оформлювати нічого не потрібно — достатньо описати своїми словами. Далі це наша робота.",
-    steps: [
-      {
-        title: "Ви пишете",
-        text: "Текст, скріншот або голосове. Без форм, шаблонів і обов'язкових полів.",
-      },
-      {
-        title: "Ми відтворюємо",
-        text: "Дивимось на ваших даних, що саме сталось, і чи це налаштування, навчання чи наша помилка.",
-      },
-      {
-        title: "Пояснюємо або правимо",
-        text: "Питання — показуємо, де це в системі. Помилка — правимо і кажемо, коли буде виправлення.",
-      },
-      {
-        title: "Повертаємось",
-        text: "Перевіряємо разом з вами, що все на місці. Часті питання додаємо у відповіді на сайті.",
-      },
-    ],
-    note: "Якщо питання виявляється про процеси, а не про кнопки, — переводимо його в консалтинг, і теж без окремої оплати до 1 листопада.",
+    chat: {
+      title: "Моя Церква · підтримка",
+      status: "у мережі",
+      placeholder: "Повідомлення",
+      caption: "Звичайне звернення: від питання зранку до перевірки за тиждень.",
+      turns: [
+        {
+          from: "you",
+          at: "09:41",
+          step: "Ви пишете",
+          text: "Допоможіть обрати автоматизацію.",
+        },
+        {
+          from: "us",
+          at: "09:47",
+          step: "Уточнюємо",
+          text: "Що забирає найбільше часу?",
+        },
+        {
+          from: "you",
+          at: "09:52",
+          text: "Нагадування лідерам про звіти.",
+        },
+        {
+          from: "us",
+          at: "10:05",
+          step: "Налаштовуємо",
+          text: "Увімкнули — тепер бот нагадує сам.",
+        },
+        {
+          from: "us",
+          at: "за тиждень",
+          step: "Повертаємось",
+          text: "Усі звіти зайшли без нагадувань.",
+        },
+      ],
+    },
   },
 
   care: {
@@ -193,19 +223,15 @@ const ua: SupportCopy = {
       },
       {
         title: "Оновлення без простою",
-        text: "Дрібні виправлення виходять щотижня і непомітно. Про великі оновлення попереджаємо заздалегідь.",
+        text: "Нове з'являється саме собою — без зупинок і переустановок. Про великі зміни попереджаємо заздалегідь.",
       },
       {
         title: "Дані лишаються вашими",
         text: "Повний експорт у CSV або Excel доступний будь-коли. Після скасування підписки дані зберігаються ще 60 днів.",
       },
     ],
-  },
-
-  self: {
-    title: "Часто відповідь знаходиться швидше",
-    text: "Перш ніж писати — ось три місця, де вже є пояснення.",
-    links: [
+    selfText: "Часто відповідь знаходиться швидше — ось три місця, де вже є пояснення.",
+    selfLinks: [
       { label: "Питання і відповіді", text: "Комунікація, техніка, безпека даних", href: "/faq" },
       { label: "Телеграм-бот", text: "Що бачить кожна роль і як це виглядає в чаті", href: "/telegram" },
       { label: "Консалтинг", text: "Аудит процесів, впровадження, навчання команди", href: "/consulting" },
@@ -215,9 +241,9 @@ const ua: SupportCopy = {
 
 const en: SupportCopy = {
   navLabel: "Support",
-  seoTitle: "Support — MyChurch",
+  seoTitle: "Support — My Church",
   seoDescription:
-    "MyChurch support: Telegram, email and phone, a reply within the day, a shared channel for your team, daily backups and weekly updates.",
+    "My Church support: Telegram, email and phone, a reply within the day, a shared channel for your team, daily backups and weekly updates.",
 
   hero: {
     eyebrow: "Support",
@@ -227,8 +253,8 @@ const en: SupportCopy = {
     ctaSecondary: "Send an email",
     note: "No tickets, no reference numbers. Just tell us what happened.",
     facts: [
-      { value: "within a day", label: "reply to any request" },
-      { value: "up to 14 days", label: "launch with us alongside" },
+      { value: "fast", label: "reply to any request" },
+      { value: "up to 7 days", label: "launch with us alongside" },
       { value: "weekly", label: "platform updates" },
     ],
   },
@@ -236,7 +262,7 @@ const en: SupportCopy = {
   channels: {
     eyebrow: "Where to write",
     title: "Four channels — and not a single auto-reply",
-    text: "Pick the one that suits you. They all reach the same team that set your system up.",
+    text: "They all reach the same team that set your system up.",
     whenLabel: "When we reply",
     items: [
       {
@@ -244,7 +270,7 @@ const en: SupportCopy = {
         name: "Telegram",
         handle: TELEGRAM_HANDLE,
         href: TELEGRAM_HREF,
-        text: "The fastest channel. Questions as the day goes, a screenshot of the screen or a voice note — whichever is easier.",
+        text: "The fastest channel: questions as the day goes, a screenshot or a voice note.",
         when: "Within the working day",
       },
       {
@@ -252,7 +278,7 @@ const en: SupportCopy = {
         name: "Email",
         handle: MAIL,
         href: `mailto:${MAIL}`,
-        text: "For detailed requests: exports, documents, access rights — anything worth putting in writing.",
+        text: "For anything worth putting in writing: exports, documents, access rights.",
         when: "Within the day",
       },
       {
@@ -260,14 +286,14 @@ const en: SupportCopy = {
         name: "Phone",
         handle: PHONE,
         href: PHONE_HREF,
-        text: "For when something breaks right before a service and talking is faster than typing.",
+        text: "For when something breaks right before a service and talking is faster.",
         when: "Mon–Fri, 9:00–18:00",
       },
       {
         id: "team",
         name: "A shared chat with your team",
         handle: "a channel of your own",
-        text: "We open it during rollout: your admins, your leaders and us. It stays after launch too.",
+        text: "Your admins, your leaders and us. It stays after launch too.",
         when: "Opened during rollout",
       },
     ],
@@ -277,25 +303,43 @@ const en: SupportCopy = {
     eyebrow: "How it works",
     title: "What happens after your message",
     text: "Nothing needs to be formatted — describing it in your own words is enough. The rest is our job.",
-    steps: [
-      {
-        title: "You write",
-        text: "Text, a screenshot or a voice note. No forms, no templates, no required fields.",
-      },
-      {
-        title: "We reproduce it",
-        text: "We look at your own data to see what happened, and whether it is setup, training or a bug on our side.",
-      },
-      {
-        title: "We explain or fix",
-        text: "A question — we show you where it lives in the system. A bug — we fix it and tell you when the fix lands.",
-      },
-      {
-        title: "We come back",
-        text: "We check with you that everything is in place. Frequent questions go into the answers on the site.",
-      },
-    ],
-    note: "If the question turns out to be about processes rather than buttons, we move it to consulting — also at no cost until 1 November.",
+    chat: {
+      title: "My Church · support",
+      status: "online",
+      placeholder: "Message",
+      caption: "An ordinary request: from the morning question to a check a week later.",
+      turns: [
+        {
+          from: "you",
+          at: "09:41",
+          step: "You write",
+          text: "Help us pick an automation.",
+        },
+        {
+          from: "us",
+          at: "09:47",
+          step: "We ask",
+          text: "What takes up the most time?",
+        },
+        {
+          from: "you",
+          at: "09:52",
+          text: "Reminding leaders about reports.",
+        },
+        {
+          from: "us",
+          at: "10:05",
+          step: "We set it up",
+          text: "Done — the bot reminds them now.",
+        },
+        {
+          from: "us",
+          at: "a week later",
+          step: "We come back",
+          text: "Every report came in without a nudge.",
+        },
+      ],
+    },
   },
 
   care: {
@@ -313,19 +357,15 @@ const en: SupportCopy = {
       },
       {
         title: "Updates without downtime",
-        text: "Small fixes ship weekly and go unnoticed. We announce larger updates in advance.",
+        text: "New things simply appear — no stops, no reinstalling. We announce larger changes in advance.",
       },
       {
         title: "The data stays yours",
         text: "A full export to CSV or Excel is available at any time. After a cancellation the data is kept for another 60 days.",
       },
     ],
-  },
-
-  self: {
-    title: "Often the answer is quicker to find",
-    text: "Before you write — three places that already explain it.",
-    links: [
+    selfText: "Often the answer is quicker to find — three places that already explain it.",
+    selfLinks: [
       { label: "Questions and answers", text: "Communication, technology, data safety", href: "/faq" },
       { label: "Telegram bot", text: "What each role sees and how it looks in the chat", href: "/telegram" },
       { label: "Consulting", text: "Process audit, rollout, training for the team", href: "/consulting" },

@@ -1,24 +1,33 @@
-"""Іконка застосунку «Моя Церква»: церква на синьому квадраті зі скругленням.
+"""Іконка застосунку «Моя Церква»: монограма «МЦ» на синьому квадраті.
 
 Використовується тільки як іконка вкладки/застосунку (favicon, icon, apple-icon)
-— знак бренду в інтерфейсі лишається той, що рахує `gen.py`.
+— знак бренду в інтерфейсі лишається той, що рахує `gen.py`, а в хедері стоїть
+словесний логотип, і монограма його не заміняє.
 
-Геометрія знята з ескізу (сітка 160×160) і задана параметрично, тому будь-який
-розмір рахується заново, а не масштабується з растру. Малі розміри (16–32 px)
-беруть товщий штрих і без світлої рамки: інакше на вкладці лишається пляма.
+Літери беруться з Manrope 800 через `word.py`, тому монограма — це той самий
+шрифт, що й логотип, а не окремий малюнок. Ширина ріже кегль раніше за висоту:
+дві широкі кириличні великі літери впираються в бік плитки, і якщо цього не
+врахувати, «Ц» вилазить за край.
+
+Церква, яка стояла тут раніше, лишилась нижче (`church_png`) — вона намальована
+параметрично в сітці 160×160 і готова, якщо монограма не приживеться.
 """
 import os
 from PIL import Image, ImageDraw
+import word
 
 U = 160.0  # умовна сітка, в якій записана геометрія
 
-BAND = 8.0  # світла рамка по краю
-R_OUT = 38.0  # скруглення зовнішнього квадрата
-R_IN = 31.0  # скруглення синього поля під рамкою
-STROKE = 6.0  # товщина ліній церкви
+MONO = "М"  # що стоїть у плитці
+MONO_CAP = 0.62  # бажана висота великої літери в частках сторони
+MONO_MAXW = 0.78  # ширший за це напис не буває: зменшуємо кегль, а не ріжемо
+MONO_TRACK = -0.03  # трекінг між двома літерами, em
 
-BLUE = (0, 122, 255)
-BLUE_LIGHT = (140, 194, 255)
+R_OUT = 38.0  # скруглення квадрата
+STROKE = 6.0  # товщина ліній церкви
+ZOOM = 1.12  # церква на всю плитку: без рамки лишилось місце по краях
+
+BLUE = (0, 105, 224)  # --brand, #0069e0 — той самий синій, що в кнопках
 WHITE = (255, 255, 255)
 
 # Ламані білого контуру: хрест, неф із дахом, два крила, спільна основа.
@@ -30,10 +39,9 @@ WING_R = [(122.5, 123.5), (122.5, 90.5), (96.5, 90.5)]
 BASE = [(37.0, 123.5), (122.5, 123.5)]
 SHAPES = (CROSS_V, CROSS_H, NAVE, WING_L, WING_R, BASE)
 
-SMALL_AT = 32  # до цього розміру включно — спрощена побудова
-SMALL_STROKE = 10.0
-SMALL_ZOOM = 1.12  # без рамки лишається місце: підсуваємо церкву ближче до країв
-CENTER = (80.0, 77.0)  # оптичний центр контуру, навколо нього збільшуємо
+SMALL_AT = 32  # до цього розміру включно — товщий штрих
+SMALL_STROKE = 9.0
+CENTER = (80.0, 77.0)  # центр габариту контуру, навколо нього збільшуємо
 
 
 def _polyline(draw, pts, width, k):
@@ -46,31 +54,47 @@ def _polyline(draw, pts, width, k):
         draw.ellipse([x - r, y - r, x + r, y + r], fill=WHITE + (255,))
 
 
-def _zoomed(pts, zoom):
+def _placed(pts, zoom):
+    """Збільшує контур і ставить його по центру плитки.
+
+    Хрест тягне габарит угору, тому без цієї поправки верхнє поле виходить
+    вужчим за нижнє, і на вкладці іконка виглядає збитою до верхнього краю.
+    """
     cx, cy = CENTER
-    return [(cx + (x - cx) * zoom, cy + (y - cy) * zoom) for x, y in pts]
+    z = [(cx + (x - cx) * zoom, cy + (y - cy) * zoom) for x, y in pts]
+    return [(x + OFFSET[0], y + OFFSET[1]) for x, y in z]
 
 
-def to_png(size, band=True, stroke=STROKE, zoom=1.0, square=False, path=None):
-    """Рендер у `size` пікселів через 8× суперсемплінг."""
-    ss = 8 if size <= 256 else 3
-    k = size * ss / U
-    side = round(U * k)
-    img = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+def _offset():
+    """Зсув, який вирівнює габарит усіх ламаних по центру сітки 160×160."""
+    cx, cy = CENTER
+    xs = [cx + (x - cx) * ZOOM for pts in SHAPES for x, _ in pts]
+    ys = [cy + (y - cy) * ZOOM for pts in SHAPES for _, y in pts]
+    return (U / 2 - (min(xs) + max(xs)) / 2, U / 2 - (min(ys) + max(ys)) / 2)
+
+
+OFFSET = _offset()
+
+
+def to_png(size, square=False, path=None):
+    """Монограма в плитці, `size` пікселів, через суперсемплінг."""
+    ss = 8 if size <= 64 else 4
+    n = size * ss
+    img = Image.new("RGBA", (n, n), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-
-    outer = BLUE_LIGHT if band else BLUE
-    box = [0, 0, side - 1, side - 1]
     if square:
-        d.rectangle(box, fill=outer + (255,))
+        d.rectangle([0, 0, n - 1, n - 1], fill=BLUE + (255,))
     else:
-        d.rounded_rectangle(box, R_OUT * k, fill=outer + (255,))
-    if band:
-        b = BAND * k
-        d.rounded_rectangle([b, b, side - 1 - b, side - 1 - b], R_IN * k, fill=BLUE + (255,))
+        d.rounded_rectangle([0, 0, n - 1, n - 1], n * (R_OUT / U), fill=BLUE + (255,))
 
-    for pts in SHAPES:
-        _polyline(d, _zoomed(pts, zoom), stroke, k)
+    cap = n * MONO_CAP
+    tr = MONO_TRACK if len(MONO) > 1 else 0.0
+    w = word.width(MONO, word.cap_to_px(cap), word.WEIGHT_LOGO, tr)
+    if w > n * MONO_MAXW:
+        cap *= n * MONO_MAXW / w
+        w = word.width(MONO, word.cap_to_px(cap), word.WEIGHT_LOGO, tr)
+    word.draw(d, ((n - w) / 2, n / 2 + cap / 2), MONO, word.cap_to_px(cap),
+              WHITE, WHITE, word.WEIGHT_LOGO, tr)
 
     img = img.resize((size, size), Image.LANCZOS)
     if path:
@@ -79,19 +103,36 @@ def to_png(size, band=True, stroke=STROKE, zoom=1.0, square=False, path=None):
 
 
 def icon(size, path=None):
-    """Розмір → готова іконка з потрібним для нього спрощенням."""
-    small = size <= SMALL_AT
-    return to_png(
-        size,
-        band=not small,
-        stroke=SMALL_STROKE if small else STROKE,
-        zoom=SMALL_ZOOM if small else 1.0,
-        path=path,
-    )
+    """Розмір → готова іконка. Монограма однакова на всіх розмірах."""
+    return to_png(size, path=path)
 
 
-def svg(band=True, stroke=STROKE, zoom=1.0):
-    """Векторний майстер — те саме, що й растр, один в один."""
+def church_png(size, stroke=STROKE, zoom=ZOOM, square=False, path=None):
+    """Стара іконка — церква на плитці. Лишена як запасний варіант."""
+    ss = 8 if size <= 256 else 3
+    k = size * ss / U
+    side = round(U * k)
+    img = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+
+    box = [0, 0, side - 1, side - 1]
+    if square:
+        d.rectangle(box, fill=BLUE + (255,))
+    else:
+        d.rounded_rectangle(box, R_OUT * k, fill=BLUE + (255,))
+
+    for pts in SHAPES:
+        _polyline(d, _placed(pts, zoom), stroke, k)
+
+    img = img.resize((size, size), Image.LANCZOS)
+    if path:
+        img.save(path)
+    return img
+
+
+def church_svg(stroke=STROKE, zoom=ZOOM):
+    """Векторний майстер церкви. Для монограми його немає: літери довелось би
+    перевести в криві, а fontTools на машині не стоїть."""
     def d(pts):
         head = f"M{pts[0][0]:g} {pts[0][1]:g}"
         return head + "".join(f"L{x:g} {y:g}" for x, y in pts[1:])
@@ -99,14 +140,8 @@ def svg(band=True, stroke=STROKE, zoom=1.0):
     def hexc(c):
         return "#%02x%02x%02x" % c
 
-    bg = (
-        f'<rect width="160" height="160" rx="{R_OUT:g}" fill="{hexc(BLUE_LIGHT)}"/>'
-        f'<rect x="{BAND:g}" y="{BAND:g}" width="{160 - 2 * BAND:g}"'
-        f' height="{160 - 2 * BAND:g}" rx="{R_IN:g}" fill="{hexc(BLUE)}"/>'
-        if band
-        else f'<rect width="160" height="160" rx="{R_OUT:g}" fill="{hexc(BLUE)}"/>'
-    )
-    paths = "".join(f'<path d="{d(_zoomed(p, zoom))}"/>' for p in SHAPES)
+    bg = f'<rect width="160" height="160" rx="{R_OUT:g}" fill="{hexc(BLUE)}"/>'
+    paths = "".join(f'<path d="{d(_placed(p, zoom))}"/>' for p in SHAPES)
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">'
         f"{bg}"

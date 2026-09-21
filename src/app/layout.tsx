@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Caveat, Manrope } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import { DemoModalProvider } from "@/context/demo-modal-context";
 import DemoModal from "@/components/shared/demo-modal";
@@ -13,7 +13,7 @@ import AnchorGuard from "@/components/shared/anchor-guard";
 import BackToTop from "@/components/shared/back-to-top";
 import Analytics from "@/components/shared/analytics";
 import { graph, organizationSchema, websiteSchema } from "@/lib/schema";
-import { OG_IMAGE, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/seo";
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_URL, absoluteUrl, ogImage, twitterImage } from "@/lib/seo";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,13 +30,6 @@ const manrope = Manrope({
   display: "swap",
   preload: true,
   weight: ["500", "800"],
-});
-
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-  preload: true,
 });
 
 export const viewport: Viewport = {
@@ -86,9 +79,9 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     title: "Моя Церква — система управління церквою українською",
     description: SITE_DESCRIPTION,
-    images: [OG_IMAGE],
+    images: [ogImage(OG_IMAGE)],
   },
-  twitter: { card: "summary_large_image", images: [OG_IMAGE.url] },
+  twitter: { card: "summary_large_image", images: [twitterImage(OG_IMAGE)] },
 };
 
 /* Runs before first paint so the stored theme and language are already
@@ -115,7 +108,7 @@ export default function RootLayout({
     <html
       lang="uk"
       data-lang="ua"
-      className={`${inter.variable} ${manrope.variable} ${caveat.variable} h-full antialiased`}
+      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

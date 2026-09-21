@@ -197,9 +197,9 @@ const ua: PricingCopy = {
 };
 
 const en: PricingCopy = {
-  seoTitle: "What a church management system costs — MyChurch plans",
+  seoTitle: "What a church management system costs — My Church plans",
   seoDescription:
-    "Four steps of MyChurch: Start, Base, Growth and Premium. What each one takes off your hands and how much time it gives back. We name the exact figure before work starts.",
+    "Four steps of My Church: Start, Base, Growth and Premium. What each one takes off your hands and how much time it gives back. We name the exact figure before work starts.",
   navLabel: "Pricing",
 
   eyebrow: "Pricing",

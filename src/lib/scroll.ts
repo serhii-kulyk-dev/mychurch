@@ -27,12 +27,16 @@ export function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** Обробник кліку для посилання «/#секція»: на своїй сторінці гортаємо самі. */
+/** Обробник кліку для посилання з якорем («/#секція», «/modules#m-team»):
+    якщо секція вже на цій сторінці — гортаємо самі, без переходу. Інакше це
+    звичайне посилання: роутер завантажить потрібну сторінку, а адресу там
+    почистить <AnchorGuard />. Без цього перехід «на себе» лишає #hash в
+    адресі назавжди: роутер робить pushState, а він не будить ані `load`,
+    ані `hashchange`, на які й дивиться AnchorGuard. */
 export function sectionClick(href: string) {
   return (e: { preventDefault: () => void }) => {
-    if (!href.startsWith("/#")) return;
-    const id = href.slice(2);
-    if (!document.getElementById(id)) return;
+    const id = href.split("#")[1];
+    if (!id || !document.getElementById(id)) return;
     e.preventDefault();
     scrollToSection(id);
   };

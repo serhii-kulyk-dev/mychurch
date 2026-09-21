@@ -5,7 +5,8 @@
 позицій, тому PNG для соцмереж і SVG-локап збігаються.
 
 Шрифт лежить поруч — `brand/fonts/Manrope[wght].ttf`, ліцензія OFL
-(`Manrope-OFL.txt`), так само як Geist для Open Graph.
+(`Manrope-OFL.txt`). Статичні зрізи того самого шрифту для картинок
+соцмереж робить `brand/ogfonts.py`.
 """
 import os
 from PIL import ImageFont

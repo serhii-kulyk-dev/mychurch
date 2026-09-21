@@ -3,9 +3,7 @@ import Navbar from "@/components/sections/navbar";
 import AiHero from "@/components/sections/ai-hero";
 import AiScenarios from "@/components/sections/ai-scenarios";
 import AiChatWatcher from "@/components/sections/ai-chat-watcher";
-import AiTryIt from "@/components/sections/ai-try-it";
 import AiPersona from "@/components/sections/ai-persona";
-import AiTrust from "@/components/sections/ai-trust";
 import Cta from "@/components/sections/cta";
 import Footer from "@/components/sections/footer";
 import JsonLd from "@/components/shared/json-ld";
@@ -29,9 +27,14 @@ export default function AiPage() {
         <AiHero />
         <AiScenarios />
         <AiChatWatcher />
-        <AiTryIt />
+        {/* «Натисніть — і побачите, як він відповідає» знято 2026-09-21:
+            після сценаріїв і живої переписки вище це був третій чат поспіль.
+            Компонент цілий у components/sections/ai-try-it.tsx. */}
         <AiPersona />
-        <AiTrust />
+        {/* «Робить багато. Але нічого — без вас» знято 2026-09-21: три
+            картки з обіцянками довіри читались як текст про текст, а
+            «після вашого "так"» уже стоїть у першому ж реченні сторінки.
+            Компонент цілий у components/sections/ai-trust.tsx. */}
         <Cta />
       </main>
       <Footer />

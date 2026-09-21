@@ -48,7 +48,8 @@ export default function BackToTop() {
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-3 pointer-events-none"
       )}
-      style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
+      /* --float-lift піднімає кнопку над липкою смугою статті, коли та видима. */
+      style={{ bottom: "calc(max(1rem, env(safe-area-inset-bottom)) + var(--float-lift, 0px))" }}
     >
       <ArrowUp className="w-[18px] h-[18px] md:w-5 md:h-5" strokeWidth={2} />
     </button>

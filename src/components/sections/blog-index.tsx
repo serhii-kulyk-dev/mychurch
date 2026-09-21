@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
-import { BLOG_CATEGORIES, BLOG_COPY, BLOG_POSTS, searchQueries, starterPosts } from "@/content/blog";
+import { BLOG_CATEGORIES, BLOG_COPY, BLOG_POSTS, starterPosts } from "@/content/blog";
 import type { BlogPost } from "@/content/blog";
 import { BLOG_CATEGORY_ACCENTS, BLOG_CATEGORY_ICONS } from "@/components/shared/blog-icons";
 import { useLang } from "@/lib/lang";
@@ -28,7 +28,6 @@ export default function BlogIndex() {
   const t = BLOG_COPY[lang];
   const categories = BLOG_CATEGORIES[lang];
   const starter = starterPosts(lang);
-  const queries = searchQueries(lang, 18);
 
   const categoryTitle = (post: BlogPost) => categories.find((c) => c.id === post.category)?.title ?? "";
 
@@ -142,33 +141,6 @@ export default function BlogIndex() {
         </div>
       </section>
 
-      {/* ── За якими запитами шукають ────────────────────────── */}
-      <section className="w-full flex flex-col items-center pb-14 md:pb-20 bg-page">
-        <div className="w-full max-w-[1120px] px-5 md:px-8">
-          <FadeIn className="rounded-[24px] border border-hairline bg-surface p-6 md:p-8 flex flex-col gap-5">
-            <div className="flex items-start gap-3.5">
-              <span className="w-10 h-10 rounded-xl bg-brand-soft text-brand flex items-center justify-center shrink-0 dark:bg-brand/15">
-                <Search className="w-[19px] h-[19px]" strokeWidth={2} />
-              </span>
-              <div className="flex flex-col gap-1">
-                <h2 className="font-semibold text-ink text-[20px] md:text-[24px] leading-[1.2] tracking-[-0.5px]">{t.queriesTitle}</h2>
-                <p className="text-[15px] text-ink-2 leading-[1.5] max-w-[640px]">{t.queriesText}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {queries.map(({ query, slug }) => (
-                <Link
-                  key={query}
-                  href={`/blog/${slug}`}
-                  className="chip-module rounded-full border border-hairline-strong bg-surface-2 px-3.5 py-2 text-[13.5px] text-ink-2 hover:text-ink leading-none"
-                >
-                  {query}
-                </Link>
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
     </>
   );
 }

@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
-import { LayoutGrid, Sparkles } from "lucide-react";
+import { LayoutGrid, Plus, SlidersHorizontal, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import PersonAvatar, { lookFor } from "@/components/shared/person-avatar";
-import { MODULE_ICONS, GROUP_ICONS, GROUP_ACCENTS, moduleAccent } from "@/components/shared/module-icons";
+import { GROUP_ICONS, GROUP_ACCENTS } from "@/components/shared/module-icons";
 import { hasModulePage } from "@/content/modules/ids";
+import { sectionClick } from "@/lib/scroll";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 import type { Dict } from "@/lib/i18n";
@@ -52,7 +53,8 @@ const RIGHT = NODES.filter((n) => n.side === "right");
 
 const STORY: (NodeId | "platform")[] = [...ROWS, "platform"];
 
-const PLATFORM_MODULES = ["customization", "templates", "automations"];
+/* Slate: the setup layer is not a module group, so it borrows no group accent. */
+const PLATFORM_ACCENT = "#64748b";
 
 const STEP_MS = 3200;
 
@@ -166,7 +168,13 @@ function GroupCard({
           : "0 1px 2px rgba(0,0,0,0.03)",
       }}
     >
-      <Link href={`/modules#m-${def.groups[0]}`} className="flex items-center gap-2 group/head">
+      {/* Карта живе і на /modules: там група вже під нами, тож гортаємо
+          самі — інакше в адресі лишається #m-<група>. */}
+      <Link
+        href={`/modules#m-${def.groups[0]}`}
+        onClick={sectionClick(`/modules#m-${def.groups[0]}`)}
+        className="flex items-center gap-2 group/head"
+      >
         <span
           className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300"
           style={{ background: on ? accent : `color-mix(in oklab, ${accent} 13%, var(--surface))`, color: on ? "#fff" : accent }}
@@ -205,7 +213,7 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
   const story: (NodeId | "platform")[] = focusNode && focusNode !== "profile" ? [focusNode] : STORY;
 
   const [step, setStep] = useState(0);
-  const [hover, setHover] = useState<NodeId | null>(null);
+  const [hover, setHover] = useState<NodeId | "platform" | null>(null);
   const [inView, setInView] = useState(false);
   const reduced = useSyncExternalStore(subscribeReduced, getReduced, getReducedServer);
 
@@ -213,7 +221,11 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
   const hubRef = useRef<HTMLDivElement>(null);
   const cardEls = useRef<Partial<Record<NodeId, HTMLDivElement | null>>>({});
   const rowEls = useRef<Partial<Record<NodeId, HTMLDivElement | null>>>({});
-  const [geo, setGeo] = useState<{ w: number; h: number; wires: Partial<Record<NodeId, { d: string; head: string }>> } | null>(null);
+  const [geo, setGeo] = useState<{
+    w: number; h: number;
+    wires: Partial<Record<NodeId, { d: string; head: string }>>;
+    /** Bottom-centre of the profile card: where the setup layer plugs in. */
+  } | null>(null);
 
   /* Measure card + its row → one connector each. Re-runs on any size change. */
   useLayoutEffect(() => {
@@ -257,7 +269,11 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
             wires[p.id] = p.dir === "in" ? elbow(p.card, p.row, lane) : elbow(p.row, p.card, lane);
           }
         }
-        setGeo({ w: base.width, h: base.height, wires });
+        setGeo({
+          w: base.width,
+          h: base.height,
+          wires,
+        });
       });
     };
     measure();
@@ -285,6 +301,9 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
   }, [paused, story.length]);
 
   const active: NodeId | "platform" = hover ?? story[step % story.length];
+  /* The setup layer is on: its own row inside the profile fills in. */
+  const setupOn = active === "platform";
+  const customRow = setupOn ? copy.custom.filled : copy.custom.empty;
 
   const column = (defs: NodeDef[]) => (
     <div className="flex flex-col gap-2.5 md:justify-between">
@@ -405,13 +424,56 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
                       >
                         <Icon className="w-[11px] h-[11px]" strokeWidth={2.4} />
                       </span>
-                      <span className="text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ink-3 w-[62px] shrink-0 truncate">{row.label}</span>
+                      <span className="text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ink-3 w-[66px] shrink-0 truncate">{row.label}</span>
                       <span className={cn("text-[12.5px] leading-[1.3] truncate transition-colors duration-300", on ? "text-ink font-medium" : "text-ink-2")}>
                         {row.value}
                       </span>
                     </div>
                   );
                 })}
+
+                {/* Рядок, якого ми не постачали: церква додає його сама.
+                    Порожній, поки шар налаштувань не засвітиться, — тоді
+                    заповнюється. Смуга «Налаштування» з трьома чипами під
+                    схемою прибрана 2026-09-21: кастомізацію доводить слід
+                    у чужому екрані, а не перелік модулів збоку. */}
+                <div
+                  onMouseEnter={() => setHover("platform")}
+                  onMouseLeave={() => setHover(null)}
+                  className="mt-1 flex items-center gap-2 rounded-lg border border-dashed px-1.5 py-[7px] transition-colors duration-300"
+                  style={{
+                    borderColor: setupOn ? `color-mix(in oklab, ${PLATFORM_ACCENT} 60%, var(--hairline-strong))` : "var(--hairline-strong)",
+                    background: setupOn ? `color-mix(in oklab, ${PLATFORM_ACCENT} 10%, var(--surface))` : "transparent",
+                  }}
+                >
+                  <span
+                    className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-colors duration-300"
+                    style={{
+                      background: setupOn ? PLATFORM_ACCENT : `color-mix(in oklab, ${PLATFORM_ACCENT} 12%, var(--surface))`,
+                      color: setupOn ? "#fff" : PLATFORM_ACCENT,
+                    }}
+                  >
+                    {setupOn
+                      ? <SlidersHorizontal className="w-[11px] h-[11px]" strokeWidth={2.4} />
+                      : <Plus className="w-[11px] h-[11px]" strokeWidth={2.6} />}
+                  </span>
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.05em] text-ink-3 w-[66px] shrink-0 truncate">{customRow.label}</span>
+                  <span
+                    key={String(setupOn)}
+                    className={cn("text-[12.5px] leading-[1.3] truncate transition-colors duration-300", setupOn ? "text-ink font-medium" : "text-ink-3")}
+                    style={setupOn && !reduced ? { animation: "revealUp 0.4s var(--ease-out-soft) both" } : undefined}
+                  >
+                    {customRow.value}
+                  </span>
+                  {setupOn && (
+                    <span
+                      className="ml-auto shrink-0 rounded-full px-1.5 py-[3px] text-[9.5px] font-semibold uppercase tracking-[0.06em] leading-none"
+                      style={{ background: `color-mix(in oklab, ${PLATFORM_ACCENT} 16%, var(--surface))`, color: PLATFORM_ACCENT }}
+                    >
+                      {copy.custom.filled.tag}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -419,60 +481,10 @@ export default function ModulesMap({ focusModule, bare }: { focusModule?: string
             <div className="relative z-10 order-3">{column(RIGHT)}</div>
           </div>
 
-          {/* Platform: the layer under everything */}
-          <div
-            className="rounded-[16px] border border-dashed px-3 py-2.5 flex flex-col sm:flex-row sm:items-center gap-2.5 transition-colors duration-300"
-            style={{
-              borderColor: active === "platform" ? "color-mix(in oklab, #64748b 55%, var(--hairline-strong))" : "var(--hairline-strong)",
-              background: active === "platform" ? "var(--surface-2)" : "transparent",
-            }}
-          >
-            <span className="flex items-center gap-2 shrink-0">
-              <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-surface-3 text-ink-2">
-                <LayoutGrid className="w-[15px] h-[15px]" strokeWidth={2.2} />
-              </span>
-              <span className="font-semibold text-ink text-[13.5px] tracking-[-0.2px]">{copy.nodes.platform}</span>
-            </span>
-            <div className="flex flex-wrap gap-1 sm:ml-auto">
-              {PLATFORM_MODULES.map((id) => {
-                const found = findModule(t, id);
-                if (!found) return null;
-                const Icon = MODULE_ICONS[id] ?? LayoutGrid;
-                const c = moduleAccent(id, found.group.id);
-                const href = hasModulePage(id) ? `/modules/${id}` : `/modules#m-${found.group.id}`;
-                return (
-                  <Link
-                    key={id}
-                    href={href}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface px-1.5 py-[3px] text-[11.5px] font-medium text-ink-2 leading-none hover:text-ink hover:border-hairline-strong transition-colors"
-                  >
-                    <Icon className="w-3 h-3" strokeWidth={2.2} style={{ color: c }} />
-                    {found.item.name}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Caption */}
+          {/* Підпис до того, що зараз підсвічене. Крапки-перемикачі
+              прибрані 2026-09-21: у блоках лишаються візуалізація і те,
+              що можна навести, а не навігація. */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5" aria-live="polite">
-            {story.length > 1 && (
-              <div className="flex items-center gap-1.5 shrink-0">
-                {story.map((id, i) => {
-                  const on = !hover && i === step % story.length;
-                  return (
-                    <button
-                      key={id}
-                      aria-label={copy.nodeHints[id]}
-                      onClick={() => { setStep(i); setHover(null); }}
-                      className="h-5 flex items-center px-0.5 group"
-                    >
-                      <span className={cn("block h-1.5 rounded-full transition-all duration-300", on ? "w-6 bg-brand" : "w-1.5 bg-hairline-strong group-hover:bg-ink-3")} />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
             <p key={active} className="text-[15px] text-ink-2 leading-[1.45]" style={{ animation: "revealUp 0.4s var(--ease-out-soft) both" }}>
               {copy.nodeHints[active]}
             </p>

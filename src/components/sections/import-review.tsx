@@ -151,7 +151,9 @@ export default function ImportReview() {
             </div>
 
             <FadeIn delay={2} className="flex flex-col gap-3 pl-4 border-l-2 border-brand/40">
-              <p className="text-[16px] text-ink leading-[1.5] tracking-[-0.2px]">«{c.quote.text}»</p>
+              {/* Це наш опис випадку, а не слова церкви: лапки прибрані
+                  2026-09-21, бо цитати за церкву ми не пишемо. */}
+              <p className="text-[16px] text-ink leading-[1.5] tracking-[-0.2px]">{c.quote.text}</p>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="text-[13px] text-ink-3 leading-none">{c.quote.author}</span>
                 <Link

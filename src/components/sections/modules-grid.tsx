@@ -208,7 +208,7 @@ export default function ModulesGrid() {
           </div>
 
           {/* ── Самі модулі ── */}
-          <div className="min-w-0 flex-1 flex flex-col gap-7 md:gap-8 pt-6 lg:pt-0">
+          <div className="min-w-0 flex-1 flex flex-col gap-9 md:gap-11 pt-6 lg:pt-0">
             {q && (
               <p className="text-[14px] text-ink-3 tabular-nums" role="status" aria-live="polite">
                 {found > 0 ? c.found.replace("{n}", String(found)) : c.empty}
@@ -225,8 +225,9 @@ export default function ModulesGrid() {
                   id={`m-${group.id}`}
                   className={cn("scroll-mt-32 flex flex-col gap-3", hidden && "hidden")}
                 >
-                  {/* Заголовок групи — знак, назва, лічильник. Пояснення зайве: назви модулів під ним кажуть те саме. */}
-                  <FadeIn className="flex items-baseline gap-2.5 min-w-0">
+                  {/* Заголовок групи — знак, назва, лічильник, і волосяна лінія
+                      під ними: групи мають читатись як розділи довідника. */}
+                  <FadeIn className="flex items-baseline gap-2.5 min-w-0 border-b border-hairline pb-3">
                     <span
                       className="self-center shrink-0 w-8 h-8 rounded-[10px] flex items-center justify-center"
                       style={{ background: `color-mix(in oklab, ${accent} 14%, var(--surface))`, color: accent }}
@@ -299,6 +300,21 @@ export default function ModulesGrid() {
               >
                 {c.clear}
               </button>
+            )}
+
+            {/* Перенесення бази — не окремий розділ сайту, а вхід у модулі:
+                рядок стоїть під каталогом, а не третім реченням у шапці. */}
+            {!q && (
+              <FadeIn className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-hairline pt-6 text-[15px] text-ink-3">
+                {t.importLink.text}
+                <Link
+                  href="/import"
+                  className="inline-flex items-center gap-1 font-medium text-brand hover:underline underline-offset-4"
+                >
+                  {t.importLink.cta}
+                  <ArrowUpRight className="w-[15px] h-[15px]" strokeWidth={2} />
+                </Link>
+              </FadeIn>
             )}
           </div>
         </div>

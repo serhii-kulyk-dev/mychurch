@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import {
-  BarChart3, CalendarCheck, Check, FileBarChart, FileDown,
-  Loader2, MousePointerClick, TrendingDown, TrendingUp,
-} from "lucide-react";
+import { BarChart3, CalendarCheck, Check, FileBarChart, FileDown, Loader2, TrendingDown, TrendingUp } from "lucide-react";
 import { useT } from "@/lib/lang";
-import ClickHere from "@/components/shared/click-here";
 import { prefersReducedMotion } from "@/components/shared/fade-in";
 import { useCountUp } from "@/components/shared/use-count-up";
 import { cn } from "@/lib/utils";
-import { centerInRail } from "@/lib/scroll";
 import type { Dict } from "@/lib/i18n";
 
 /* The analytics block is one screen whose chart keeps changing. Three views,
@@ -180,7 +175,10 @@ function AttendanceView({ t }: { t: Dict["features"]["mocks"]["analytics"]["atte
                 tabIndex={0}
                 aria-label={`${t.weeks[i]}: ${t.series[0]} ${v}, ${t.series[1]} ${g}`}
                 onPointerEnter={(e) => e.pointerType === "mouse" && setManual(i)}
-                onClick={() => setManual((w) => (w === i ? null : i))}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setManual((w) => (w === i ? null : i));
+                }}
                 onFocus={() => setManual(i)}
                 onBlur={() => setManual(null)}
                 className="relative flex-1 h-full flex items-end justify-center gap-[3px] cursor-pointer outline-none transition-opacity duration-300"
@@ -400,10 +398,6 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
   const { ref, inView } = useInView<HTMLElement>();
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [round, setRound] = useState(0);
-  const [touched, setTouched] = useState(false);
-  const railRef = useRef<HTMLDivElement>(null);
-  const railWrapRef = useRef<HTMLDivElement>(null);
   /* One label per view, never more: the dictionary must not be able to ask
      for a chart that does not exist. */
   const views = block.points.slice(0, VIEWS.length);
@@ -413,87 +407,24 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
     if (!inView || paused || prefersReducedMotion()) return;
     const id = setTimeout(() => setActive((i) => (i + 1) % views.length), CYCLE_MS);
     return () => clearTimeout(id);
-  }, [inView, paused, active, round, views.length]);
-
-  /* On small screens the list is a horizontal strip — keep the active view in
-     sight. Only the strip moves: scrollIntoView would take the page with it. */
-  useEffect(() => {
-    centerInRail(railRef.current, active, !prefersReducedMotion());
-  }, [active]);
-
-  const pick = (i: number) => {
-    setActive(i);
-    setRound((n) => n + 1);
-    setTouched(true);
-  };
+  }, [inView, paused, active, views.length]);
 
   return (
-    <article ref={ref} className="overflow-hidden rounded-[24px] md:rounded-[28px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)] grid grid-cols-1 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]">
-      {/* Story + switcher */}
-      <div className="flex flex-col justify-center gap-3 p-7 md:p-10">
-        <h3 className="font-semibold text-ink text-[30px] md:text-[40px] leading-[1.05] tracking-[-1.2px]">{block.title}</h3>
-        <p className="text-[15.5px] font-normal text-ink-2 leading-[1.55]">{block.text}</p>
+    <article ref={ref} className="overflow-hidden rounded-[24px] md:rounded-[28px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)] grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]">
+      {/* Розповідь праворуч: екран стоїть ліворуч, щоб блоки огляду
+          й далі йшли шахівницею (перед цим «Планування» і «Аналітика»
+          обидва мали екран праворуч). */}
+      <div className="flex flex-col justify-center gap-3 p-7 md:p-10 md:order-2">
+        {/* Кегль той самий, що в решти блоків огляду (features.tsx): у аналітики
+            був свій, менший — і назва модуля випадала з ряду. */}
+        <h3 className="font-semibold text-ink text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">{block.title}</h3>
+        <p className="text-[16.5px] md:text-[18px] font-normal text-ink-2 leading-[1.5]">{block.text}</p>
 
-        {/* Обгортка тільки під курсор: сам рейок на телефоні прокручується,
-            і все, що в ньому, поїхало б разом зі скролом. */}
-        <div ref={railWrapRef} className="relative">
-        <div
-          ref={railRef}
-          role="tablist"
-          aria-label={block.title}
-          className="flex md:flex-col gap-1.5 md:gap-1 pt-2 -mx-1 px-1 overflow-x-auto md:overflow-visible snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {views.map((v, i) => {
-            const { icon: Icon, color } = VIEWS[i];
-            const on = i === active;
-            return (
-              <button
-                key={v}
-                type="button"
-                role="tab"
-                aria-selected={on}
-                data-click-here
-                onClick={() => pick(i)}
-                className={cn(
-                  "relative shrink-0 snap-center flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-left overflow-hidden transition-colors duration-200",
-                  on ? "bg-surface-2 border border-hairline" : "border border-transparent hover:bg-surface-2/70"
-                )}
-              >
-                <span
-                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200"
-                  style={{ background: on ? color : `color-mix(in oklab, ${color} 13%, var(--surface))`, color: on ? "#fff" : color }}
-                >
-                  <Icon className="w-4 h-4" strokeWidth={2.2} />
-                </span>
-                <span className={cn("text-[14px] leading-[1.25] whitespace-nowrap md:whitespace-normal", on ? "font-semibold text-ink" : "font-medium text-ink-2")}>{v}</span>
-                {on && (
-                  <span aria-hidden className="absolute left-0 right-0 bottom-0 h-[2px] overflow-hidden">
-                    <span
-                      key={`${active}-${round}`}
-                      className="block h-full origin-left"
-                      style={{
-                        background: color,
-                        opacity: 0.6,
-                        animationName: "barGrowX",
-                        animationDuration: `${CYCLE_MS}ms`,
-                        animationTimingFunction: "linear",
-                        animationFillMode: "both",
-                        animationPlayState: paused ? "paused" : "running",
-                      }}
-                    />
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-          <ClickHere host={railWrapRef} show={!touched} size={54} />
-        </div>
       </div>
 
       {/* The screen: same chrome, a different chart every few seconds */}
       <div
-        className="relative flex items-center justify-center min-h-[300px] md:min-h-[440px] p-5 md:p-8 md:order-2"
+        className="relative flex items-center justify-center min-h-[280px] md:min-h-[440px] p-5 md:p-8 md:order-1"
         style={{ background: tint }}
         onPointerEnter={(e) => e.pointerType === "mouse" && setPaused(true)}
         onPointerLeave={(e) => e.pointerType === "mouse" && setPaused(false)}
@@ -526,10 +457,6 @@ export default function AnalyticsShowcase({ block, tint }: { block: Block; tint:
               {active === 2 && <ReportView t={t.report} />}
             </div>
           </div>
-          <span className="mt-5 flex items-center gap-1.5 text-[12px] text-ink-3 leading-none text-center">
-            <MousePointerClick className="tap-hint w-3.5 h-3.5 shrink-0" style={{ color: accent }} strokeWidth={2.2} />
-            {t.hint}
-          </span>
         </div>
       </div>
     </article>

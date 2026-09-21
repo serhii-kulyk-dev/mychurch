@@ -467,15 +467,14 @@ export default function DeskStage({ active, onPick, auto, cycle }: {
                   aria-selected={on}
                   onClick={() => onPick(i)}
                   className={cn(
-                    "relative min-w-0 flex items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition-colors duration-200 overflow-hidden border",
+                    "relative min-w-0 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors duration-200 overflow-hidden border",
                     on ? "bg-surface border-hairline shadow-[0_1px_2px_rgba(0,0,0,0.04)]" : "border-transparent text-ink-2 hover:bg-surface/70 hover:text-ink",
                   )}
                 >
                   <PersonAvatar look={AVATAR_LOOKS[LOOK[r.id] ?? 0]} size={28} className={cn("rounded-full transition-opacity", live ? "opacity-100" : "opacity-60")} />
-                  <span className="flex flex-col min-w-0">
-                    <span className={cn("text-[13px] font-semibold leading-[1.2] truncate", on ? "text-ink" : "text-inherit")}>{r.short}</span>
-                    <span className="block text-[10.5px] text-ink-3 leading-none mt-1 truncate max-w-[130px]">{r.screen.title}</span>
-                  </span>
+                  {/* Лише назва ролі: екран, який за нею стоїть, підписаний
+                      у смузі вікна — дублювати його під кожним рядком зайве. */}
+                  <span className={cn("min-w-0 text-[13px] font-semibold leading-[1.2] truncate", on ? "text-ink" : "text-inherit")}>{r.short}</span>
                   <span aria-hidden className="ml-auto w-1.5 h-1.5 rounded-full shrink-0 transition-colors duration-300" style={{ background: live ? a : "var(--hairline-strong)" }} />
                   {on && auto && (
                     <span aria-hidden className="absolute left-0 right-0 bottom-0 h-[2px] overflow-hidden">

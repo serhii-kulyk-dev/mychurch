@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { type ReactNode } from "react";
 import AnimatedHeadline, { countWords, softIn, useHeadlineStage } from "@/components/shared/animated-headline";
 import { useT } from "@/lib/lang";
@@ -61,21 +59,6 @@ export default function ModulesHero({ children }: { children?: ReactNode }) {
           {leadEnd}
         </p>
 
-        {/* Перенесення даних — це вхід у модулі, а не окремий розділ сайту:
-           звідси й посилання, одразу під обіцянкою. */}
-        <p
-          className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[15px] text-ink-3"
-          style={softIn(stage >= 2, 10)}
-        >
-          {t.importLink.text}
-          <Link
-            href="/import"
-            className="inline-flex items-center gap-1 font-medium text-brand hover:underline underline-offset-4"
-          >
-            {t.importLink.cta}
-            <ArrowRight className="w-[15px] h-[15px]" strokeWidth={2} />
-          </Link>
-        </p>
       </div>
 
       {children && <div className="relative z-10 w-full mt-9 md:mt-14">{children}</div>}

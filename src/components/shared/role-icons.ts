@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Church, UsersRound, HandHeart, HeartHandshake, UserPlus, User, Network, Calculator, ConciergeBell,
+  Church, UsersRound, HandHeart, HeartHandshake, UserPlus, User, Network, Calculator, ConciergeBell, Flame,
   Eye, UserX, BarChart3, Target, Sparkles, ArrowRightLeft,
   ClipboardCheck, CalendarDays, Send, ListChecks,
   Smartphone, MousePointerClick, BookOpen, Bell, GraduationCap,
@@ -17,13 +17,20 @@ export type RoleId = (typeof ROLE_IDS)[number];
 export const ROLE_ICONS: Record<string, LucideIcon> = {
   pastor: Church,
   leader: UsersRound,
-  deacon: HeartHandshake,
-  volunteer: HandHeart,
+  deacon: HandHeart,
+  volunteer: Flame,
   visitor: UserPlus,
   member: User,
   hr: Network,
   accountant: Calculator,
   reception: ConciergeBell,
+};
+
+/* Обличчя ролі — для плашок на головній: там замість іконки стоїть людина,
+   бо блок і називається «для кожного в церкві». Індекси в AVATAR_LOOKS
+   підібрані так, щоб сусідні плашки не повторювали одне обличчя. */
+export const ROLE_LOOKS: Record<string, number> = {
+  pastor: 3, leader: 0, deacon: 7, volunteer: 1, visitor: 5, member: 0, hr: 1, accountant: 3, reception: 5,
 };
 
 export const ROLE_ACCENTS: Record<string, string> = {

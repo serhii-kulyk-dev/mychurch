@@ -152,7 +152,7 @@ export interface TelegramCopy {
 }
 
 const ua: TelegramCopy = {
-  navLabel: "Бот",
+  navLabel: "Telegram-бот",
   seoTitle: "Telegram-бот церкви — Моя Церква",
   seoDescription:
     "Бот церкви в Telegram: малі групи й служіння, відмітка явки за хвилину, заявка в групу з одного посилання, графік служіння з «Буду / Не зможу» і меню, яке в кожного своє.",
@@ -558,8 +558,8 @@ const ua: TelegramCopy = {
 };
 
 const en: TelegramCopy = {
-  navLabel: "Bot",
-  seoTitle: "Church Telegram bot — MyChurch",
+  navLabel: "Telegram bot",
+  seoTitle: "Church Telegram bot — My Church",
   seoDescription:
     "Your church bot in Telegram: small groups and serving teams, attendance in a minute, a group application from a single link, a serving rota with «I'm in / Can't», and a menu that differs for every person.",
 

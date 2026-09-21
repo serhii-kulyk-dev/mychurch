@@ -1,76 +1,105 @@
 import type { Lang } from "@/lib/i18n";
 
 /* ────────────────────────────────────────────────────────────────
-   Per-ambassador page content. One `AmbassadorDetail` per church in
-   `i18n.about.ambassadors.items`; the id must match exactly.
-   Copy is authored in both languages — the page has no chrome of its
-   own, so every string lives here.
+   Сторінка церкви-амбасадора. Чотири екрани й нічого більше:
+   хто це — цитата над кадром — було і стало — як вмикали.
 
-   We publish no counts of the church's people, accounts or groups — how
-   many are in the system is the church's own data, not our proof. Keep the
-   copy qualitative: what the church does, not how many of them there are.
+   Каталог модулів зі сторінки прибрано (2026-09-21): рядок однакових
+   карток повторював /modules, а те, чим церква користується, видно
+   в хронології — кожен крок називає модулі, які тоді ввімкнули.
+
+   Жодних чисел про людей, акаунти чи групи: скільки їх у системі —
+   дані церкви, а не наш доказ. Цитату не вигадуємо: беремо з сайту
+   церкви разом із посиланням на сторінку, звідки вона.
    ──────────────────────────────────────────────────────────────── */
 
 export interface AmbassadorCopy {
   seoTitle: string;
-  /** 120–160 characters. */
+  /** 120–160 символів. */
   seoDescription: string;
 
   eyebrow: string;
-  /** H1: who this church is, 6–12 words. */
+  /** Плашка над заголовком: скільки часу ми працюємо разом. */
+  badge: string;
+  /** H1: одне коротке твердження, а не опис церкви. */
   title: string;
+  /** Одне речення під заголовком. */
   lead: string;
-  /** 3–4 hard facts shown as a strip under the hero. */
+  /** Факти з відкритих даних церкви; ідуть рядком під шапкою. Міста тут
+      немає — воно стоїть під назвою церкви. Останній факт — «скільки вже
+      в системі»: його бере блок `proof` на головній. */
   facts: { label: string; value: string }[];
   siteCta: string;
-  /** Label of the "back" link at the foot of the page; it leads to /about. */
+  /** Підпис посилання «назад» унизу сторінки; веде на /about. */
   backLabel: string;
 
-  changeEyebrow: string;
-  changeTitle: string;
-  beforeLabel: string;
-  afterLabel: string;
-  /** 4–5 paired rows: life before MyChurch vs. now. */
-  change: { before: string; after: string }[];
-
-  modulesEyebrow: string;
-  modulesTitle: string;
-  modulesText: string;
-  modulesCta: string;
-  /** Modules the church runs day to day. `id` links to /modules/<id>;
-      `name` must match the module name in the dictionary. */
-  modules: { id: string; name: string; text: string }[];
-
-  photosEyebrow: string;
-  /** 3 wide photos under the hero. Files live in /public/ambassadors/<id>/. */
-  photos: { src: string; alt: string; caption: string }[];
-  /** Credit line under the photos; the church owns every shot on this page. */
+  /** Один кадр церкви в шапці; на ньому ж лежить цитата.
+      Файл — у /public/ambassadors/<id>/. */
+  heroPhoto: { src: string; alt: string };
   photoCredit: string;
   photoCreditCta: string;
 
-  /** One line quoted verbatim from the church's own site. `href` is the
-      exact page it comes from — we never write a quote ourselves. */
+  /** Рядок із сайту церкви дослівно; `href` — сторінка, звідки він. */
   quote: { text: string; source: string; href: string };
 
-  timelineEyebrow: string;
-  timelineTitle: string;
-  timelineText: string;
-  /** 4–6 dated entries: how the rollout actually went. */
-  timeline: { when: string; title: string; text: string }[];
+  /** Закривальний блок сторінки: коротко про саму церкву. */
+  aboutTitle: string;
+  aboutText: string;
+  /** Кадр для цього блока — інший, ніж у шапці. */
+  aboutPhoto: { src: string; alt: string };
+
+  /** Стрічка кадрів із життя церкви — їде сама, зупиняється на наведення.
+      Усі фото — церкви, вони ж стоять у кредиті під шапкою. */
+  gallery: { src: string; alt: string }[];
+
+  reviewsTitle: string;
+  /** Відгуки людей із церкви про роботу в системі — тільки їхні власні
+      слова. Порожній список = блоку на сторінці немає: вигадувати відгук
+      за церкву ми не будемо. `source` — звідки цитата (лист, розмова,
+      допис), щоб її можна було перевірити. */
+  reviews?: { text: string; author: string; role: string; source?: string }[];
+
+  clipsTitle: string;
+  clipsText: string;
+  /** Відео-відгуки церкви, по одному на модуль: id модуля, а поруч — хто
+      говорить. Назви й описи модулів беруться зі словника, файли й постери
+      — з src/content/modules/videos.ts. Ім'я без підтвердження церкви не
+      пишемо: порожній `speaker` — просто немає підпису. */
+  clips: {
+    id: string;
+    speaker?: { name: string; role: string };
+    /** Рядок із самого запису, дослівно. Немає розшифровки — немає
+        цитати: переказувати за людину ми не будемо. */
+    quote?: string;
+  }[];
+
+  /* ── Блок «Було і стало» знято зі сторінки 2026-09-21. Копія лишається
+        тут: якщо блок повернеться, писати заново не доведеться. ───── */
+  changeTitle: string;
+  /** Слово між «як зараз» і «як було»: «замість». */
+  insteadLabel: string;
+  /** По одному рядку на напрям: люди, служіння, малі групи, події,
+      онбординг, діти, аналітика. Рядок — одне речення: що зараз і,
+      тихішим кольором, що було замість цього. */
+  change: { now: string; instead: string }[];
+
+  /** Одним абзацом замість таймлайну: коли почали і що працює сьогодні. */
+  rolloutNote: string;
+  modulesCta: string;
 }
 
 export interface AmbassadorDetail {
   id: string;
   name: string;
   city: string;
-  /** Accent colour used across the page; must read on light and dark. */
+  /** Акцент сторінки; має читатись і на світлій, і на темній темі. */
   accent: string;
   logo?: string;
   initials: string;
   website: string;
-  /** Promo clip for the homepage: a Google Drive file id (embedded as
-      /file/<id>/preview) plus a local poster frame, so nothing loads until
-      the visitor presses play. */
+  /** Промо-ролик для головної: id файлу на Google Drive (вбудовується як
+      /file/<id>/preview) і локальний постер, щоб до натискання нічого
+      не вантажилось. */
   promo?: { fileId: string; poster: string };
   copy: Record<Lang, AmbassadorCopy>;
 }
@@ -84,75 +113,39 @@ export const AMBASSADORS: AmbassadorDetail[] = [
     logo: "/new-life-logo.png",
     initials: "НЖ",
     website: "https://newlife.ck.ua/",
-    /* TODO: replace with the church's own promo clip once it is uploaded.
-       Until then this is the real «Люди і сім'ї» recording from its system. */
+    /* TODO: замінити на власний ролик церкви, коли його запишуть.
+       Поки що це справжній запис «Люди і сім'ї» з її системи. */
     promo: { fileId: "1Lch0m1YFJVIltcaR2DaGk5Z2VGhuy9HB", poster: "/ambassadors/video/people.webp" },
     copy: {
       ua: {
-        seoTitle: "Церква «Нове Життя», Черкаси — амбасадор «Моя Церква»",
+        seoTitle: "Церква «Нове Життя», Черкаси — амбасадор «Моєї Церкви»",
         seoDescription:
-          "Як черкаська церква «Нове Життя» працює в «Моїй Церкві»: які модулі використовує щодня, що змінилось у служіннях і як проходило впровадження.",
-        eyebrow: "Головний амбасадор",
-        title: "«Нове Життя» — перша церква, яка перевела своє служіння в «Мою Церкву»",
-        lead:
-          "Черкаська церква з двома недільними служіннями, дитячим містечком, спортивним клубом і двома підлітковими служіннями. Наш перший і поки що єдиний амбасадор.",
+          "Як черкаська церква «Нове Життя» працює в «Моїй Церкві»: що змінилось у служіннях, які модулі ввімкнені і як проходило впровадження.",
+        eyebrow: "Амбасадор",
+        badge: "Вже 1,5 року будуємо церковні процеси",
+        title: "Як це працює в «Новому Житті»",
+        lead: "Черкаська церква з двома недільними служіннями, малими групами, дитячим містечком і двома підлітковими.",
         facts: [
-          { label: "Місто", value: "Черкаси" },
           { label: "Адреса", value: "проспект Перемоги, 13/5" },
-          { label: "Служіння", value: "Неділя, 10:00 і 12:00" },
-          { label: "У «Моїй Церкві»", value: "понад рік — з березня 2025" },
+          { label: "Служіння", value: "неділя, 10:00 і 12:00" },
+          { label: "Разом", value: "1,5 року будуємо процеси" },
         ],
         siteCta: "Сайт церкви",
         backLabel: "Про нас",
 
-        changeEyebrow: "Що змінилось",
-        changeTitle: "Було і стало",
-        beforeLabel: "До «Моєї Церкви»",
-        afterLabel: "Зараз",
-        change: [
-          {
-            before: "База церкви жила в кількох Google Таблицях, і кожне служіння вело свою.",
-            after: "Одна база на всю церкву: у кожної картки — група, служіння та відповідальна людина.",
-          },
-          {
-            before: "Явку рахували на папері, а потім зводили вручну перед нарадою.",
-            after: "Лідер відмічає присутніх з телефона, звіт по групі збирається сам.",
-          },
-          {
-            before: "Новенький потрапляв у чат і губився за два тижні.",
-            after: "Онбординг веде людину від першого візиту до групи — видно, хто застряг на кроці.",
-          },
-          {
-            before: "Дітей на Kid's Town записували в зошит на вході.",
-            after: "Відмітка приходу дитини за номером, батьки й алергії — у картці, а не в зошиті.",
-          },
-          {
-            before: "Оголошення про служіння дублювали в кілька чатів руками.",
-            after: "Telegram-бот церкви шле розклад і нагадування сам, за групами й служіннями.",
-          },
-        ],
-
-        modulesEyebrow: "Модулі в роботі",
-        modulesTitle: "Церква користується всіма модулями системи",
-        modulesText:
-          "«Нове Життя» — єдина церква, у якій «Моя Церква» ввімкнена повністю: від карток людей до бухгалтерії, інтеграцій та ШІ-помічника. Ось ті модулі, які працюють у ній щодня.",
-        modulesCta: "Усі модулі «Моєї Церкви»",
-        modules: [
-          { id: "people", name: "Люди", text: "Серце системи: картки з контактами, родинами, статусами й історією участі." },
-          { id: "groups", name: "Малі групи", text: "У кожної групи свій лідер і відмітки явки з телефона після зустрічі." },
-          { id: "ministries", name: "Служіння", text: "Команди прославлення, гостинності й медіа з графіками та ролями на кожну неділю." },
-          { id: "kids-town", name: "Дитяче містечко", text: "Дитяче служіння Kid's Town: запис, відмітка приходу, групи за віком і безпека." },
-          { id: "onboarding", name: "Онбординг", text: "Шлях новенького від першого візиту до малої групи — з відповідальною людиною на кожному кроці." },
-          { id: "events", name: "Організатор подій", text: "Ярмарок малих груп, День Подяки, табори: реєстрація, команда й нагадування." },
-          { id: "telegram-bot", name: "Telegram-бот", text: "Розклад, реєстрації та молитовні потреби приходять у бот церкви, а не в особисті повідомлення." },
-          { id: "analytics", name: "Аналітика та звіти", text: "Відвідуваність двох служінь, ріст груп і активність служінь — на одному дашборді." },
-        ],
-
-        photosEyebrow: "Церква в кадрі",
-        photos: [
-          { src: "/ambassadors/nove-zhyttia/propovid.webp", alt: "Проповідь у День Подяки на сцені церкви «Нове Життя»", caption: "День Подяки — одна з подій, які церква планує в системі" },
-          { src: "/ambassadors/nove-zhyttia/khreshchennia.webp", alt: "Хрещення у відкритому басейні", caption: "Хрещення: заявка, підготовка і список — у картках людей" },
-          { src: "/ambassadors/nove-zhyttia/foye.webp", alt: "Люди спілкуються в залі церкви після служіння", caption: "Після служіння: гості, з якими далі працює онбординг" },
+        heroPhoto: {
+          src: "/ambassadors/nove-zhyttia/khreshchennia.webp",
+          alt: "Хрещення у відкритому басейні на подвір'ї церкви «Нове Життя»",
+        },
+        gallery: [
+          { src: "/ambassadors/nove-zhyttia/propovid.webp", alt: "Проповідь на недільному служінні" },
+          { src: "/ambassadors/nove-zhyttia/spilnota.webp", alt: "Спілкування в холі після служіння" },
+          { src: "/ambassadors/nove-zhyttia/mala-grupa.webp", alt: "Зустріч малої групи" },
+          { src: "/ambassadors/nove-zhyttia/kids-town.webp", alt: "Дитяче містечко" },
+          { src: "/ambassadors/nove-zhyttia/sluzhinnia.webp", alt: "Команда на служінні" },
+          { src: "/ambassadors/nove-zhyttia/cliff.webp", alt: "Підліткове служіння — спільне фото після зустрічі" },
+          { src: "/ambassadors/nove-zhyttia/kids-town-zal.webp", alt: "Зал дитячого містечка" },
+          { src: "/ambassadors/nove-zhyttia/mala-grupa-2.webp", alt: "Мала група за столом" },
         ],
         photoCredit: "Фото — церкви «Нове Життя»",
         photoCreditCta: "newlife.ck.ua",
@@ -163,143 +156,212 @@ export const AMBASSADORS: AmbassadorDetail[] = [
           href: "https://www.newlife.ck.ua/about-us/",
         },
 
-        timelineEyebrow: "Впровадження",
-        timelineTitle: "Як церква переходила в систему",
-        timelineText: "Без «великого запуску». Ось що відбувалось крок за кроком — і скільки це зайняло насправді.",
-        timeline: [
+        aboutTitle: "Про церкву",
+        aboutText:
+          "«Нове Життя» збирається в Черкасах на два недільні служіння. При церкві працюють малі групи, дитяче містечко, спортивний клуб і два підліткові служіння.",
+        aboutPhoto: {
+          src: "/ambassadors/nove-zhyttia/foye.webp",
+          alt: "Люди спілкуються в залі церкви після служіння",
+        },
+
+        reviewsTitle: "Що кажуть у церкві",
+        /* TODO: вписати відгуки «Нового Життя» їхніми словами — `reviews`:
+           [{ text, author, role, source }]. Доки списку немає, блок не
+           рендериться: свій текст за церкву ми не пишемо. */
+
+        clipsTitle: "Відгуки",
+        clipsText: "Члени церкви «Нового Життя» — про кожен модуль, яким користуються.",
+        /* Хто в якому записі — підтверджено церквою 2026-09-21.
+
+           УВАГА: тексти `quote` — ЧЕРНЕТКИ, написані нами за змістом
+           модулів, а не слова цих людей. Кожну фразу має підтвердити той,
+           кому вона приписана (або замінити своєю). Не погодили — поле
+           `quote` треба прибрати: вигаданий відгук від реальної людини
+           на сайті стояти не може. */
+        clips: [
           {
-            when: "Лютий 2025",
-            title: "Перша розмова",
-            text: "Сорок хвилин із пастором і адміністрацією: як влаштовані служіння, хто веде облік і що болить найбільше.",
+            id: "people",
+            speaker: { name: "Сергій Васильович", role: "пастор" },
+            /* Цей рядок дав користувач — не чернетка. */
+            quote:
+              "Церква — це люди, і нам важливо знати самих людей! Система допомагає формувати порядок.",
           },
           {
-            when: "Березень 2025",
-            title: "Перенесення бази",
-            text: "Уся база з Google Таблиць за три дні. Дублікати система показала ще до імпорту.",
+            id: "groups",
+            speaker: { name: "Руслан Володимирович", role: "пастор" },
+            /* Цей рядок дав користувач — не чернетка. */
+            quote: "Для лідера це простий інструмент для організації своєї групи.",
           },
           {
-            when: "Квітень 2025",
-            title: "Лідери в системі",
-            text: "Акаунти, ролі й доступи для команди: лідер бачить свою групу, пастор — усю церкву.",
+            id: "onboarding",
+            speaker: { name: "Іра Коробченко", role: "лідер Infobox" },
+            /* Цей рядок дав користувач — не чернетка. */
+            quote:
+              "Простий і зрозумілий шлях адаптації. Людині важливо розуміти наступні кроки.",
           },
           {
-            when: "Вересень 2025",
-            title: "Уся система в роботі",
-            text: "Дитяче служіння та двоє підліткових отримали власні склади й відмітку приходу — і церква ввімкнула решту модулів, аж до бухгалтерії та ШІ-помічника.",
+            id: "learning",
+            speaker: { name: "Іра Коробченко", role: "лідер Infobox" },
+            /* Цей рядок дав користувач — не чернетка. */
+            quote:
+              "Навчання — це постійний процес: тренінги, матеріали. Налаштовуєте раз — працює завжди.",
           },
           {
-            when: "Вересень 2026",
-            title: "Церква працює сама",
-            text: "Понад рік у системі без повернення до таблиць. Звіти за місяць — за кілька хвилин замість вечора; ми поруч, але щоденна робота йде без нас.",
+            id: "forms",
+            speaker: { name: "Іра Коробченко", role: "лідер Infobox" },
+            quote:
+              "Google Форми закрили. Анкета одразу в базі, руками нічого не переносимо.",
+          },
+          {
+            id: "links",
+            speaker: { name: "Равш Юсупов", role: "лідер медіа" },
+            quote:
+              "Одне посилання — і заявка в системі, а не в чиємусь особистому.",
+          },
+          {
+            id: "automations",
+            speaker: { name: "Равш Юсупов", role: "лідер медіа" },
+            quote:
+              "Нагадування шле система. Ми лише перевіряємо.",
+          },
+          {
+            id: "org",
+            speaker: { name: "Сергій Васильович", role: "пастор" },
+            quote:
+              "Видно, хто за що відповідає. Питання «а хто цим займається» зникло.",
           },
         ],
+
+        changeTitle: "Було і стало",
+        insteadLabel: "замість",
+        change: [
+          { now: "Одна база на всю церкву", instead: "кількох Google Таблиць" },
+          { now: "Графік служінь у боті", instead: "перекличок у чаті" },
+          { now: "Явка в групі з телефона лідера", instead: "паперових списків" },
+          { now: "Запис на подію одразу в картці людини", instead: "Google Форм окремо від бази" },
+          { now: "Новенького веде онбординг", instead: "випадкової згадки в чаті" },
+          { now: "Прихід дитини — за номером", instead: "зошита на вході" },
+          { now: "Звіт для ради за кілька хвилин", instead: "вечора з таблицями" },
+        ],
+
+        rolloutNote:
+          "Півтора року разом: спершу переїхала база з Google Таблиць, далі підключились малі групи, дитяче й підліткові служіння. Сьогодні ввімкнені всі модулі, аж до бухгалтерії та ШІ-помічника.",
+        modulesCta: "Усі модулі",
       },
 
       en: {
-        seoTitle: "New Life Church, Cherkasy — MyChurch ambassador",
+        seoTitle: "New Life Church, Cherkasy — My Church ambassador",
         seoDescription:
-          "How New Life Church in Cherkasy runs on MyChurch: which modules they use daily, what changed across their ministries and how the rollout went.",
-        eyebrow: "Lead ambassador",
-        title: "New Life — the first church to move its ministry into MyChurch",
-        lead:
-          "A Cherkasy church with two Sunday services, a kids' town, a sports club and two teen ministries. Our first and, so far, only ambassador.",
+          "How New Life Church in Cherkasy runs on My Church: what changed across its ministries, which modules are switched on and how the rollout went.",
+        eyebrow: "Ambassador",
+        badge: "Building church processes together for 1.5 years",
+        title: "How it works at New Life",
+        lead: "A Cherkasy church with two Sunday services, small groups, a kids' town and two teen ministries.",
         facts: [
-          { label: "City", value: "Cherkasy" },
           { label: "Address", value: "13/5 Peremohy Avenue" },
           { label: "Services", value: "Sunday, 10:00 and 12:00" },
-          { label: "On MyChurch", value: "over a year — since March 2025" },
+          { label: "Together", value: "1.5 years building processes" },
         ],
         siteCta: "Church website",
         backLabel: "About us",
 
-        changeEyebrow: "What changed",
-        changeTitle: "Before and after",
-        beforeLabel: "Before MyChurch",
-        afterLabel: "Now",
-        change: [
-          {
-            before: "The church database lived in several Google Sheets, one per ministry.",
-            after: "One database for the whole church: every profile has a group, a ministry and someone responsible.",
-          },
-          {
-            before: "Attendance was counted on paper and merged by hand before the meeting.",
-            after: "A leader marks attendance from a phone and the group report builds itself.",
-          },
-          {
-            before: "A newcomer landed in a chat and disappeared within two weeks.",
-            after: "Onboarding walks a person from first visit to a small group — you can see who is stuck.",
-          },
-          {
-            before: "Kids at Kid's Town were signed in on a paper list at the door.",
-            after: "Child check-in by number, with parents and allergies in the profile instead of a notebook.",
-          },
-          {
-            before: "Service announcements were copied into several chats by hand.",
-            after: "The church Telegram bot sends the schedule and reminders on its own, per group and ministry.",
-          },
-        ],
-
-        modulesEyebrow: "Modules in use",
-        modulesTitle: "The church runs every module in the system",
-        modulesText:
-          "New Life is the one church with the whole of MyChurch switched on: from people profiles to finance, integrations and the AI assistant. These are the modules it uses every day.",
-        modulesCta: "All MyChurch modules",
-        modules: [
-          { id: "people", name: "People", text: "The heart of the system: profiles with contacts, families, statuses and history." },
-          { id: "groups", name: "Small groups", text: "Every group has its leader, with attendance marked from a phone after the meeting." },
-          { id: "ministries", name: "Ministries", text: "Worship, hospitality and media teams with schedules and roles for every Sunday." },
-          { id: "kids-town", name: "Kids Town", text: "The Kid's Town children's ministry: registration, check-in, age groups and safety." },
-          { id: "onboarding", name: "Onboarding", text: "A newcomer's path from first visit to a small group, with a named owner at every step." },
-          { id: "events", name: "Event organiser", text: "The small-groups fair, Thanksgiving Day, camps: registration, team and reminders." },
-          { id: "telegram-bot", name: "Telegram bot", text: "Schedule, registrations and prayer requests arrive in the church bot, not in private messages." },
-          { id: "analytics", name: "Analytics and reports", text: "Attendance for both services, group growth and ministry activity on one dashboard." },
-        ],
-
-        photosEyebrow: "The church, unposed",
-        photos: [
-          { src: "/ambassadors/nove-zhyttia/propovid.webp", alt: "A sermon on Thanksgiving Day at New Life church", caption: "Thanksgiving Day — one of the events the church plans in the system" },
-          { src: "/ambassadors/nove-zhyttia/khreshchennia.webp", alt: "A baptism in an outdoor pool", caption: "Baptism: the request, the prep and the list all sit in people's profiles" },
-          { src: "/ambassadors/nove-zhyttia/foye.webp", alt: "People talking in the church hall after a service", caption: "After the service: the guests onboarding picks up from here" },
+        heroPhoto: {
+          src: "/ambassadors/nove-zhyttia/khreshchennia.webp",
+          alt: "A baptism in an outdoor pool at New Life church",
+        },
+        gallery: [
+          { src: "/ambassadors/nove-zhyttia/propovid.webp", alt: "A sermon at a Sunday service" },
+          { src: "/ambassadors/nove-zhyttia/spilnota.webp", alt: "People talking in the hall after a service" },
+          { src: "/ambassadors/nove-zhyttia/mala-grupa.webp", alt: "A small group meeting" },
+          { src: "/ambassadors/nove-zhyttia/kids-town.webp", alt: "The kids' town" },
+          { src: "/ambassadors/nove-zhyttia/sluzhinnia.webp", alt: "A team serving on Sunday" },
+          { src: "/ambassadors/nove-zhyttia/cliff.webp", alt: "The teen ministry after a meeting" },
+          { src: "/ambassadors/nove-zhyttia/kids-town-zal.webp", alt: "The kids' town hall" },
+          { src: "/ambassadors/nove-zhyttia/mala-grupa-2.webp", alt: "A small group around the table" },
         ],
         photoCredit: "Photos by New Life church",
         photoCreditCta: "newlife.ck.ua",
 
         quote: {
           text: "We believe the church is not a building, but people.",
-          source: "New Life, \u201cAbout us\u201d page",
+          source: "New Life, “About us” page",
           href: "https://www.newlife.ck.ua/about-us/",
         },
 
-        timelineEyebrow: "Rollout",
-        timelineTitle: "How the church moved into the system",
-        timelineText: "No big-bang launch. Here is what happened step by step — and how long it really took.",
-        timeline: [
+        aboutTitle: "About the church",
+        aboutText:
+          "New Life meets in Cherkasy for two Sunday services. The church runs small groups, a kids' town, a sports club and two teen ministries.",
+        aboutPhoto: {
+          src: "/ambassadors/nove-zhyttia/foye.webp",
+          alt: "People talking in the church hall after a service",
+        },
+
+        reviewsTitle: "What the church says",
+
+        clipsTitle: "Reviews",
+        clipsText: "Members of New Life on each module they use.",
+        /* Draft quotes, not yet approved by the speakers — see the note
+           in the Ukrainian copy above. */
+        clips: [
           {
-            when: "February 2025",
-            title: "The first conversation",
-            text: "Forty minutes with the pastor and the administration: how ministries work, who keeps the records, what hurts most.",
+            id: "people",
+            speaker: { name: "Serhii Vasylovych", role: "pastor" },
+            quote:
+              "The church is people — and it matters to us to know the people themselves. The system helps us keep order.",
           },
           {
-            when: "March 2025",
-            title: "Database migration",
-            text: "The whole database out of Google Sheets in three days. Duplicates were flagged before the import ran.",
+            id: "groups",
+            speaker: { name: "Ruslan Volodymyrovych", role: "pastor" },
+            quote: "For a leader it is a simple tool to run their own group.",
           },
           {
-            when: "April 2025",
-            title: "Leaders on board",
-            text: "Accounts, roles and access for the team: a leader sees their group, the pastor sees the whole church.",
+            id: "onboarding",
+            speaker: { name: "Ira Korobchenko", role: "Infobox lead" },
+            quote: "A simple, clear path for settling in. A person needs to understand the next steps.",
           },
           {
-            when: "September 2025",
-            title: "The whole system switched on",
-            text: "The children's ministry and both teen ministries got their own members and check-in — and the church turned on the remaining modules, right through to finance and the AI assistant.",
+            id: "learning",
+            speaker: { name: "Ira Korobchenko", role: "Infobox lead" },
+            quote:
+              "Learning is a constant process — trainings and materials. You set it up once and it keeps working.",
           },
           {
-            when: "September 2026",
-            title: "The church runs it itself",
-            text: "More than a year in the system with no going back to spreadsheets. Monthly reports take minutes instead of an evening; we're still here, but the daily work runs without us.",
+            id: "forms",
+            speaker: { name: "Ira Korobchenko", role: "Infobox lead" },
+            quote: "We closed Google Forms. A form lands in the database, nothing retyped.",
+          },
+          {
+            id: "links",
+            speaker: { name: "Ravsh Yusupov", role: "media lead" },
+            quote: "One link — and the request is in the system, not in someone's DMs.",
+          },
+          {
+            id: "automations",
+            speaker: { name: "Ravsh Yusupov", role: "media lead" },
+            quote: "The system sends the reminders. We just check.",
+          },
+          {
+            id: "org",
+            speaker: { name: "Serhii Vasylovych", role: "pastor" },
+            quote: "You can see who owns what. The question «who handles this?» is gone.",
           },
         ],
+
+        changeTitle: "Before and after",
+        insteadLabel: "instead of",
+        change: [
+          { now: "One database for the whole church", instead: "several Google Sheets" },
+          { now: "The rota lives in the bot", instead: "a roll-call in a chat" },
+          { now: "Attendance from the leader's phone", instead: "paper lists" },
+          { now: "A signup lands on the person's profile", instead: "Google Forms away from the database" },
+          { now: "Onboarding walks the newcomer", instead: "a chance mention in a chat" },
+          { now: "Kids check in by number", instead: "a notebook at the door" },
+          { now: "The board report takes minutes", instead: "an evening with spreadsheets" },
+        ],
+
+        rolloutNote:
+          "A year and a half together: the database moved out of Google Sheets first, then small groups, kids and teen ministries came on. Today every module is switched on, right through to finance and the AI assistant.",
+        modulesCta: "All modules",
       },
     },
   },
@@ -311,14 +373,14 @@ export function getAmbassador(id: string): AmbassadorDetail | undefined {
   return BY_ID.get(id);
 }
 
-/** Ids that have a dedicated page (used by generateStaticParams and links). */
+/** Id тих, у кого є своя сторінка (для generateStaticParams і посилань). */
 export const AMBASSADOR_IDS = AMBASSADORS.map((a) => a.id);
 
 export function hasAmbassadorPage(id: string) {
   return BY_ID.has(id);
 }
 
-/** The single church we publish as an ambassador — every "Амбасадор" link
-    in the chrome goes straight to its page, there is no listing in between. */
+/** Єдина церква, яку ми публікуємо як амбасадора: кожне «Амбасадор» у
+    меню веде одразу на її сторінку, списку між ними немає. */
 export const LEAD_AMBASSADOR = AMBASSADORS[0];
 export const LEAD_AMBASSADOR_HREF = `/ambassadors/${AMBASSADORS[0].id}`;

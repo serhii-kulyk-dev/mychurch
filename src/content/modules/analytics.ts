@@ -77,7 +77,7 @@ export const analyticsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Analytics and reports — MyChurch module",
+        seoTitle: "Analytics and reports — My Church module",
         seoDescription: "Attendance, church growth, group and ministry activity — dashboards and reports for any period. Decisions based on numbers, not gut feeling.",
         title: "The real picture of the church, in numbers",
         lead: "Who came, who came back, who drifted away; which groups are growing and which are fading — the module gathers it from attendance, profiles and events into dashboards that update themselves. A board report takes five minutes, not an evening with spreadsheets.",

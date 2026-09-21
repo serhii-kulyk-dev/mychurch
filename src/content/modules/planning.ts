@@ -62,7 +62,7 @@ export const planningModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Calendar — MyChurch module",
+        seoTitle: "Calendar — My Church module",
         seoDescription: "Services, small-group meetings, events and room bookings in one church calendar. Everyone sees their own schedule, and clashes show up before you save.",
         title: "Everything happening in the church, in one calendar",
         lead: "Services, rehearsals, small-group meetings, conferences and hall bookings — in one shared calendar. Everyone sees what's theirs: the pastor sees the whole church, a leader their group, reception today's day.",
@@ -92,7 +92,7 @@ export const planningModules: ModuleDetail[] = [
           { role: "reception", text: "Answers \"when is…?\" in a second and sees every booking for today." },
         ],
         faq: [
-          { q: "Can I sync with Google Calendar?", a: "Yes. Connect your schedule to Google or Apple Calendar with a link — changes made in MyChurch appear there automatically." },
+          { q: "Can I sync with Google Calendar?", a: "Yes. Connect your schedule to Google or Apple Calendar with a link — changes made in My Church appear there automatically." },
           { q: "What happens when two events want the same hall?", a: "The system warns you before saving: it shows who already has the hall and offers a free time or another room. A clash never slips through unnoticed." },
           { q: "Can a volunteer see other people's events?", a: "By default only their own services and groups, plus the church's public events. The pastor, the administrator and anyone you grant access see the full calendar." },
           { q: "How do I move or cancel a service?", a: "Change the time or mark it cancelled — participants and the team get a Telegram message, and the hall booking is released automatically." },
@@ -183,7 +183,7 @@ export const planningModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Seasons — MyChurch module",
+        seoTitle: "Seasons — My Church module",
         seoDescription: "Plan the church year in seasons: Christmas, Easter, summer, the autumn launch. Goals, events, team and a review for every season — all in one place.",
         title: "Plan the church year in seasons, not scattered events",
         lead: "A season is a few weeks with a purpose of its own: Christmas, Easter, summer camps, the autumn group launch. The module gathers each season's events, goals, team and review so the whole church moves in one direction.",
@@ -327,7 +327,7 @@ export const planningModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Goals and metrics — MyChurch module",
+        seoTitle: "Goals and metrics — My Church module",
         seoDescription: "Set goals for the church, small groups and ministries and see progress every week. Plan versus actual is counted from real data, with no manual reports.",
         title: "Church goals with progress you see every week",
         lead: "The pastor sets a goal for the church, a leader for their group or ministry, and progress is counted automatically from attendance, newcomers and registrations. Plan versus actual on one screen — no Monday-morning reports.",
@@ -463,7 +463,7 @@ export const planningModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Event organiser — MyChurch module",
+        seoTitle: "Event organiser — My Church module",
         seoDescription: "Conferences, services, camps: registration, tickets, team, schedule and reminders in one place. Every attendee lands in the church database straight away.",
         title: "Every event from sign-up to follow-up, in one place",
         lead: "A conference, a family evening or a youth camp — the module runs the event from the registration page to the report afterwards. Attendees, tickets, team, schedule and reminders in one place, not in five chats.",

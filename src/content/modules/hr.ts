@@ -79,7 +79,7 @@ export const hrModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Org structure — MyChurch module",
+        seoTitle: "Org structure — My Church module",
         seoDescription: "The church org chart: departments, ministries, roles and reporting lines. Who does what, who reports to whom, where the vacancies are — always current.",
         title: "The whole church team on one chart",
         lead: "The Org structure module shows the church as a team: departments and ministries, heads, roles and reporting lines. A new volunteer understands in a minute who to go to, and the pastor sees where there are too many people and where there's no one.",
@@ -223,7 +223,7 @@ export const hrModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Requests — MyChurch module",
+        seoTitle: "Requests — My Church module",
         seoDescription: "Time off, cover on a ministry, requests for funds or rooms: a volunteer submits from a phone, a leader approves in one click and HR sees the whole queue.",
         title: "Approvals in a minute, not a week of chats",
         lead: "The Requests module replaces the \"can I skip serving on Sunday?\" messages. A volunteer submits a request from their phone, it goes to the right leader, who approves with one tap, and HR sees the full picture.",
@@ -374,7 +374,7 @@ export const hrModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Accounting — MyChurch module",
+        seoTitle: "Accounting — My Church module",
         seoDescription: "Church finances made transparent: cash, card and online giving, expenses with approval, team payouts, ministry budgets and reports for any period — no Excel.",
         title: "Every donation recorded, every report in a minute",
         lead: "The Accounting module brings all the church's money into one ledger: Sunday offerings, online payments, ministry expenses, team payouts. A quarterly report for the board takes one click — no Excel.",

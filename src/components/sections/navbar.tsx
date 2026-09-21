@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, Mail } from "lucide-react";
+import { ChevronDown, Send } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { useLang, useT } from "@/lib/lang";
 import { useDemoModal } from "@/context/demo-modal-context";
 import { LEAD_AMBASSADOR_HREF } from "@/content/ambassadors";
 import { TELEGRAM_COPY } from "@/content/telegram";
+import { SITE_TELEGRAM } from "@/lib/seo";
 import { BLOG_COPY } from "@/content/blog";
 
 export default function Navbar() {
@@ -72,7 +73,6 @@ export default function Navbar() {
      посеред сторінки, а не згори. З інших сторінок це звичайний перехід —
      там якоря ще нема, його треба спершу завантажити, а вже на місці адресу
      чистить <AnchorGuard />. */
-  const toContacts = sectionClick("/#contacts");
 
   /* Solidify the bar once the page moves away from the top */
   useEffect(() => {
@@ -313,15 +313,17 @@ export default function Navbar() {
 
         {/* Desktop: preferences + CTA */}
         <div className="hidden min-[1260px]:flex flex-1 items-center gap-2 min-[1320px]:gap-3 justify-end">
-          <Link
-            href="/#contacts"
-            onClick={toContacts}
-            aria-label={t.nav.contacts}
-            title={t.nav.contacts}
+          {/* За комп'ютером набирати номер нічим — там швидша дія написати. */}
+          <a
+            href={SITE_TELEGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.common.telegram}
+            title={t.common.telegram}
             className="flex w-10 h-10 items-center justify-center rounded-full border border-hairline-strong bg-surface text-ink-2 hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
           >
-            <Mail className="w-[17px] h-[17px]" strokeWidth={2} />
-          </Link>
+            <Send className="w-[17px] h-[17px]" strokeWidth={2} />
+          </a>
           <PreferenceToggles />
           <button
             onClick={openModal}
@@ -337,6 +339,21 @@ export default function Navbar() {
 
         {/* Mobile: toggles + hamburger */}
         <div className="flex min-[1260px]:hidden items-center justify-end gap-2">
+          {/* Той самий швидкий контакт, що й на широкому екрані: написати в
+             Telegram. Дзвінок тут стояв до 2026-09-21 — церкви пишуть, а не
+             набирають; номер лишився в розмітці сайту й у запасному екрані
+             форми (lead-fallback), у футері його немає. Вужче за 360 px ховаємо:
+             там кожні 44 px виштовхують бургер за край екрана. */}
+          <a
+            href={SITE_TELEGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t.common.telegram}
+            title={t.common.telegram}
+            className="hidden min-[360px]:flex w-9 h-9 items-center justify-center rounded-full border border-hairline-strong bg-surface text-ink-2 hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
+          >
+            <Send className="w-[16px] h-[16px]" strokeWidth={2} />
+          </a>
           <PreferenceToggles size="sm" />
           {/* Між телефоном і повним меню (≈640–1260) головна дія лишається на
              видноті: ховати її в шухляду на ноутбуці — втрачати конверсію. */}
@@ -366,7 +383,12 @@ export default function Navbar() {
       {/* Mobile menu drawer */}
       <div
         className={cn(
-          "fixed inset-0 top-16 md:top-20 z-40 min-[1260px]:hidden transition-all duration-300",
+          /* overflow-hidden — не косметика: закрита шухляда (-translate-y-full)
+             стоїть рівно за шапкою, а скло шапки в Safari не розмиває того, що
+             під ним лежить окремим шаром. Chrome такий фон змилює, Safari —
+             ні, і синя кнопка «Замовити демо» просвічувала поверх логотипа на
+             кожному екрані. Рамка її просто відрізає. */
+          "fixed inset-0 top-16 md:top-20 z-40 overflow-hidden min-[1260px]:hidden transition-all duration-300",
           open ? "pointer-events-auto" : "pointer-events-none"
         )}
       >

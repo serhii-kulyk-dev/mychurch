@@ -78,6 +78,8 @@ interface Props {
   rotateShort?: string[];
   /** Колір на кожне слово ротатора, у тому ж порядку. */
   colors?: (string | undefined)[];
+  /** Рядки і хвіст стають одним рядком — переноситься він уже сам. */
+  oneLine?: boolean;
   as?: "h1" | "h2";
   className?: string;
   /** Такт із `useHeadlineStage`. */
@@ -95,11 +97,36 @@ export default function AnimatedHeadline({
   rotate,
   rotateShort,
   colors,
+  oneLine = false,
   as: Tag = "h1",
   className,
   stage,
 }: Props) {
   const body = lines.reduce((a, l) => a + l.length, 0);
+
+  /* Заголовок в один рядок: слова й хвіст течуть поруч, а не блоками —
+     перенесення робить сам браузер, коли рядок не влазить. */
+  if (oneLine) {
+    return (
+      <Tag className={cn(className, stage >= 1 && "hero-lit")}>
+        <span className="hero-line block">
+          {lines.flat().map((word, wi) => (
+            <span key={`${word}-${wi}`} className="hero-word">
+              <span style={{ animationDelay: `${wi * WORD_STEP}ms` }}>{word}</span>{" "}
+            </span>
+          ))}
+          {accent?.split(" ").map((word, wi, all) => (
+            <span key={`${word}-${wi}`} className="hero-word">
+              <span className="text-brand" style={{ animationDelay: `${(body + wi) * WORD_STEP}ms` }}>
+                {word}
+              </span>
+              {wi < all.length - 1 ? " " : ""}
+            </span>
+          ))}
+        </span>
+      </Tag>
+    );
+  }
 
   return (
     <Tag className={cn(className, stage >= 1 && "hero-lit")}>

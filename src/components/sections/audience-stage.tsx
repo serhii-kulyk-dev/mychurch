@@ -347,11 +347,12 @@ function PastorFocus({ s, accent }: Card<"pastor">) {
 /* ── Лідер · Telegram: бот питає, лідер тисне кнопку в чаті ── */
 function LeaderTelegram({ s }: Card<"leader">) {
   const [sent, setSent] = useState(false);
+  const botName = useT().automations.botName;
   return (
     <div className="rounded-xl border border-hairline overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-2 bg-[#229ED9] text-white">
         <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0"><Send className="w-3 h-3" strokeWidth={2.4} /></span>
-        <span className="text-[12px] font-semibold leading-none">MyChurch bot</span>
+        <span className="text-[12px] font-semibold leading-none">{botName}</span>
         <span className="ml-auto text-[10.5px] opacity-85 leading-none">Telegram</span>
       </div>
       <div className="chat-wallpaper p-3 flex flex-col gap-2">

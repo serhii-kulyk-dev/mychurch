@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Heart, UsersRound, HeartHandshake, GraduationCap, NotebookPen, ClipboardCheck, History,
-  Cake, Church, Phone, User, Check, Sparkles, Plus, X, MousePointerClick,
-} from "lucide-react";
+import { Heart, UsersRound, HeartHandshake, GraduationCap, NotebookPen, History, Cake, Church, Phone, User, Check, Sparkles, Plus, X } from "lucide-react";
 import PersonAvatar, { AVATAR_LOOKS } from "@/components/shared/person-avatar";
 import ClickHere from "@/components/shared/click-here";
 import { useT } from "@/lib/lang";
@@ -55,28 +52,10 @@ function FamilyFace({ name, profiles }: { name: string; profiles: readonly { rea
 
 export default function PeopleExplorer() {
   const t = useT().features.mocks.people;
-  const hostRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [added, setAdded] = useState<Record<string, string[]>>({});
   const [celebrate, setCelebrate] = useState(false);
-
-  useEffect(() => {
-    const el = hostRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setInView(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   useEffect(() => {
     if (!celebrate) return;
@@ -108,21 +87,10 @@ export default function PeopleExplorer() {
   const ringLen = 2 * Math.PI * 20;
 
   return (
-    <div ref={hostRef} className="w-full max-w-[560px] mx-auto flex flex-col gap-3">
-      {/* Підказка стоїть над людьми: спершу читаєш, що робити, потім бачиш,
-          на кого тиснути. Кнопки тут немає — дія одна, і вона на картці. */}
-      <div style={{ display: "grid", gridTemplateRows: selected === null ? "1fr" : "0fr", transition: "grid-template-rows 0.45s var(--ease-out-soft)" }}>
-        <div style={{ overflow: "hidden" }}>
-          <div className="flex justify-center">
-            <span className={["inline-flex items-center gap-2 rounded-full bg-surface/70 border border-hairline pl-2 pr-4 py-1.5 transition-opacity duration-300", inView ? "opacity-100" : "opacity-0"].join(" ")}>
-              <span className="tap-hint shrink-0 w-7 h-7 rounded-full bg-brand-soft flex items-center justify-center">
-                <MousePointerClick className="w-[15px] h-[15px] text-brand" strokeWidth={2.2} />
-              </span>
-              <span className="text-[13.5px] text-ink-2 leading-[1.35]">{t.hint}</span>
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="w-full max-w-[560px] mx-auto flex flex-col gap-3">
+      {/* Підказка «натисніть на профіль» прибрана 2026-09-21: у блоці
+          огляду лишаються тільки екран і сама дія — курсор-привид уже
+          показує, куди тиснути. */}
 
       {/* Avatar strip */}
       <div ref={stripRef} className="relative grid grid-cols-3 gap-2 md:gap-3">
@@ -252,16 +220,9 @@ export default function PeopleExplorer() {
                   </div>
                 </Section>
 
-                <Section icon={ClipboardCheck} accent="#0ea5e9" title={t.labels.attendance} delay={620} className="col-span-2">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 flex gap-1.5">
-                      {profile.attendance.map((v, i) => (
-                        <span key={i} className="mock-pop flex-1 h-2 rounded-full" style={{ animationDelay: `${760 + i * 50}ms`, background: v ? "var(--brand)" : "var(--hairline-strong)" }} />
-                      ))}
-                    </div>
-                    <span className="text-[12px] font-semibold text-ink tabular-nums">{profile.attendance.filter(Boolean).length}/{profile.attendance.length}</span>
-                  </div>
-                </Section>
+                {/* Смужка «відвідуваність за 8 тижнів» прибрана 2026-09-21:
+                    у картці людини вона була зайвим рядком, а сама явка
+                    живе в групах і в аналітиці. */}
 
                 <Section icon={History} accent="#f59e0b" title={t.labels.history} delay={680}>
                   <ul className="flex flex-col gap-1.5">

@@ -12,6 +12,7 @@ import struct
 from PIL import Image
 import appicon
 import gen
+import social
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -83,10 +84,9 @@ def main():
     gen.to_png(512, BRAND, 0.05, path=f"{PUB}/logo.png")
     gen.to_png(1024, BRAND, 0.05, path=f"{OUT}/logo-1024.png")
 
-    # ---- аватарка бота: обрізається в коло, тому виворіт із відступом --
-    tg = Image.new("RGBA", (512, 512), BRAND + (255,))
-    tg.alpha_composite(gen.to_png(512, WHITE, 0.20))
-    tg.save(f"{PUB}/brand/telegram-avatar.png")
+    # ---- аватарка в Telegram: напис, вписаний у коло ------------------
+    social.tg_avatar(512).save(f"{PUB}/brand/telegram-avatar.png")
+    social.tg_avatar(1024).save(f"{OUT}/telegram-avatar-1024.png")
 
     # ---- спрощений знак для превʼю бренду ----------------------------
     old = params(**SMALL)
@@ -96,9 +96,9 @@ def main():
     # ---- іконка застосунку: церква на синьому квадраті (appicon.py) ---
     # Вкладка, закладки й домашній екран — це вже не знак бренду, а іконка
     # застосунку, тому вона малюється окремо.
-    open(f"{OUT}/appicon.svg", "w").write(appicon.svg())
-    open(f"{OUT}/appicon-small.svg", "w").write(
-        appicon.svg(band=False, stroke=appicon.SMALL_STROKE, zoom=appicon.SMALL_ZOOM))
+    # Векторного майстра в монограми немає — літери довелось би перевести в
+    # криві (fontTools), тому в `out/` лишається тільки вектор старої церкви.
+    open(f"{OUT}/appicon-church.svg", "w").write(appicon.church_svg())
     appicon.to_png(512, path=f"{APP}/icon.png")
     # apple-touch-icon: без прозорих кутів — iOS скруглює сама.
     appicon.to_png(180, square=True, path=f"{APP}/apple-icon.png")

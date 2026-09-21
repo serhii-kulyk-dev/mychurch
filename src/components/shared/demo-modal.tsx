@@ -10,14 +10,14 @@ import { useFocusTrap } from "@/components/shared/use-focus-trap";
 import { validateName, validatePhone } from "@/lib/validate";
 import { sendLead, type LeadState } from "@/lib/lead";
 import { track } from "@/lib/analytics/client";
-import { SITE_EMAIL, SITE_PHONE } from "@/lib/seo";
+import LeadFallback from "@/components/shared/lead-fallback";
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 
 export default function DemoModal() {
   const dict = useT();
   const t = dict.modal;
-  const { isOpen, goals, close } = useDemoModal();
+  const { isOpen, goals, context, close } = useDemoModal();
   /* Що відвідувач позначив у фінальному блоці — показуємо, щоб він бачив,
      з чим саме надсилає заявку. */
   const goalLabels = dict.builder.goals as Record<string, { label: string }>;
@@ -127,7 +127,16 @@ export default function DemoModal() {
       setState("sending");
       track("form_submit", { source: "demo" });
       try {
-        const ok = await sendLead({ name, phone, company, goals, source: "demo" });
+        const ok = await sendLead({
+          name,
+          phone,
+          company,
+          goals,
+          /* Форма знайомства віддає модалці те, що людина вже розказала. */
+          about: context.about,
+          size: context.size,
+          source: context.about || context.size ? "brief" : "demo",
+        });
         track(ok ? "lead" : "lead_failed", { source: "demo", goals: goals.join(",") });
         setState(ok ? "sent" : "failed");
       } finally {
@@ -135,7 +144,7 @@ export default function DemoModal() {
         sendingRef.current = false;
       }
     },
-    [name, phone, company, goals, state, t.errors]
+    [name, phone, company, goals, context, state, t.errors]
   );
 
   const handleBackdropClick = useCallback(
@@ -284,31 +293,41 @@ export default function DemoModal() {
               </div>
 
               <div className="flex flex-col gap-8">
+                {/* Після невдачі головною дією стає дзвінок нижче, а повтор
+                    відправки відходить на другий план — і виглядає відповідно. */}
                 <button
                   type="submit"
                   disabled={state === "sending"}
-                  className="btn-primary btn-brand group relative flex items-center justify-center h-12 w-full rounded-full overflow-hidden disabled:opacity-70"
+                  className={cn(
+                    "group relative flex items-center justify-center h-12 w-full rounded-full overflow-hidden disabled:opacity-70",
+                    state === "failed"
+                      ? "btn-secondary border border-hairline-strong"
+                      : "btn-primary btn-brand"
+                  )}
                 >
-                  <span className="relative text-white font-semibold text-base tracking-[-0.32px] leading-[1.4]">
-                    {state === "sending" ? t.sending : t.submit}
+                  {state === "failed" && (
+                    <span className="btn-secondary-bg absolute inset-0 bg-surface rounded-full transition-colors duration-150" />
+                  )}
+                  <span
+                    className={cn(
+                      "relative font-semibold text-base tracking-[-0.32px] leading-[1.4]",
+                      state === "failed" ? "text-ink-2" : "text-white"
+                    )}
+                  >
+                    {state === "sending" ? t.sending : state === "failed" ? t.retry : t.submit}
                   </span>
                 </button>
 
                 {/* Нічого не доїхало — показуємо запасні канали, а не «дякуємо». */}
                 {state === "failed" && (
-                  <div role="alert" className="flex flex-col gap-1 text-center">
-                    <span className="text-[14px] font-semibold text-[#c76a00]">{t.failedTitle}</span>
-                    <span className="text-[13.5px] text-ink-2 leading-[1.5]">
-                      {t.failedText}{" "}
-                      <a href={`tel:${SITE_PHONE}`} className="font-medium text-ink underline underline-offset-2">
-                        {SITE_PHONE}
-                      </a>
-                      {" · "}
-                      <a href={`mailto:${SITE_EMAIL}`} className="font-medium text-ink underline underline-offset-2">
-                        {SITE_EMAIL}
-                      </a>
-                    </span>
-                  </div>
+                  <LeadFallback
+                    source="demo"
+                    title={t.failedTitle}
+                    text={t.failedText}
+                    name={name}
+                    phone={phone}
+                    className="-mt-2"
+                  />
                 )}
 
                 {/* Legal */}

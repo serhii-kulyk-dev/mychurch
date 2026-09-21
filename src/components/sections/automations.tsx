@@ -1,231 +1,251 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Zap } from "lucide-react";
-import CursorDemo from "@/components/shared/cursor-demo";
+import { Fragment, useEffect, useState } from "react";
+import { Zap } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import FadeIn, { prefersReducedMotion } from "@/components/shared/fade-in";
-import { AVATAR_LOOKS } from "@/components/shared/person-avatar";
-import { TgDevice } from "@/components/shared/tg-phone";
-import { TgHeader, TgInline, TgInput, TgMessage } from "@/components/shared/tg-screen";
-import { hasModulePage } from "@/content/modules/ids";
+import GridPulse from "@/components/shared/grid-pulse";
+import { MODULE_ACCENTS, MODULE_ICONS } from "@/components/shared/module-icons";
+import { useCountUp } from "@/components/shared/use-count-up";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
 
 /* ────────────────────────────────────────────────────────────────
-   Раніше тут стояв статичний макет: повідомлення вже лежало в чаті,
-   і нічого не відбувалося. Тепер сценарій грає сам, як у житті:
-   подія спалахує ліворуч → бот друкує → повідомлення приходить →
-   у системі відмічаються дві дії, яких людина не бачить → палець
-   тисне кнопку → відповідь іде назад → бот підтверджує. Далі
-   наступна ситуація. Telegram справжній — шапка, бульбашки й
-   inline-кнопки ті самі, що на /telegram.
+   «Якщо — то» однією колонкою: подія згори, під нею дія, розвилка
+   і дві гілки. Розряд іде згори вниз, від блока до блока.
+
+   Схема лежала впоперек на всю ширину сторінки, з проводами, які
+   міряли по DOM. Блок тепер така сама картка, як решта огляду, —
+   упоперек вона в половину картки не влазила й різалась краєм.
+   Тож ланцюжок став вертикальним, а проводи — простими рисками.
+   Зелений блок-результат прибрано: те саме каже рядок унизу.
    ──────────────────────────────────────────────────────────────── */
 
 const AMBER = "#f59e0b";
+/* Темний текст на суцільному бурштині — єдиний блок схеми, який світиться. */
+const INK = "#14100a";
 
-/* Крок сценарію: 0 порожній чат, 1 бот друкує, 2 повідомлення,
-   3 людина відповіла, 4 бот підтвердив. */
-const TYPING_MS = 500;
-const MESSAGE_MS = 1500;
-const ACK_MS = 900;
-const NEXT_MS = 2600;
-const TAP_DELAY = 900;
+/* Сценарії міняються самі, доки на них не навели. */
+const NEXT_MS = 5200;
+/* Спершу здригається сама подія, і аж тоді згори вниз біжить розряд.
+   Збігається з .zap-trigger і zapDrop у globals.css. */
+const START_MS = 900;
+const DROP_MS = 260;
+const STEP_MS = 300;
 
-/* Обличчя того, чий це телефон — для таблички біля курсора. */
-const FACES = [4, 5, 2, 3];
+interface Node {
+  text: string;
+  accent: string;
+  Icon: LucideIcon;
+}
+
+/* Крок сценарію: квадратик модуля і рядок. Кольорові плашки на всю
+   ширину виявились заважкими — лишився значок і текст. */
+function Step({ node, lit }: { node: Node; lit?: boolean }) {
+  return (
+    <span className={cn("flex items-center gap-3", lit && "zap-lift")}>
+      <span
+        className="w-8 h-8 rounded-[10px] shrink-0 flex items-center justify-center"
+        style={{ background: node.accent }}
+      >
+        <node.Icon className="w-4 h-4 text-white" strokeWidth={2.2} />
+      </span>
+      <span className="text-white text-[16px] md:text-[17.5px] font-semibold leading-[1.25] tracking-[-0.35px]">
+        {node.text}
+      </span>
+    </span>
+  );
+}
+
+/* Провід між кроками: риска під значком, якою згори вниз біжить розряд. */
+function Drop({ delay, paused }: { delay: number; paused: boolean }) {
+  return (
+    <span aria-hidden className="relative block h-7 w-px ml-[15.5px] bg-white/15">
+      <span
+        className="absolute inset-0 origin-top"
+        style={{
+          background: AMBER,
+          animationName: "zapDrop",
+          animationDuration: `${DROP_MS}ms`,
+          animationDelay: `${delay}ms`,
+          animationTimingFunction: "linear",
+          animationFillMode: "both",
+          animationPlayState: paused ? "paused" : "running",
+        }}
+      />
+    </span>
+  );
+}
+
+/* Подія, з якої все починається: єдиний бурштиновий значок у схемі. */
+function Event({ text }: { text: string }) {
+  return (
+    <span className="zap-trigger flex items-center gap-3">
+      <span
+        className="w-8 h-8 rounded-[10px] shrink-0 flex items-center justify-center"
+        style={{ background: AMBER }}
+      >
+        <Zap className="w-4 h-4" strokeWidth={2.4} style={{ color: INK }} fill={INK} />
+      </span>
+      <span className="text-white text-[16px] md:text-[17.5px] font-semibold leading-[1.25] tracking-[-0.35px]">
+        {text}
+      </span>
+    </span>
+  );
+}
 
 export default function Automations() {
-  const t = useT().automations;
+  const c = useT().automations;
   const [active, setActive] = useState(0);
-  const [step, setStep] = useState(0);
-  const paused = useRef(false);
-  const timers = useRef<number[]>([]);
+  /* Наведення зупиняє і розряд, і перехід до наступного сценарію. */
+  const [paused, setPaused] = useState(false);
+  /* Куди саме дійшов розряд (-1 — нікуди). */
+  const [lit, setLit] = useState(-1);
 
-  const r = t.recipes[active];
-  const count = t.recipes.length;
+  const count = c.recipes.length;
+  const r = c.recipes[active];
 
-  const clear = () => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-  };
-  const later = (ms: number, fn: () => void) => {
-    timers.current.push(window.setTimeout(fn, ms));
-  };
-
-  /* Перехід на іншу ситуацію завжди починає чат спочатку. */
-  const go = (i: number) => {
-    setStep(0);
-    setActive(i);
-  };
-
-  /* Нова ситуація — далі все грає само. */
+  /* Блок підстрибує, щойно розряд добіг до нього. */
   useEffect(() => {
-    clear();
-    if (prefersReducedMotion()) {
-      later(10, () => setStep(4));
-      later(9000, () => setActive((a) => (a + 1) % count));
-      return clear;
-    }
-    later(TYPING_MS, () => setStep(1));
-    later(MESSAGE_MS, () => setStep(2));
-    return clear;
-  }, [active, count]);
+    if (prefersReducedMotion()) return;
+    const last = r.steps.length - 1;
+    const timers = r.steps.map((_, i) =>
+      window.setTimeout(() => setLit(i), START_MS + i * STEP_MS + DROP_MS)
+    );
+    const off = window.setTimeout(() => setLit(-1), START_MS + last * STEP_MS + DROP_MS + 700);
+    return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(off);
+    };
+  }, [active, r.steps]);
 
-  useEffect(() => () => clear(), []);
+  const card = (x: { text: string; module: string }): Node => ({
+    text: x.text,
+    accent: MODULE_ACCENTS[x.module] ?? AMBER,
+    Icon: MODULE_ICONS[x.module] ?? Zap,
+  });
 
-  /* Палець натиснув кнопку — відповідь, підтвердження, наступна ситуація. */
-  const onTap = () => {
-    setStep(3);
-    later(ACK_MS, () => setStep(4));
-    later(ACK_MS + NEXT_MS, () => {
-      if (!paused.current) go((active + 1) % count);
-    });
-  };
-
-  const pick = (i: number) => {
-    if (i !== active) go(i);
-  };
-
-  const link = hasModulePage("automations") ? "/modules/automations" : "/modules";
-  const reply = r.buttons[0].t;
-  /* Довгі підписи не влазять у два стовпці — тоді Telegram ставить їх у стовпчик. */
-  const rows = r.buttons.reduce((n, b) => n + b.t.length, 0) > 28 ? r.buttons.map((b) => [b]) : [r.buttons];
+  /* Лічильник перелічується щоразу, коли міняється сценарій. */
+  const saved = useCountUp(r.saved, true, 900);
 
   return (
     <section
       id="automations"
-      className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-24 overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(900px 440px at 8% 0%, rgba(0,105,224,0.42), transparent 70%), " +
-          "radial-gradient(760px 420px at 92% 104%, rgba(245,158,11,0.20), transparent 70%), " +
-          "linear-gradient(165deg, #0a1020 0%, #070b14 100%)",
-      }}
+      className="w-full flex flex-col items-center pt-2.5 md:pt-3 pb-16 md:pb-24 scroll-mt-24"
     >
-      <div
-        className="w-full max-w-[1120px] px-5 md:px-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] gap-10 lg:gap-16 items-center"
-        onMouseEnter={() => (paused.current = true)}
-        onMouseLeave={() => (paused.current = false)}
-        onFocusCapture={() => (paused.current = true)}
-        onBlurCapture={() => (paused.current = false)}
-      >
-        {/* ── Подія і те, що сталося в системі ────────── */}
-        <FadeIn className="flex flex-col gap-7">
-          <div className="flex flex-col gap-4">
-            <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: AMBER }}>
-              {t.eyebrow}
-            </span>
-            <h2 className="font-semibold text-white text-[34px] md:text-[50px] leading-[1.06] tracking-[-1.4px] md:tracking-[-1.8px]">
-              {t.title}
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar md:flex-wrap md:overflow-visible">
-            {t.recipes.map((x, i) => (
-              <button
-                key={x.name}
-                onClick={() => pick(i)}
-                aria-pressed={active === i}
-                className={cn(
-                  "shrink-0 rounded-full px-4 py-2.5 text-[13.5px] font-medium leading-none border transition-colors",
-                  active === i
-                    ? "bg-white/[0.14] border-white/25 text-white"
-                    : "border-white/10 text-white/50 hover:text-white/85"
-                )}
-              >
-                {x.name}
-              </button>
-            ))}
-          </div>
-
-          <span key={`t-${active}`} className="zap-hit flex items-start gap-3 rounded-2xl self-start border border-white/12 bg-white/[0.06] px-4 py-3.5">
-            <Zap className="w-[18px] h-[18px] shrink-0 mt-0.5" strokeWidth={2.4} style={{ color: AMBER }} fill={AMBER} />
-            <span className="flex flex-col gap-1">
-              <span className="text-[12px] uppercase tracking-[0.12em] text-white/40 leading-none tabular-nums">{r.at}</span>
-              <span className="text-[16px] md:text-[18px] text-white leading-[1.35]">{r.trigger}</span>
-            </span>
-          </span>
-
-          <div className="flex flex-col gap-3">
-            <span className="text-[12px] uppercase tracking-[0.12em] text-white/35 leading-none">{t.alsoLabel}</span>
-            <ul className="flex flex-col gap-2.5">
-              {r.also.map((a, i) => (
-                <li
-                  key={a.text}
-                  className={cn("flex items-start gap-3 transition-opacity duration-300", step >= 2 ? "opacity-100" : "opacity-0")}
-                  style={{ transitionDelay: `${i * 260}ms` }}
-                >
-                  <span
-                    className={cn(
-                      "mt-[3px] w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300",
-                      step >= 2 ? "bg-[#12a150]/25" : "bg-white/10"
-                    )}
-                    style={{ transitionDelay: `${i * 260}ms` }}
-                  >
-                    <Check className="w-3 h-3 text-[#3ddc97]" strokeWidth={3} />
-                  </span>
-                  <span className="text-[15px] md:text-[16px] text-white/80 leading-[1.4]">{a.text}</span>
-                  <span className="ml-auto shrink-0 text-[12.5px] text-white/35 tabular-nums pt-1">{a.at}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Link href={link} className="group inline-flex self-start items-center gap-1.5 text-[14.5px] font-semibold text-white/75 hover:text-white transition-colors">
-            {t.link}
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.2} />
-          </Link>
-        </FadeIn>
-
-        {/* ── Те, що бачить людина ────────────────────── */}
-        <FadeIn delay={2} variant="scale" className="flex justify-center lg:justify-end">
-          <CursorDemo
-            playKey={`${active}-${step >= 2 ? "on" : "off"}`}
-            active={step === 2}
-            startDelay={TAP_DELAY}
-            onDone={onTap}
-            mode="touch"
-            label={r.who}
-            look={AVATAR_LOOKS[FACES[active]]}
-            accent={AMBER}
-            className="w-full flex justify-center lg:justify-end"
+      <div className="w-full max-w-[1120px] px-5 md:px-8">
+        <FadeIn variant="scale">
+          {/* Той самий розкрій, що й у решти огляду: схема в темній
+              половині, назва одним словом — у білій. Ряд чипів зі
+              сценаріями прибрано: вони міняються самі, а показує це
+              смужка внизу. */}
+          {/* Картка нікуди не веде: ні кліку, ні стрілки. */}
+          <div
+            style={
+              {
+                "--accent": AMBER,
+                "--accent-soft": `color-mix(in oklab, ${AMBER} 12%, var(--surface))`,
+                "--accent-line": `color-mix(in oklab, ${AMBER} 32%, var(--surface))`,
+              } as React.CSSProperties
+            }
+            className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] overflow-hidden rounded-[24px] md:rounded-[28px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
           >
-            <TgDevice className="max-w-[300px]">
-              <TgHeader title={t.botName} sub={t.botSub} />
-              <div className="tg-wallpaper flex-1 min-h-0 px-4 py-4 flex flex-col">
-                <div className="mt-auto flex flex-col gap-2.5">
-                  <span className="self-center rounded-full bg-ink/20 px-2.5 py-1 text-[11.5px] font-medium text-white leading-none">
-                    {t.todayLabel}
-                  </span>
-
-                  {step === 1 && (
-                    <span className="tg-bubble bubble-in self-start rounded-[14px] rounded-bl-[4px] px-3.5 py-3 flex items-center gap-1.5">
-                      <i className="tg-dot" />
-                      <i className="tg-dot" />
-                      <i className="tg-dot" />
-                    </span>
-                  )}
-
-                  {step >= 2 && (
-                    <TgMessage lines={r.lines} className="bubble-in" time={r.msgTime}>
-                      <TgInline rows={rows} className="pt-1.5" dense demo={step === 2 ? reply : undefined} />
-                    </TgMessage>
-                  )}
-
-                  {step >= 3 && (
-                    <span className="tg-bubble-out bubble-in self-end max-w-[86%] rounded-[14px] rounded-br-[4px] px-3.5 py-2 flex items-end gap-2">
-                      <span className="text-[14.5px] leading-[1.35] text-ink">{reply}</span>
-                      <span className="text-[11px] text-ink-3 leading-none tabular-nums shrink-0 pb-0.5">{r.ackTime}</span>
-                    </span>
-                  )}
-
-                  {step >= 4 && <TgMessage lines={r.ack} className="bubble-in" time={r.ackTime} />}
-                </div>
+            <div
+              className="relative flex flex-col min-h-[280px] md:min-h-[440px] p-5 md:p-7 gap-5 overflow-hidden"
+              style={{
+                background:
+                  "radial-gradient(700px 360px at 8% 0%, rgba(0,105,224,0.42), transparent 70%), " +
+                  "radial-gradient(600px 340px at 92% 104%, rgba(245,158,11,0.20), transparent 70%), " +
+                  "linear-gradient(165deg, #0a1020 0%, #070b14 100%)",
+              }}
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+            >
+              {/* Тло — те саме, що в хедері сторінки: сітка, у якій
+                  спалахують клітинки й пробігають промені. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  maskImage: "radial-gradient(ellipse 80% 70% at 50% 45%, black 20%, transparent 84%)",
+                  WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 45%, black 20%, transparent 84%)",
+                }}
+              >
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to right, rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px)",
+                    backgroundSize: "56px 56px",
+                  }}
+                />
+                <GridPulse className="absolute inset-0" focus={[0.5, 0.5]} />
               </div>
-              <TgInput placeholder={t.inputPlaceholder} />
-            </TgDevice>
-          </CursorDemo>
+
+              {/* Подія згори і чотири кроки під нею. Розвилка «так / ні»
+                  й кольорові плашки на всю ширину жили тут до 2026-09-21:
+                  на пів картки це читалось як схема метро. */}
+              <div key={active} className="relative flex-1 w-full max-w-[340px] mx-auto flex flex-col justify-center">
+                <Event text={r.when} />
+                {r.steps.map((x, i) => (
+                  <Fragment key={x.text}>
+                    <Drop delay={START_MS + i * STEP_MS} paused={paused} />
+                    <Step node={card(x)} lit={lit === i} />
+                  </Fragment>
+                ))}
+              </div>
+
+              {/* Підвал: що з цього виходить людям, скільки часу це повертає
+                  за тиждень (число приблизне — тому «≈») і смужка, яка
+                  показує, коли прийде наступний сценарій. */}
+              <div className="relative flex items-end justify-between gap-4">
+                <span className="flex flex-col gap-1.5 min-w-0">
+                  <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                      {c.savedEyebrow}
+                    </span>
+                    <span className="text-[20px] md:text-[24px] font-semibold text-white leading-none tracking-[-0.6px] tabular-nums">
+                      ≈ {saved} {c.savedUnit}
+                    </span>
+                    <span className="text-[12.5px] text-white/45 leading-none">{c.savedPer}</span>
+                  </span>
+                </span>
+
+                <span aria-hidden className="flex items-center gap-1.5 shrink-0 pb-1">
+                  {c.recipes.map((x, i) =>
+                    i === active ? (
+                      <span key={x.name} className="h-[5px] w-8 rounded-full bg-white/20 overflow-hidden">
+                        <span
+                          key={active}
+                          onAnimationEnd={() => setActive((a) => (a + 1) % count)}
+                          className="block h-full w-full origin-left rounded-full"
+                          style={{
+                            background: AMBER,
+                            animationName: "barGrowX",
+                            animationDuration: `${NEXT_MS}ms`,
+                            animationTimingFunction: "linear",
+                            animationFillMode: "both",
+                            animationPlayState: paused ? "paused" : "running",
+                          }}
+                        />
+                      </span>
+                    ) : (
+                      <span key={x.name} className="h-[5px] w-[5px] rounded-full bg-white/25" />
+                    )
+                  )}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center gap-3 p-7 md:p-10">
+              <h2 className="font-semibold text-ink text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
+                {c.title}
+              </h2>
+              <p className="text-[16.5px] md:text-[18px] font-normal text-ink-2 leading-[1.5] max-w-[340px]">
+                {c.text}
+              </p>
+            </div>
+          </div>
         </FadeIn>
       </div>
     </section>

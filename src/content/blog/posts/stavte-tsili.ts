@@ -60,6 +60,27 @@ export const post: BlogPost = {
               kind: "text",
               text: "Зверніть увагу: усі робочі формулювання спираються на дані, які церква вже й так збирає. Ціль, для перевірки якої треба щоразу проводити опитування, помирає в березні.",
             },
+            {
+              kind: "visual",
+              caption:
+                "Приклад однієї цілі з таблиці вище: стартове число, дата й лінія, до якої треба дійти. Поки стовпчик нижчий за пунктир, ціль не виконана — і це видно на травневій зустрічі лідерів, а не в грудні.",
+              visual: {
+                type: "chart",
+                title: "Частка людей у малих групах: з 38% до 55% до грудня",
+                unit: "частка людей у малих групах, відсотки",
+                goal: 55,
+                goalLabel: "ціль 55%",
+                bars: [
+                  { label: "січ", value: 38 },
+                  { label: "бер", value: 41 },
+                  { label: "трав", value: 43 },
+                  { label: "лип", value: 47 },
+                  { label: "вер", value: 49 },
+                  { label: "лист", value: 53 },
+                  { label: "груд", value: 56 },
+                ],
+              },
+            },
           ],
         },
         {
@@ -77,6 +98,24 @@ export const post: BlogPost = {
               kind: "callout",
               title: "Ціль ≠ звіт",
               text: "Якщо про ціль згадують лише тоді, коли треба звітувати, вона не працює. Ціль має з'являтись у щотижневій розмові лідерів: що ми зробили цього тижня, щоб зрушити її.",
+            },
+            {
+              kind: "solution",
+              title: "Три цілі на квартал — з числом і людиною",
+              text:
+                "Показник, стартове число, термін і відповідальний стоять поруч, а прогрес рахується з тих самих відміток, що вже є в системі.",
+              spec: {
+                kind: "list",
+                title: "Цілі та метрики",
+                subtitle: "Осінній квартал",
+                items: [
+                  { title: "Гості доходять до групи", sub: "Було 18% · ціль 30% · до 31 грудня", meta: "Тарас Микитюк", badge: { label: "24%", tone: "green" } },
+                  { title: "Кожне служіння має заміну", sub: "Було 4 служіння · ціль 9 · до 30 листопада", meta: "Оксана Гнатюк", badge: { label: "6 з 9", tone: "amber" } },
+                  { title: "Дзвінок новому за три дні", sub: "Було 9 днів · ціль 3 дні", meta: "Ніна Панчук", badge: { label: "5 днів", tone: "amber" } },
+                ],
+                footer: "Число тягнеться з відміток і заявок — руками його ніхто не вводить.",
+              },
+              link: { label: "Модуль «Цілі та метрики»", href: "/modules/goals" },
             },
           ],
         },
@@ -172,6 +211,27 @@ export const post: BlogPost = {
               kind: "text",
               text: "Every working version relies on data the church already collects. A goal that needs a survey to measure dies in March.",
             },
+            {
+              kind: "visual",
+              caption:
+                "One goal from the table above, made visible: a starting number, a date and the line to reach. While the column sits below the dashes the goal is not met — and that shows up at the May leaders' meeting, not in December.",
+              visual: {
+                type: "chart",
+                title: "People in small groups: from 38% to 55% by December",
+                unit: "share of people in small groups, per cent",
+                goal: 55,
+                goalLabel: "goal 55%",
+                bars: [
+                  { label: "Jan", value: 38 },
+                  { label: "Mar", value: 41 },
+                  { label: "May", value: 43 },
+                  { label: "Jul", value: 47 },
+                  { label: "Sep", value: 49 },
+                  { label: "Nov", value: 53 },
+                  { label: "Dec", value: 56 },
+                ],
+              },
+            },
           ],
         },
         {
@@ -189,6 +249,24 @@ export const post: BlogPost = {
               kind: "callout",
               title: "A goal is not a report",
               text: "If a goal only comes up at reporting time, it is not working. It should appear in the weekly leaders' conversation: what did we do this week to move it?",
+            },
+            {
+              kind: "solution",
+              title: "Three goals a quarter, each with a number and a name",
+              text:
+                "Metric, baseline, deadline and owner sit side by side, and progress is counted from the check-ins the system already holds.",
+              spec: {
+                kind: "list",
+                title: "Goals and metrics",
+                subtitle: "Autumn quarter",
+                items: [
+                  { title: "Guests reach a group", sub: "Was 18% · goal 30% · by 31 December", meta: "Taras Mykytiuk", badge: { label: "24%", tone: "green" } },
+                  { title: "Every ministry has a stand-in", sub: "Was 4 ministries · goal 9 · by 30 November", meta: "Oksana Hnatiuk", badge: { label: "6 of 9", tone: "amber" } },
+                  { title: "A call to a newcomer within three days", sub: "Was 9 days · goal 3 days", meta: "Nina Panchuk", badge: { label: "5 days", tone: "amber" } },
+                ],
+                footer: "The number comes from check-ins and requests — nobody types it in.",
+              },
+              link: { label: "The Goals and metrics module", href: "/modules/goals" },
             },
           ],
         },

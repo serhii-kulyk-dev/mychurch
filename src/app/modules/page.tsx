@@ -3,7 +3,6 @@ import Navbar from "@/components/sections/navbar";
 import ModulesHero from "@/components/sections/modules-hero";
 import ModulesMap from "@/components/sections/modules-map";
 import ModulesGrid from "@/components/sections/modules-grid";
-import ModuleBuilder from "@/components/sections/module-builder";
 import ChurchBrief from "@/components/sections/church-brief";
 import { BuilderProvider } from "@/context/builder-context";
 import Footer from "@/components/sections/footer";
@@ -29,8 +28,12 @@ export default function ModulesPage() {
           <ModulesMap bare />
         </ModulesHero>
         <ModulesGrid />
+        {/* Конструктор («Зберіть свою систему») знято зі сторінки 2026-09-21
+            на прохання користувача. Компонент живий у
+            components/sections/module-builder.tsx — повернути = вписати
+            <ModuleBuilder /> назад сюди. Бриф лишається: без конструктора
+            він просто відкривається з порожнім полем. */}
         <BuilderProvider>
-          <ModuleBuilder />
           <ChurchBrief />
         </BuilderProvider>
       </main>

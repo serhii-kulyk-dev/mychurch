@@ -10,6 +10,7 @@
 SVG-локапи потребують fontTools (`pip install fonttools`) — без нього
 збираються тільки PNG, вектор пропускається з попередженням.
 """
+import math
 import os
 import shutil
 from PIL import Image, ImageDraw
@@ -200,6 +201,41 @@ def lockup_svg(first, rest, stacked=False, cap=100.0):
                        for d, c in word.svg_paths(LOGO, px, first, rest))
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w:.2f} {h:.2f}" '
             f'width="{w:.0f}" height="{h:.0f}" fill="none">{body}</svg>')
+
+
+# --------------------------------------------------- аватарка в Telegram
+TG_SECOND = (168, 205, 250)  # «Церква» світліша: «Моя» лишається головною
+TG_SAFE = 0.90               # частка радіуса, далі напис не заходить
+TG_RATIO = 0.58              # висота «Церква» відносно «Моя»
+TG_GAP = 0.26                # проміжок між рядками в частках великої «М»
+
+
+def tg_avatar(size=512, first=WHITE, second=TG_SECOND, bg=BRAND):
+    """Квадрат, який Telegram ріже в коло: напис вписано в коло, не в квадрат.
+
+    `lockup_png` тут не годиться — його поля рахуються від прямокутника, і
+    круглий кроп лишає дрібний напис посередині кружечка. Тому габарит двох
+    рядків вписуємо в коло по діагоналі: напис займає весь видимий кружечок.
+
+    Два рядки, а не один: щоб «Моя Церква» влізло в ширину кола одним рядком,
+    кегль падає вдвічі, і в списку чатів (~50 px) лишається пляма.
+    """
+    lines = ((FIRST, 1.0, first), (SECOND, TG_RATIO, second))
+    # рахуємо габарит при умовній висоті літери 100, далі масштабуємо
+    ws = [word.width(t, word.cap_to_px(100 * k)) for t, k, _ in lines]
+    hs = [100 * k for _, k, _ in lines]
+    bw, bh = max(ws), sum(hs) + TG_GAP * 100 * (len(lines) - 1)
+    s = size * TG_SAFE / math.hypot(bw, bh)  # діагональ = діаметр безпечного кола
+    cap = 100 * s
+
+    img = Image.new("RGBA", (size, size), bg + (255,))
+    d = ImageDraw.Draw(img)
+    y = (size - bh * s) / 2
+    for (text, k, colour), w0, h0 in zip(lines, ws, hs):
+        px = word.cap_to_px(cap * k)
+        word.draw(d, ((size - w0 * s) / 2, y + h0 * s), text, px, colour, colour)
+        y += h0 * s + TG_GAP * cap
+    return img
 
 
 def lockup_png(cap, theme, stacked=False, transparent=True, pad=0.34):

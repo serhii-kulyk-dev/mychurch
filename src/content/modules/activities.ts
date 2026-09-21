@@ -59,7 +59,7 @@ export const activitiesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Ministries — MyChurch module",
+        seoTitle: "Ministries — My Church module",
         seoDescription: "Teams, roles, rotas, confirmations and attendance for every ministry in the church. Volunteers see their rota on their phone, leaders see who has confirmed.",
         title: "Every ministry with a team, roles and a rota",
         lead: "The Ministries module brings every team in the church — worship, sound, welcome, kids — into one place: who is on the team, who owns which role, who serves this Sunday and who has already confirmed.",
@@ -187,7 +187,7 @@ export const activitiesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Service planning — MyChurch module",
+        seoTitle: "Service planning — My Church module",
         seoDescription: "Order of service with timing, the team, materials for every block and confirmations. A plan from a template in 5 minutes, reminders sent automatically.",
         title: "Order of service, team and timing in one plan",
         lead: "The Service Planning module is the running order, the team and the materials for every service in one place. Volunteers see their blocks, the pastor sees the whole picture — and nobody asks \"what time am I on?\".",
@@ -217,7 +217,7 @@ export const activitiesModules: ModuleDetail[] = [
           { role: "volunteer", text: "Sees their block, their cue time and the materials on their phone — and confirms with one tap." },
         ],
         faq: [
-          { q: "We already plan services in a Google Doc. Why change?", a: "A document doesn't know who has confirmed and doesn't remind anyone. In MyChurch the plan is linked to people: the team sees their blocks, confirms, gets reminders, and the history of services builds up on its own." },
+          { q: "We already plan services in a Google Doc. Why change?", a: "A document doesn't know who has confirmed and doesn't remind anyone. In My Church the plan is linked to people: the team sees their blocks, confirms, gets reminders, and the history of services builds up on its own." },
           { q: "Can we plan several services on one Sunday?", a: "Yes: morning and evening, or services on different campuses — each with its own running order and team. The system warns if one person is in two plans at the same time." },
           { q: "What does the sound engineer see, and what does the host see?", a: "The same plan, but each sees their own blocks highlighted. Materials on a block are available to everyone on that service's team." },
           { q: "Can the plan change on Sunday morning?", a: "Yes. Change the order or a duration and the updated plan is on everyone's phone at once; the bot notifies the people the change affects." },
@@ -314,7 +314,7 @@ export const activitiesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Small groups — MyChurch module",
+        seoTitle: "Small groups — My Church module",
         seoDescription: "Members, leaders, meetings and attendance for small groups. Leaders mark attendance from a phone; the pastor sees which groups grow and who has stopped coming.",
         title: "Every group carries on, even when the leader changes",
         lead: "The Small Groups module holds the members, leaders, meeting schedule and attendance of every group in one place. The leader marks attendance from a phone; the pastor sees which groups are growing and which are fading.",
@@ -440,7 +440,7 @@ export const activitiesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Learning — MyChurch module",
+        seoTitle: "Learning — My Church module",
         seoDescription: "Courses, cohorts, lessons, attendance, homework and certificates. Every participant's progress shows in their profile, from Alpha to the leaders' school.",
         title: "Church learning where everyone's progress is visible",
         lead: "The Learning module runs the Alpha course, Foundations of Faith, the leaders' school and any other church course: cohorts, lessons, attendance, homework and certificates. You see who reached the end and who got stuck on lesson three.",
@@ -593,7 +593,7 @@ export const activitiesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Onboarding — MyChurch module",
+        seoTitle: "Onboarding — My Church module",
         seoDescription: "A newcomer's path from the form at the door to membership: steps, a named person, automatic welcomes and reminders. Anyone who gets stuck is highlighted.",
         title: "No newcomer gets lost after their first Sunday",
         lead: "The Onboarding module turns a first Sunday into a path: a form at the door, a welcome the same day, a named person, an invitation to a group and a course. Every step is visible, every missed step is highlighted.",
@@ -729,7 +729,7 @@ export const activitiesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Camps — MyChurch module",
+        seoTitle: "Camps — My Church module",
         seoDescription: "Participant registration, payments, rooms and squads, the leaders' team, a day-by-day schedule and medical details: a kids' or youth camp in one place.",
         title: "A camp without chaos, from sign-up to arrival",
         lead: "The Camps module holds everything a kids', teen or youth camp needs: participant registration, parental consent, payments, rooms and squads, the leaders' team and a day-by-day schedule.",

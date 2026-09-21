@@ -6,15 +6,44 @@ ErrorDocument 404 /404.html
 # Картинки для соцмереж Next кладе файлами без розширення
 # (/opengraph-image, /blog/<стаття>/opengraph-image). Apache віддав би
 # їх як text/plain, і превʼю в месенджерах не було б.
+#
+# Тепер `og:image` веде на копію з розширенням, яку робить
+# scripts/og-png.mjs, — її хостинг віддає як image/png сам. Це правило
+# лишається заради старих посилань, що вже осіли в кешах соцмереж.
 <FilesMatch "^opengraph-image$">
   ForceType image/png
 </FilesMatch>
 
-# Список амбасадорів окремою сторінкою не потрібен — він один.
-# Раніше це робив redirects() у next.config, але статичний експорт
-# редиректів не вміє, тож переносимо правило на хостинг.
+# --- Редиректи ---
 #
-# Саме RedirectMatch із ^...$: звичайний Redirect збігається за
-# префіксом, і під нього потрапила б сама /ambassadors/nove-zhyttia/,
-# отримавши нескінченний редирект на себе.
-RedirectMatch 301 ^/ambassadors/?$ /ambassadors/nove-zhyttia/
+# Хостинг тримає Apache за nginx, і сам Apache бачить запит як звичайний http.
+# Через це будь-який його власний редирект — і дописування косої риски
+# (DirectorySlash), і Redirect із відносною ціллю — віддає в Location
+# http://, а не https://. Браузер із примусовим HTTPS такий перехід ріже,
+# і людина замість сторінки бачить помилку завантаження.
+#
+# Тому всі редиректи пишемо самі, абсолютними й зі схемою https.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Список амбасадорів окремою сторінкою не потрібен — він один.
+  # Раніше це робив redirects() у next.config, але статичний експорт
+  # редиректів не вміє, тож правило живе на хостингу.
+  RewriteRule ^ambassadors/?$ https://%{HTTP_HOST}/ambassadors/nove-zhyttia/ [R=301,L]
+
+  # Коса риска в кінці. Експорт кладе кожну сторінку текою з index.html,
+  # тож /modules без риски — це запит теки, який інакше дописав би mod_dir.
+  # У .htaccess mod_rewrite відпрацьовує раніше за нього, тож слово лишається
+  # за цим правилом.
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_URI} !/$
+  RewriteRule ^(.+)$ https://%{HTTP_HOST}/$1/ [R=301,L]
+</IfModule>
+
+# Якщо mod_rewrite на хостингу вимкнуть — хоч /ambassadors лишиться живим.
+# Саме RedirectMatch із ^...$: звичайний Redirect збігається за префіксом,
+# і під нього потрапила б сама /ambassadors/nove-zhyttia/, отримавши
+# нескінченний редирект на себе.
+<IfModule !mod_rewrite.c>
+  RedirectMatch 301 ^/ambassadors/?$ https://mychurch.com.ua/ambassadors/nove-zhyttia/
+</IfModule>

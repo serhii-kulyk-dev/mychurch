@@ -43,6 +43,25 @@ export const post: BlogPost = {
               kind: "text",
               text: "Жодне з цих місць не є помилкою саме собою. Проблема в тому, що між ними немає зв'язку: людина з таблиці, її заявка з пошти й її присутність із зошита ніде не зустрічаються.",
             },
+            {
+              kind: "solution",
+              title: "Одна картка людини",
+              text:
+                "Контакт, сім'я, група, присутність і звернення стоять в одному записі — і відкриваються тому, кому це дозволено, без прохання «скинь файл».",
+              spec: {
+                kind: "list",
+                title: "Люди",
+                subtitle: "Один список замість п'яти таблиць",
+                items: [
+                  { title: "Олена Гнатюк", sub: "Група «Витоки» · четвертий рік у церкві", meta: "Була минулої неділі", badge: { label: "Член церкви", tone: "brand" } },
+                  { title: "Родина Ковальчуків", sub: "Четверо · звернення про допомогу", meta: "Відповідальний: Тарас", badge: { label: "В роботі", tone: "amber" } },
+                  { title: "Андрій Пилипенко", sub: "Служіння звуку · неділя", meta: "Графік на місяць", badge: { label: "Служитель", tone: "violet" } },
+                  { title: "Марія Дідух", sub: "Гостя, другий тиждень", meta: "Ще без групи", badge: { label: "Новенька", tone: "green" } },
+                ],
+                footer: "Кожна зміна лишає слід: видно, хто і коли оновив запис.",
+              },
+              link: { label: "Модуль «Люди»", href: "/modules/people" },
+            },
           ],
         },
         {
@@ -70,6 +89,25 @@ export const post: BlogPost = {
                 { title: "Звернення", text: "Заявки з усіх каналів в один список зі статусом і відповідальним." },
                 { title: "Домовленості", text: "База знань служінь: інструкції, підрядники, рішення сезону." },
               ],
+            },
+            {
+              kind: "visual",
+              caption:
+                "Джерела нікуди не діваються — вони перестають бути єдиною копією. Коли контакт, група, присутність і звернення чіпляються до однієї картки, питання «а де це?» зникає разом із відповіддю «у Валі».",
+              visual: {
+                type: "merge",
+                title: "П'ять місць, з яких збирають одне й те саме",
+                sources: ["Таблиця адміністратора", "Чати лідерів", "Зошит служіння", "Форми на сайті", "Пам'ять лідерів"],
+                target: {
+                  title: "Картка людини",
+                  rows: [
+                    { title: "Олена Гнатюк", meta: "Група «Витоки»" },
+                    { title: "Родина Ковальчуків", meta: "Звернення, в роботі" },
+                    { title: "Андрій Пилипенко", meta: "Служіння звуку" },
+                    { title: "Марія Дідух", meta: "Гостя, другий тиждень" },
+                  ],
+                },
+              },
             },
             {
               kind: "callout",
@@ -156,6 +194,25 @@ export const post: BlogPost = {
               kind: "text",
               text: "None of these places is wrong by itself. The problem is that nothing connects them: the person in the spreadsheet, their request in the inbox and their attendance in the notebook never meet.",
             },
+            {
+              kind: "solution",
+              title: "One person, one record",
+              text:
+                "Contact, family, group, attendance and requests sit in a single record — open to whoever is allowed to see it, with no “send me the file” in between.",
+              spec: {
+                kind: "list",
+                title: "People",
+                subtitle: "One list instead of five spreadsheets",
+                items: [
+                  { title: "Olena Hnatiuk", sub: "Roots group · fourth year in church", meta: "In last Sunday", badge: { label: "Member", tone: "brand" } },
+                  { title: "The Kovalchuk family", sub: "Four people · request for help", meta: "Owner: Taras", badge: { label: "In progress", tone: "amber" } },
+                  { title: "Andrii Pylypenko", sub: "Sound ministry · Sundays", meta: "Rota for the month", badge: { label: "Serving", tone: "violet" } },
+                  { title: "Mariia Didukh", sub: "Guest, second week", meta: "No group yet", badge: { label: "New", tone: "green" } },
+                ],
+                footer: "Every change leaves a trace: who updated the record, and when.",
+              },
+              link: { label: "The People module", href: "/modules/people" },
+            },
           ],
         },
         {
@@ -183,6 +240,25 @@ export const post: BlogPost = {
                 { title: "Requests", text: "Every channel into one list with a status and an owner." },
                 { title: "Agreements", text: "A ministry knowledge base: instructions, suppliers, decisions of the season." },
               ],
+            },
+            {
+              kind: "visual",
+              caption:
+                "The sources do not disappear — they stop being the only copy. Once the contact, the group, the attendance and the request all hang off one record, where is it? stops being answered with ask Valia.",
+              visual: {
+                type: "merge",
+                title: "Five places holding the same thing",
+                sources: ["Admin spreadsheet", "Leader chats", "Ministry notebook", "Website forms", "What leaders remember"],
+                target: {
+                  title: "Person record",
+                  rows: [
+                    { title: "Olena Hnatiuk", meta: "Roots group" },
+                    { title: "The Kovalchuk family", meta: "Request, in progress" },
+                    { title: "Andrii Pylypenko", meta: "Sound team" },
+                    { title: "Maria Didukh", meta: "Guest, second week" },
+                  ],
+                },
+              },
             },
             {
               kind: "callout",

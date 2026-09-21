@@ -2,7 +2,8 @@ import type { LucideIcon } from "lucide-react";
 import {
   UserPlus, Activity, Inbox, Send, Flame, Home, Blocks, Ticket,
   Network, GraduationCap, Calculator, DoorOpen, ClipboardList, Zap, BarChart3, Building2,
-  FolderInput,
+  FolderInput, Users, Cake, IdCard, ListChecks, Tent, CalendarDays, ListTodo, BookOpen,
+  Package, Sparkles, SlidersHorizontal, Target,
 } from "lucide-react";
 
 /* ────────────────────────────────────────────────────────────────
@@ -35,6 +36,9 @@ export const BUILDER_GROUPS: BuilderGroup[] = [
       { id: "attendance", Icon: Activity, modules: ["analytics", "assistant", "automations"] },
       { id: "requests", Icon: Inbox, modules: ["applications", "automations"] },
       { id: "comms", Icon: Send, modules: ["telegram", "telegram-bot", "campaigns"] },
+      { id: "families", Icon: Users, modules: ["family", "people"] },
+      { id: "birthdays", Icon: Cake, modules: ["calendar", "automations"] },
+      { id: "membership", Icon: IdCard, modules: ["people", "forms"] },
     ],
   },
   {
@@ -44,6 +48,9 @@ export const BUILDER_GROUPS: BuilderGroup[] = [
       { id: "groups", Icon: Home, modules: ["groups", "calendar"] },
       { id: "kids", Icon: Blocks, modules: ["kids-town", "family"] },
       { id: "events", Icon: Ticket, modules: ["events", "camps", "links", "rooms"] },
+      { id: "planning", Icon: ListChecks, modules: ["service-planning", "templates"] },
+      { id: "camps", Icon: Tent, modules: ["camps", "forms", "links"] },
+      { id: "calendar", Icon: CalendarDays, modules: ["calendar", "events"] },
     ],
   },
   {
@@ -53,6 +60,9 @@ export const BUILDER_GROUPS: BuilderGroup[] = [
       { id: "learning", Icon: GraduationCap, modules: ["learning", "knowledge"] },
       { id: "money", Icon: Calculator, modules: ["accounting"] },
       { id: "rooms", Icon: DoorOpen, modules: ["rooms", "inventory", "infrastructure"] },
+      { id: "projects", Icon: ListTodo, modules: ["projects", "automations"] },
+      { id: "knowledge", Icon: BookOpen, modules: ["knowledge", "tables"] },
+      { id: "inventory", Icon: Package, modules: ["inventory", "infrastructure"] },
     ],
   },
   {
@@ -63,6 +73,9 @@ export const BUILDER_GROUPS: BuilderGroup[] = [
       { id: "routine", Icon: Zap, modules: ["automations", "templates", "assistant"] },
       { id: "numbers", Icon: BarChart3, modules: ["analytics", "goals", "seasons"] },
       { id: "campuses", Icon: Building2, modules: ["campuses", "customization"] },
+      { id: "assistant", Icon: Sparkles, modules: ["assistant", "analytics"] },
+      { id: "custom", Icon: SlidersHorizontal, modules: ["customization", "templates"] },
+      { id: "goals", Icon: Target, modules: ["goals", "seasons", "analytics"] },
     ],
   },
 ];

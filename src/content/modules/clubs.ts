@@ -71,8 +71,8 @@ export const clubsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Kids Town — MyChurch module",
-        seoDescription: "Children's ministry in MyChurch: a child registered under their parents, check-in in seconds, age groups, allergies on the badge and safe pick-up by code.",
+        seoTitle: "Kids Town — My Church module",
+        seoDescription: "Children's ministry in My Church: a child registered under their parents, check-in in seconds, age groups, allergies on the badge and safe pick-up by code.",
         title: "Every child in the right group, and safe",
         lead: "Kids Town is a dedicated space for children's ministry. A child is registered under their parents, checked in within seconds, placed in an age group and handed back only to someone with the code.",
         highlights: [

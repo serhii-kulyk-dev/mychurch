@@ -69,8 +69,8 @@ export const platformModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Customisation — MyChurch module",
-        seoDescription: "Customise MyChurch: your own fields, statuses and stages, roles with precise permissions, processes, terminology and branding — no developer needed.",
+        seoTitle: "Customisation — My Church module",
+        seoDescription: "Customise My Church: your own fields, statuses and stages, roles with precise permissions, processes, terminology and branding — no developer needed.",
         title: "The system bends to your church, not the reverse",
         lead: "Every church looks after people in its own way. Customisation lets you add your own fields, statuses, roles and process stages — without a developer and without waiting for an update.",
         highlights: [
@@ -215,8 +215,8 @@ export const platformModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Templates — MyChurch module",
-        seoDescription: "A library of MyChurch templates: forms, campaigns, events and processes built on real church needs. Pick one, adjust it, launch — and save your own.",
+        seoTitle: "Templates — My Church module",
+        seoDescription: "A library of My Church templates: forms, campaigns, events and processes built on real church needs. Pick one, adjust it, launch — and save your own.",
         title: "Never start from a blank page",
         lead: "A newcomer form, a volunteer reminder, camp registration, an onboarding path — other churches have already built all of it. Take a template, adjust it, launch.",
         highlights: [
@@ -352,7 +352,7 @@ export const platformModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Telegram bot — MyChurch module",
+        seoTitle: "Telegram bot — My Church module",
         seoDescription: "Your church's own Telegram bot with your name and logo: schedule, event sign-ups, QR check-in, answers to common questions and a first contact for newcomers.",
         title: "Your church answers people at any hour",
         lead: "Your own Telegram bot with your church's name and logo. Service schedule, event sign-ups, check-in at the door and answers to common questions — people get it all in a familiar messenger, and the team gets fewer \"when is it?\" messages.",
@@ -364,14 +364,14 @@ export const platformModules: ModuleDetail[] = [
         ],
         features: [
           { icon: "Bot", title: "Your bot, your name", text: "@YourChurchBot with a logo and a greeting in your own words. People see the church, not the platform." },
-          { icon: "CalendarDays", title: "Schedule always at hand", text: "Services, group meetings, this week's events — live data from the MyChurch calendar, no manual updates." },
+          { icon: "CalendarDays", title: "Schedule always at hand", text: "Services, group meetings, this week's events — live data from the My Church calendar, no manual updates." },
           { icon: "Ticket", title: "Sign up in two taps", text: "Camp, conference, course — a person picks the event, confirms the details from their profile — and they're on the list." },
           { icon: "ScanLine", title: "Check-in in the bot", text: "A QR at the door or an \"I'm here\" button — attendance at the service or group meeting is recorded without reception." },
           { icon: "HelpCircle", title: "Answers to questions", text: "\"Where do I park?\", \"Is there a kids' room?\" — the bot answers from the church knowledge base and hands the hard ones to a person." },
           { icon: "UserPlus", title: "A newcomer's first contact", text: "Tapped Start — and the person is in the database as a guest, while their owner gets a reminder to write." },
         ],
         steps: [
-          { title: "Create the bot", text: "A minute in BotFather: name, logo, token — and the bot appears in MyChurch settings." },
+          { title: "Create the bot", text: "A minute in BotFather: name, logo, token — and the bot appears in My Church settings." },
           { title: "Build the menu", text: "Turn on sections: schedule, events, sign-ups, my group, questions. The greeting texts are yours." },
           { title: "Put a QR at the door", text: "Print the QR code — guests register, members check in, and everyone subscribes to reminders." },
           { title: "Teach it to answer", text: "Add common questions and answers or connect the knowledge base — the bot covers most of the \"where?\" and \"when?\"." },
@@ -384,7 +384,7 @@ export const platformModules: ModuleDetail[] = [
         ],
         faq: [
           { q: "How is the church bot different from the Telegram integration?", a: "The integration connects Telegram to the database for campaigns and notifications. The bot is what a person interacts with: menu, schedule, sign-ups, check-in. The integration works inside the bot." },
-          { q: "Do I need to know how to code?", a: "No. You create the bot in BotFather following the guide, paste the token — and set up the menu and texts in MyChurch." },
+          { q: "Do I need to know how to code?", a: "No. You create the bot in BotFather following the guide, paste the token — and set up the menu and texts in My Church." },
           { q: "Can the bot answer free-form questions?", a: "Common ones — from the knowledge base and your answers. If it doesn't know, it passes the message to the owner and tells the person so." },
           { q: "Can I have several bots for campuses?", a: "Yes. Each campus can have its own bot with its own schedule — or one shared bot that asks which location the person attends." },
         ],

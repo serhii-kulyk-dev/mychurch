@@ -1,132 +1,103 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, Check, LayoutGrid, Sparkles } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
-import { Field } from "@/components/shared/form-field";
-import { MODULE_ICONS } from "@/components/shared/module-icons";
-import { useBuilder } from "@/context/builder-context";
-import { validateName, validatePhone } from "@/lib/validate";
-import { sendLead, type LeadState } from "@/lib/lead";
 import { track } from "@/lib/analytics/client";
-import { SITE_EMAIL, SITE_PHONE } from "@/lib/seo";
+import { useDemoModal } from "@/context/demo-modal-context";
+import { ALL_GOALS, findGoal } from "@/content/builder";
 import { useT } from "@/lib/lang";
 import { cn } from "@/lib/utils";
-import type { Dict } from "@/lib/i18n";
 
-/* Bottom of the modules page: the visitor describes their church and we propose
-   a module set. Submission goes through the same sendLead() as the demo modal. */
-
-function moduleName(t: Dict, id: string) {
-  for (const g of t.modules.groups) {
-    const item = g.items.find((i) => i.id === id);
-    if (item) return item.name;
-  }
-  return id;
-}
+/* Знайомство: людина каже, яка в неї церква і що хоче спростити, а ім'я
+   й телефон лишає вже в модалці — одна форма контактів на весь сайт. */
 
 /* ── Toggle chip ─────────────────────────────────────────────────── */
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function Chip({
+  active,
+  onClick,
+  icon: Icon,
+  iconColor,
+  className,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  /* Іконка бажання; без неї (розмір церкви) позначкою лишається галочка. */
+  icon?: LucideIcon;
+  /* Колір бажання: ним світиться іконка і ободок чипа. */
+  iconColor?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
       aria-pressed={active}
       onClick={onClick}
+      style={
+        iconColor
+          ? {
+              /* Яскраво, але не заливкою: колір тримають ободок, тло і сам
+                 напис, а обране нижче навпаки — сіре. */
+              borderColor: `color-mix(in oklab, ${iconColor} 62%, var(--surface))`,
+              background: `color-mix(in oklab, ${iconColor} 13%, var(--surface))`,
+              color: `color-mix(in oklab, ${iconColor} 78%, var(--ink))`,
+            }
+          : undefined
+      }
       className={cn(
         "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border text-[13.5px] font-medium leading-none transition-colors duration-150",
         active
           ? "border-brand bg-brand-soft text-brand"
-          : "border-hairline bg-surface text-ink-2 hover:text-ink hover:border-hairline-strong hover:bg-surface-2"
+          : "border-hairline bg-surface text-ink-2 hover:text-ink hover:border-hairline-strong hover:bg-surface-2",
+        className
       )}
     >
-      {active && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+      {Icon ? (
+        <Icon className="w-4 h-4 shrink-0" strokeWidth={2.2} style={iconColor ? { color: iconColor } : undefined} />
+      ) : (
+        active && <Check className="w-3.5 h-3.5" strokeWidth={3} />
+      )}
       {children}
     </button>
   );
 }
 
-function ChipGroup({ label, children }: { label: string; children: React.ReactNode }) {
+/* Один крок брифу: номер, підпис і те, що в ньому роблять. */
+function Step({ n, label, children }: { n: number; label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2.5">
-      <span className="text-[13px] font-medium text-ink-2">{label}</span>
-      <div role="group" aria-label={label} className="flex flex-wrap gap-2">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/* ── What the visitor gets: a small mock of a proposed set ──────── */
-function SetRow({ t, label, ids, muted }: { t: Dict; label: string; ids: string[]; muted?: boolean }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-ink-3">{label}</span>
-      <div className="flex flex-wrap gap-1.5">
-        {ids.map((id) => {
-          const Icon = MODULE_ICONS[id] ?? LayoutGrid;
-          return (
-            <span
-              key={id}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12.5px] font-medium leading-none border",
-                muted
-                  ? "border-dashed border-hairline-strong text-ink-3"
-                  : "border-hairline bg-surface-2 text-ink"
-              )}
-            >
-              <Icon className={cn("w-3.5 h-3.5", muted ? "text-ink-3" : "text-brand")} strokeWidth={2.2} />
-              {moduleName(t, id)}
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function ExampleSet({ t }: { t: Dict }) {
-  const b = t.brief.example;
-  return (
-    <div className="rounded-2xl bg-surface border border-hairline shadow-[0_12px_28px_-18px_rgba(0,0,0,0.35)] p-4 md:p-5 flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-ink-3">{b.label}</span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-[12px] font-medium text-brand leading-none">
-          <Sparkles className="w-3.5 h-3.5" strokeWidth={2.2} />
-          {b.tag}
+    <div className="flex flex-col gap-2.5 pb-5 border-b border-hairline last:border-b-0 last:pb-0">
+      <span className="flex items-center gap-2.5">
+        <span className="w-6 h-6 rounded-full border border-hairline-strong flex items-center justify-center text-[12px] font-semibold text-ink-3 tabular-nums shrink-0">
+          {n}
         </span>
-      </div>
-      <p className="text-[14.5px] text-ink leading-[1.4]">{b.church}</p>
-      <SetRow t={t} label={b.start} ids={b.startItems} />
-      <SetRow t={t} label={b.later} ids={b.laterItems} muted />
+        <span className="text-[16px] md:text-[17px] font-semibold text-ink leading-tight">{label}</span>
+      </span>
+      {children}
     </div>
   );
 }
 
-/* ── What the visitor actually built in the constructor above ───── */
+const FIELD_SHELL = cn(
+  "field-shell flex flex-col gap-1.5 px-5 py-4 rounded-[14px] bg-surface border border-hairline transition-[border-color,box-shadow] duration-150 cursor-text",
+  "[&:hover:not(:focus-within)]:border-hairline-strong [&:hover:not(:focus-within)]:shadow-[0px_1px_2px_rgba(0,0,0,0.06)]",
+  "focus-within:border-[#007aff] focus-within:shadow-[0px_2px_4px_rgba(0,122,255,0.12)]"
+);
+
+/* Усі бажання конструктора: ярлики — у словнику, іконка й колір — від
+   модуля, який це бажання вмикає. Список не вигаданий тут, він той самий,
+   що й у каталозі модулів. */
+/* «Новенькі» прибрано з пропозицій на прохання користувача. */
+const BRIEF_GOALS = ALL_GOALS.filter((g) => g.id !== "newcomers");
+
+/* Скільки бажань видно за раз: обрав одне — воно стає піном унизу, а на
+   його місце підкидається наступне. */
+const POOL = 6;
+
 function lower(s: string) {
   return s.charAt(0).toLowerCase() + s.slice(1);
-}
-
-function BuiltSet({ t, goals, start, later }: { t: Dict; goals: string[]; start: string[]; later: string[] }) {
-  const fb = t.builder.fromBuilder;
-  const e = t.brief.example;
-  return (
-    <div className="rounded-2xl bg-surface border border-hairline shadow-[0_12px_28px_-18px_rgba(0,0,0,0.35)] p-4 md:p-5 flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-ink-3">{fb.label}</span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-1 text-[12px] font-medium text-brand leading-none">
-          <Sparkles className="w-3.5 h-3.5" strokeWidth={2.2} />
-          {fb.tag}
-        </span>
-      </div>
-      <p className="text-[14.5px] text-ink leading-[1.4]">
-        {goals.map((id) => lower(t.builder.goals[id as keyof typeof t.builder.goals].label)).join(" · ")}
-      </p>
-      <SetRow t={t} label={e.start} ids={start} />
-      {later.length > 0 && <SetRow t={t} label={e.later} ids={later} muted />}
-    </div>
-  );
 }
 
 /* ── Section ─────────────────────────────────────────────────────── */
@@ -134,125 +105,86 @@ export default function ChurchBrief() {
   const t = useT();
   const b = t.brief;
   const f = b.form;
-  const modalErrors = t.modal.errors;
+  const { openWith } = useDemoModal();
+  /* Ярлик бажання зі словника: ключі збігаються з id у конструкторі. */
+  const labels = t.builder.goals as Record<string, { label: string; short?: string }>;
+  /* Своє бажання: людина вписала його сама — id несе сам текст. */
+  const label = (id: string) => labels[id]?.label ?? id.replace(/^own:/, "");
+  /* На чипах і пінах — коротке слово, у листі лишається ціле речення. */
+  const short = (id: string) => labels[id]?.short ?? label(id);
 
   const [size, setSize] = useState<number | null>(null);
   const [about, setAbout] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [goals, setGoals] = useState<string[]>([]);
+  const [own, setOwn] = useState("");
   const [aboutError, setAboutError] = useState<string | null>(null);
-  const [nameError, setNameError] = useState<string | null>(null);
-  const [phoneError, setPhoneError] = useState<string | null>(null);
-  const [company, setCompany] = useState("");
-  const [state, setState] = useState<LeadState>("idle");
-  const submitted = state === "sent";
   /* Для аналітики: чи людина вже почала заповнювати бриф. */
   const startedRef = useRef(false);
-  /* Засув від подвійної відправки: `state` оновлюється до перемальовки,
-     а два кліки поспіль встигають в один такт — і лід ішов двічі. */
-  const sendingRef = useRef(false);
 
-  /* A set assembled in the constructor above fills the brief in: the visitor
-     sees their own set here, and the message starts written for them. */
-  const { goals, set } = useBuilder();
-  const [touched, setTouched] = useState(false);
+  /* Видно лише кілька бажань: обране їде вниз пінами, звільняючи місце. */
+  const pool = BRIEF_GOALS.filter((g) => !goals.includes(g.id)).slice(0, POOL);
+
   const wishes = useMemo(
     () =>
       goals.length
         ? t.builder.fromBuilder.prefix +
-          goals.map((id) => lower(t.builder.goals[id as keyof typeof t.builder.goals].label)).join("; ") +
+          goals.map((id) => lower(labels[id]?.label ?? id)).join("; ") +
           "."
         : "",
-    [goals, t]
+    [goals, t, labels]
   );
 
-  /* Поки людина не почала правити текст, він іде за набором із конструктора.
-     Підлаштовуємо під час рендера, а не в ефекті: інакше перший кадр показував
-     би старий текст, і поле смикалось би на очах. Порожній початковий маркер
-     збігається з порожнім `wishes` на монтуванні — тоді нічого не робимо. */
-  const [syncedWishes, setSyncedWishes] = useState("");
-  if (syncedWishes !== wishes) {
-    setSyncedWishes(wishes);
-    if (!touched) setAbout(wishes);
-  }
-
+  /* Досить або описати церкву, або позначити бажання чипами. */
   const validateAbout = useCallback(
-    (v: string) => {
+    (v: string, other: string) => {
       const s = v.trim();
-      if (!s) return f.errors.aboutRequired;
+      if (!s) return other.trim() ? null : f.errors.aboutRequired;
       if (s.length < 10) return f.errors.aboutShort;
       return null;
     },
     [f.errors]
   );
 
-  const reset = () => {
-    setSize(null);
-    setAbout(wishes);
-    setTouched(false);
-    setName("");
-    setPhone("");
-    setAboutError(null);
-    setNameError(null);
-    setPhoneError(null);
-    setCompany("");
-    setState("idle");
-    sendingRef.current = false;
-  };
-
-  /* Перший дотик до брифу — окремий крок у аналітиці: далі видно,
-     скільки людей почали заповнювати й скільки дійшли до кінця. */
+  /* Перший дотик до брифу — окремий крок у аналітиці. */
   const markStart = useCallback((field: string) => {
     if (startedRef.current) return;
     startedRef.current = true;
     track("form_start", { source: "brief", field });
   }, []);
 
-  const handleSubmit = async (ev: React.FormEvent) => {
+  const toggleGoal = (id: string) => {
+    markStart("бажання");
+    track("brief_goal", { label: id });
+    setGoals((prev) => (prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]));
+  };
+
+  /* Кнопка не надсилає лід, а відкриває модалку: ПІБ і телефон людина
+     лишає там, разом із тим, що вже розказала тут. */
+  const handleSubmit = (ev: React.FormEvent) => {
     ev.preventDefault();
-    if (sendingRef.current || state === "sending") return;
-    const ae = validateAbout(about);
-    const ne = validateName(name, modalErrors);
-    const pe = validatePhone(phone, modalErrors);
+    const ae = validateAbout(about, wishes);
     setAboutError(ae);
-    setNameError(ne);
-    setPhoneError(pe);
-    /* Фокус — на перше поле з помилкою. */
-    if (ae || ne || pe) {
-      track("form_error", { source: "brief", field: ae ? "про церкву" : ne ? "ім'я" : "телефон" });
-      const form = ev.currentTarget as HTMLFormElement;
-      const selector = ae ? "textarea" : ne ? 'input[type="text"]' : 'input[type="tel"]';
-      form.querySelector<HTMLTextAreaElement | HTMLInputElement>(selector)?.focus();
+    if (ae) {
+      track("form_error", { source: "brief", field: "про церкву" });
+      (ev.currentTarget as HTMLFormElement).querySelector("textarea")?.focus();
       return;
     }
-    sendingRef.current = true;
-    setState("sending");
-    track("form_submit", { source: "brief", size: size === null ? "" : f.sizes[size], goals: goals.length });
-    try {
-      const ok = await sendLead({
-        name,
-        phone,
-        company,
-        source: "brief",
-        about,
-        size: size === null ? undefined : f.sizes[size],
-      });
-      track(ok ? "lead" : "lead_failed", { source: "brief" });
-      setState(ok ? "sent" : "failed");
-    } finally {
-      /* Засув знімаємо і після невдачі — повторити спробу має бути можна. */
-      sendingRef.current = false;
-    }
+    track("brief_submit", { size: size === null ? "" : f.sizes[size], goals: goals.length });
+    openWith(goals, {
+      about: [about.trim(), wishes].filter(Boolean).join("\n") || undefined,
+      size: size === null ? undefined : f.sizes[size],
+    });
   };
 
   return (
     <section id="brief" className="w-full flex flex-col items-center pt-12 md:pt-16 pb-16 md:pb-24 scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8">
         <FadeIn variant="scale">
+          {/* Дві половини: ліворуч заголовок, праворуч — розмір, бажання
+              й кілька слів про церкву. Контакти питає модалка. */}
           <div className="overflow-hidden rounded-[24px] md:rounded-[32px] border border-hairline bg-surface grid grid-cols-1 lg:grid-cols-[1fr_1.08fr] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-            {/* Copy + example */}
             <div
-              className="relative flex flex-col gap-7 p-7 md:p-12 border-b lg:border-b-0 lg:border-r border-hairline overflow-hidden"
+              className="relative flex items-center p-7 md:p-10 border-b lg:border-b-0 lg:border-r border-hairline overflow-hidden"
               style={{ background: "linear-gradient(160deg, color-mix(in oklab, var(--brand) 9%, var(--surface)) 0%, var(--surface-2) 100%)" }}
             >
               <div
@@ -260,163 +192,127 @@ export default function ChurchBrief() {
                 className="aurora-a absolute -top-32 -left-24 w-[380px] h-[320px] rounded-full pointer-events-none"
                 style={{ background: "radial-gradient(closest-side, var(--glow), transparent)" }}
               />
-
-              <div className="relative flex flex-col gap-4">
-                <h2 className="font-semibold text-ink text-[28px] md:text-[36px] leading-[1.12] tracking-[-0.9px] md:tracking-[-1.2px]">{b.title}</h2>
-                <p className="text-[16px] md:text-[17px] text-ink-2 leading-[1.55]">{b.text}</p>
-              </div>
-
-              <FadeIn delay={1} variant="scale" className="relative">
-                {goals.length > 0 ? <BuiltSet t={t} goals={goals} start={set.start} later={set.later} /> : <ExampleSet t={t} />}
-              </FadeIn>
-
-              <p className="relative text-[13px] text-ink-3 leading-[1.4]">{b.note}</p>
+              <h2 className="relative font-semibold text-ink text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
+                {b.title} <span className="text-brand">{b.titleAccent}</span>
+              </h2>
             </div>
 
-            {/* Form */}
-            <div className="p-7 md:p-12 flex flex-col justify-center">
-              {submitted ? (
-                <div className="flex flex-col items-center gap-6 py-6 text-center">
-                  <div className="w-[72px] h-[72px] rounded-full bg-brand flex items-center justify-center">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
-                      <path d="M7 16.5L13 22.5L25 10" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <h3 className="font-semibold text-ink text-[30px] leading-[1.2] tracking-[-0.9px]">{f.successTitle}</h3>
-                    <p className="text-base text-ink-2 leading-[1.5] max-w-[380px]">{f.successText}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={reset}
-                    className="btn-secondary relative flex items-center justify-center h-11 px-6 rounded-full overflow-hidden border border-hairline-strong"
-                  >
-                    <span className="btn-secondary-bg absolute inset-0 bg-surface rounded-full transition-colors duration-150" />
-                    <span className="relative text-ink-2 font-medium text-[15px] tracking-[-0.3px]">{f.again}</span>
-                  </button>
+            {/* min-w-0: рядок пінів не переносить слова, тож без цього він
+                розсуває колонку і з'їдає половину із заголовком. */}
+            <div className="min-w-0 p-7 md:p-10 flex flex-col justify-center">
+              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+                <Step n={1} label={f.aboutLabel}>
+                <div className="flex flex-col gap-2">
+                  <label className={FIELD_SHELL}>
+                    <textarea
+                      rows={2}
+                      placeholder={f.aboutPlaceholder}
+                      value={about}
+                      onChange={(e) => {
+                        markStart("про церкву");
+                        setAbout(e.target.value);
+                        if (aboutError) setAboutError(validateAbout(e.target.value, wishes));
+                      }}
+                      className="w-full resize-none text-[16px] text-ink/[0.88] placeholder:text-[#818186] bg-transparent outline-none leading-[1.5]"
+                    />
+                  </label>
+                  {aboutError && (
+                    <p role="alert" className="text-[13px] font-medium text-[#c76a00] leading-[1.4]">
+                      {aboutError}
+                    </p>
+                  )}
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
-                  <ChipGroup label={f.sizeLabel}>
-                    {f.sizes.map((s, i) => (
+
+                </Step>
+
+                <Step n={2} label={f.sizeLabel}>
+                  <div role="group" aria-label={f.sizeLabel} className="flex flex-wrap gap-2">
+                  {f.sizes.map((s, i) => (
+                    <Chip
+                      key={s}
+                      active={size === i}
+                      onClick={() => {
+                        markStart("розмір церкви");
+                        track("brief_size", { label: s });
+                        setSize(size === i ? null : i);
+                      }}
+                    >
+                      {s}
+                    </Chip>
+                  ))}
+                  </div>
+                </Step>
+
+                <Step n={3} label={t.builder.pickLabel}>
+                  {/* Поле, у яке складаються піни: порожнє — з підказкою,
+                      повне — сірими пінами з хрестиком. Самі пропозиції
+                      стоять під ним двома рядами, що гортаються вбік. */}
+                  <label className={cn(FIELD_SHELL, "min-h-[60px] flex-row flex-wrap items-center gap-2 py-3")}>
+                    {goals.map((id) => {
+                        const Icon = findGoal(id)?.Icon;
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => toggleGoal(id)}
+                            aria-pressed
+                            aria-label={`${label(id)} — ${f.dropHint}`}
+                            className="perk-in inline-flex shrink-0 items-center gap-1.5 h-9 pl-3.5 pr-2.5 rounded-full border border-hairline bg-surface-2 text-ink-2 text-[13.5px] font-medium leading-none whitespace-nowrap transition-colors duration-150 hover:text-ink hover:border-hairline-strong"
+                          >
+                            {Icon && <Icon className="w-4 h-4 shrink-0 text-ink-3" strokeWidth={2.2} />}
+                            {short(id)}
+                            <X className="w-3.5 h-3.5 shrink-0 opacity-70" strokeWidth={2.6} />
+                          </button>
+                        );
+                    })}
+                    {/* Тут-таки можна вписати своє — Enter кладе його піном. */}
+                    <input
+                      type="text"
+                      value={own}
+                      placeholder={goals.length === 0 ? f.pickedPlaceholder : ""}
+                      onChange={(e) => setOwn(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter") return;
+                        e.preventDefault();
+                        const v = own.trim();
+                        if (!v) return;
+                        markStart("своє бажання");
+                        setGoals((prev) => [...prev, `own:${v}`]);
+                        setOwn("");
+                      }}
+                      className="flex-1 min-w-[160px] h-9 text-[15px] text-ink/[0.88] placeholder:text-[#818186] bg-transparent outline-none leading-none"
+                    />
+                  </label>
+
+                  <div
+                    role="group"
+                    aria-label={t.builder.pickLabel}
+                    /* Обгортаємо, а не гортаємо: короткі назви влазять у два
+                       ряди, і жоден чип не вилазить за край картки. */
+                    className="flex flex-wrap gap-2"
+                  >
+                    {pool.map((g) => (
                       <Chip
-                        key={s}
-                        active={size === i}
-                        onClick={() => {
-                          markStart("розмір церкви");
-                          track("brief_size", { label: s });
-                          setSize(size === i ? null : i);
-                        }}
+                        key={g.id}
+                        active={false}
+                        icon={g.Icon}
+                        className="perk-in"
+                        onClick={() => toggleGoal(g.id)}
                       >
-                        {s}
+                        {short(g.id)}
                       </Chip>
                     ))}
-                  </ChipGroup>
-
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className={cn(
-                        "flex flex-col gap-1.5 px-5 py-4 rounded-[14px] bg-surface border transition-[border-color,box-shadow] duration-150 cursor-text",
-                        "[&:hover:not(:focus-within)]:border-hairline-strong [&:hover:not(:focus-within)]:shadow-[0px_1px_2px_rgba(0,0,0,0.06)]",
-                        "focus-within:border-[#007aff] focus-within:shadow-[0px_2px_4px_rgba(0,122,255,0.12)]",
-                        "border-hairline"
-                      )}
-                    >
-                      <span className="text-[13px] font-medium text-ink-2">{f.aboutLabel}</span>
-                      <textarea
-                        rows={4}
-                        placeholder={f.aboutPlaceholder}
-                        value={about}
-                        onChange={(e) => {
-                          setTouched(true);
-                          markStart("про церкву");
-                          setAbout(e.target.value);
-                          if (aboutError) setAboutError(validateAbout(e.target.value));
-                        }}
-                        className="w-full resize-none text-[16px] text-ink/[0.88] placeholder:text-[#818186] bg-transparent outline-none leading-[1.5]"
-                      />
-                    </label>
-                    {aboutError && (
-                      <p role="alert" className="text-[13px] font-medium text-[#c76a00] leading-[1.4]">
-                        {aboutError}
-                      </p>
-                    )}
                   </div>
+                </Step>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field
-                      kind="name"
-                      placeholder={f.namePlaceholder}
-                      value={name}
-                      error={nameError}
-                      onChange={(v) => {
-                        setName(v);
-                        markStart("ім'я");
-                        if (nameError) setNameError(validateName(v, modalErrors));
-                      }}
-                    />
-                    <Field
-                      kind="tel"
-                      placeholder={f.phonePlaceholder}
-                      value={phone}
-                      error={phoneError}
-                      onChange={(v) => {
-                        setPhone(v);
-                        markStart("телефон");
-                        if (phoneError) setPhoneError(validatePhone(v, modalErrors));
-                      }}
-                    />
-                  </div>
-
-                  {/* Honeypot: поза потоком і поза табом, людина його не бачить. */}
-                  <input
-                    type="text"
-                    name="company"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    className="absolute w-px h-px -left-[9999px] opacity-0"
-                  />
-
-                  <div className="flex flex-col gap-4">
-                    <button
-                      type="submit"
-                      disabled={state === "sending"}
-                      className="btn-primary btn-brand group relative flex items-center justify-center gap-2 h-12 w-full rounded-full overflow-hidden disabled:opacity-70"
-                    >
-                      <span className="relative text-white font-semibold text-base tracking-[-0.32px] leading-[1.4]">
-                        {state === "sending" ? f.sending : f.submit}
-                      </span>
-                      <ArrowRight className="relative w-[17px] h-[17px] text-white transition-transform duration-200 group-hover:translate-x-0.5" />
-                    </button>
-
-                    {/* Нічого не доїхало — показуємо запасні канали, а не «дякуємо». */}
-                    {state === "failed" && (
-                      <div role="alert" className="flex flex-col gap-1 text-center">
-                        <span className="text-[14px] font-semibold text-[#c76a00]">{f.failedTitle}</span>
-                        <span className="text-[13.5px] text-ink-2 leading-[1.5]">
-                          {f.failedText}{" "}
-                          <a href={`tel:${SITE_PHONE}`} className="font-medium text-ink underline underline-offset-2">
-                            {SITE_PHONE}
-                          </a>
-                          {" · "}
-                          <a href={`mailto:${SITE_EMAIL}`} className="font-medium text-ink underline underline-offset-2">
-                            {SITE_EMAIL}
-                          </a>
-                        </span>
-                      </div>
-                    )}
-                    <p className="text-[12px] text-ink-3 leading-[1.5] text-center">
-                      {f.consentPrefix}{" "}
-                      <Link href="/terms" className="font-medium text-ink-2 hover:underline underline-offset-2">{t.modal.consentTerms}</Link>
-                      {" "}{t.modal.consentAnd}{" "}
-                      <Link href="/privacy" className="font-medium text-ink-2 hover:underline underline-offset-2">{t.modal.consentPrivacy}</Link>.
-                    </p>
-                  </div>
-                </form>
-              )}
+                <button
+                  type="submit"
+                  className="btn-primary btn-brand group relative flex items-center justify-center gap-2 h-12 w-full rounded-full overflow-hidden"
+                >
+                  <span className="relative font-semibold text-base tracking-[-0.32px] leading-[1.4] text-white">{f.submit}</span>
+                  <ArrowRight className="relative w-[17px] h-[17px] text-white transition-transform duration-200 group-hover:translate-x-0.5" />
+                </button>
+              </form>
             </div>
           </div>
         </FadeIn>

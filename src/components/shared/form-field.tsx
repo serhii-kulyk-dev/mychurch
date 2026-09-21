@@ -4,9 +4,9 @@ import { useId } from "react";
 import { User, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/* Which of the two fields this is — decides the icon, the autofill hint and
-   the keyboard a phone opens. Placeholder alone is not a label: the input
-   carries a real <label>, visually hidden so the layout stays the same. */
+/* Which field this is — decides the icon, the autofill hint and the keyboard
+   a phone opens. Placeholder alone is not a label: the input carries a real
+   <label>, visually hidden so the layout stays the same. */
 type FieldKind = "name" | "tel";
 
 interface FieldProps {
@@ -25,7 +25,9 @@ const KIND = {
   tel: { Icon: Phone, type: "tel", autoComplete: "tel", inputMode: "tel" as const },
 } satisfies Record<FieldKind, { Icon: typeof User; type: string; autoComplete: string; inputMode?: "tel" }>;
 
-/* One-line text input, used by the demo modal and the church-brief form. */
+/* One-line text input, used by the demo modal and the church-brief form.
+   Назву церкви тут не питаємо: вона є лише у формі знайомства, першим
+   питанням — «як називається церква та трохи про себе». */
 export function Field({ kind, placeholder, value, error, onChange, label }: FieldProps) {
   const id = useId();
   const errorId = `${id}-error`;
@@ -36,7 +38,7 @@ export function Field({ kind, placeholder, value, error, onChange, label }: Fiel
       <label
         htmlFor={id}
         className={cn(
-          "flex items-center gap-4 h-[52px] px-5 rounded-[14px] bg-surface border transition-[border-color,box-shadow] duration-150 cursor-text",
+          "field-shell flex items-center gap-4 h-[52px] px-5 rounded-[14px] bg-surface border transition-[border-color,box-shadow] duration-150 cursor-text",
           "[&:hover:not(:focus-within)]:border-hairline-strong [&:hover:not(:focus-within)]:shadow-[0px_1px_2px_rgba(0,0,0,0.06)]",
           "focus-within:border-[#007aff] focus-within:shadow-[0px_2px_4px_rgba(0,122,255,0.12)]",
           error ? "border-[#c76a00]" : "border-hairline"
@@ -51,6 +53,10 @@ export function Field({ kind, placeholder, value, error, onChange, label }: Fiel
           autoComplete={autoComplete}
           placeholder={placeholder}
           value={value}
+          /* Код країни ставимо самі: людина дотикається поля — і вже має «+38»,
+             далі набирає тільки свій номер. Валідатор і лід бачать повний
+             номер, як і раніше. */
+          onFocus={kind === "tel" && !value ? () => onChange("+38") : undefined}
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}

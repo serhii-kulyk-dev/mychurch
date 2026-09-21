@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  LayoutDashboard,
+  Home,
   Users,
   UsersRound,
   HeartHandshake,
@@ -17,7 +17,7 @@ import { useT } from "@/lib/lang";
 const CANVAS_W = 960;
 const CANVAS_H = 592;
 
-const NAV_ICONS = [LayoutDashboard, Users, UsersRound, HeartHandshake, CalendarDays, BarChart3];
+const NAV_ICONS = [Home, Users, UsersRound, HeartHandshake, CalendarDays, BarChart3];
 const STAT_VALUES = [428, 23, 9];
 const BARS = [52, 64, 58, 71, 66, 79, 74, 88];
 const WEEKS = ["3.03", "10.03", "17.03", "24.03", "31.03", "7.04", "14.04", "21.04"];

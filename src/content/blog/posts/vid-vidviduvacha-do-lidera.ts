@@ -79,6 +79,24 @@ export const post: BlogPost = {
               kind: "text",
               text: "Назвіть етапи так, як звично вашій церкві: у когось між групою і хрещенням стоїть курс, у когось членство оформлюється окремо. Важлива не термінологія, а те, що етапи існують явно й про кожну людину можна сказати, де вона зараз.",
             },
+            {
+              kind: "visual",
+              caption:
+                "Числа — приклад для громади, у якій за рік побувало сто двадцять гостей, а не статистика. Дивіться на форму: найвужче місце тут між першим візитом і малою групою, і саме в нього треба ставити відповідального. У вашій церкві воно може бути іншим — тому шлях і варто побачити цілком.",
+              visual: {
+                type: "path",
+                title: "Дорога від першого візиту до лідера",
+                unit: "осіб на кожній зупинці за рік",
+                stages: [
+                  { title: "Відвідувач", value: 120 },
+                  { title: "Покаяння", value: 54 },
+                  { title: "Мала група", value: 33 },
+                  { title: "Хрещення", value: 21 },
+                  { title: "Служіння", value: 13 },
+                  { title: "Лідер", value: 4 },
+                ],
+              },
+            },
           ],
         },
         {
@@ -99,6 +117,41 @@ export const post: BlogPost = {
             {
               kind: "text",
               text: "Жоден рядок у правій колонці не замінює розмову. Система лише прибирає причину, через яку розмова не відбувається: «я не знав», «я забув», «це було в іншому чаті».",
+            },
+            {
+              kind: "solution",
+              title: "Шлях видно дошкою",
+              text:
+                "Кожен новий стоїть на своєму етапі, у кожного переходу є відповідальний — і видно, хто застряг між етапами другий тиждень.",
+              spec: {
+                kind: "board",
+                title: "Онбординг",
+                subtitle: "Жовтень",
+                columns: [
+                  {
+                    title: "Перший візит",
+                    cards: [
+                      { title: "Марія Дідух", sub: "Неділя, 12 жовтня", tag: { label: "Потрібен дзвінок", tone: "amber" } },
+                      { title: "Родина Шевчуків", sub: "Прийшли вдвох, з дитиною" },
+                    ],
+                  },
+                  {
+                    title: "Знайомство",
+                    cards: [
+                      { title: "Андрій Пилипенко", sub: "Дзвонила Ніна · три дні тому" },
+                      { title: "Оксана Гнатюк", sub: "Запрошена в групу «Витоки»" },
+                    ],
+                  },
+                  {
+                    title: "У групі",
+                    cards: [
+                      { title: "Тарас Микитюк", sub: "«Молодіжна» · четверта зустріч" },
+                      { title: "Софія Панчук", sub: "Питає про служіння медіа", tag: { label: "Готова служити", tone: "brand" } },
+                    ],
+                  },
+                ],
+              },
+              link: { label: "Модуль «Онбординг»", href: "/modules/onboarding" },
             },
           ],
         },
@@ -254,6 +307,24 @@ export const post: BlogPost = {
               kind: "text",
               text: "Name the stages the way your church already speaks. Some put a course between group and baptism, some handle membership separately. The terminology does not matter; what matters is that the stages exist explicitly and you can say where any given person is right now.",
             },
+            {
+              kind: "visual",
+              caption:
+                "Example numbers for a church that saw a hundred and twenty guests in a year, not statistics. Watch the shape: the narrowest step here is between a first visit and a small group, and that is where the transition needs an owner. In your church it may sit elsewhere — which is why the whole path is worth seeing at once.",
+              visual: {
+                type: "path",
+                title: "The road from a first visit to leading",
+                unit: "people at each stop over a year",
+                stages: [
+                  { title: "Visitor", value: 120 },
+                  { title: "Repentance", value: 54 },
+                  { title: "Small group", value: 33 },
+                  { title: "Baptism", value: 21 },
+                  { title: "Ministry", value: 13 },
+                  { title: "Leader", value: 4 },
+                ],
+              },
+            },
           ],
         },
         {
@@ -274,6 +345,41 @@ export const post: BlogPost = {
             {
               kind: "text",
               text: "Nothing in the right-hand column replaces a conversation. The system only removes the reasons the conversation never happens: I did not know, I forgot, it was in another chat.",
+            },
+            {
+              kind: "solution",
+              title: "The path as a board",
+              text:
+                "Every newcomer sits at their stage, every transition has an owner — and it is visible who has been stuck between two stages for a second week.",
+              spec: {
+                kind: "board",
+                title: "Onboarding",
+                subtitle: "October",
+                columns: [
+                  {
+                    title: "First visit",
+                    cards: [
+                      { title: "Mariia Didukh", sub: "Sunday, 12 October", tag: { label: "Needs a call", tone: "amber" } },
+                      { title: "The Shevchuk family", sub: "Came as a couple, with a child" },
+                    ],
+                  },
+                  {
+                    title: "Getting to know",
+                    cards: [
+                      { title: "Andrii Pylypenko", sub: "Nina called · three days ago" },
+                      { title: "Oksana Hnatiuk", sub: "Invited to the Roots group" },
+                    ],
+                  },
+                  {
+                    title: "In a group",
+                    cards: [
+                      { title: "Taras Mykytiuk", sub: "Youth · fourth meeting" },
+                      { title: "Sofiia Panchuk", sub: "Asking about media ministry", tag: { label: "Ready to serve", tone: "brand" } },
+                    ],
+                  },
+                ],
+              },
+              link: { label: "The Onboarding module", href: "/modules/onboarding" },
             },
           ],
         },

@@ -56,10 +56,10 @@ export const peopleModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "People — MyChurch module",
+        seoTitle: "People — My Church module",
         seoDescription: "A profile for every person in the church: status, participation history, notes, contacts and connections — in one place instead of three spreadsheets.",
         title: "Every person in the church, in their place",
-        lead: "The People module is the heart of MyChurch. One profile instead of three spreadsheets: who this person is, which group they're in, when they last came and who looks after them.",
+        lead: "The People module is the heart of My Church. One profile instead of three spreadsheets: who this person is, which group they're in, when they last came and who looks after them.",
         highlights: [
           "Profile with full participation history",
           "Statuses: guest, newcomer, member",
@@ -172,7 +172,7 @@ export const peopleModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Family — MyChurch module",
+        seoTitle: "Family — My Church module",
         seoDescription: "One family record instead of five separate profiles: spouses, children, parents, key dates and shared history for every household in the church.",
         title: "See the whole family, not just individuals",
         lead: "The Family module links people into households: spouses, children, parents. One record — and you know who belongs to whom, which children are in Kids Town and when the family's anniversary is.",

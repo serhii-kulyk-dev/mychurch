@@ -20,7 +20,7 @@ export default function SupportChannels() {
 
   return (
     <section id="channels" className="w-full flex flex-col items-center py-16 md:py-24 bg-page scroll-mt-24">
-      <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-14">
+      <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-8 md:gap-12">
         <SectionHeading align="left" eyebrow={c.eyebrow} title={c.title} text={c.text} />
 
         {/* A ledger of channels rather than a card grid: one row each, the
@@ -40,7 +40,7 @@ export default function SupportChannels() {
             const external = item.href?.startsWith("http");
 
             const row = (
-              <div className="grid grid-cols-1 md:grid-cols-[300px_1fr_auto] items-start gap-3 md:gap-8 py-6 md:py-7">
+              <div className="grid grid-cols-1 md:grid-cols-[300px_1fr_auto] items-start gap-3 md:gap-8 py-5 md:py-6">
                 {/* Channel + address */}
                 <div className="flex items-start gap-3.5 min-w-0">
                   <span className="mt-0.5 w-9 h-9 rounded-xl bg-surface border border-hairline flex items-center justify-center shrink-0 text-brand">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Mail, Phone, Send } from "lucide-react";
+import { Mail, Phone, Send } from "lucide-react";
 import LogoLink from "@/components/shared/logo-link";
 import PreferenceToggles from "@/components/shared/preference-toggles";
 import { useLang, useT } from "@/lib/lang";
@@ -11,8 +11,6 @@ import { cn } from "@/lib/utils";
 import { SITE_TELEGRAM, SITE_TELEGRAM_HANDLE } from "@/lib/seo";
 import { TELEGRAM_COPY } from "@/content/telegram";
 import { BLOG_COPY } from "@/content/blog";
-
-const NEW_LIFE = { label: "Нове Життя", href: "https://www.newlife.ck.ua/" };
 
 const EMAIL = "team@mychurch.com.ua";
 const PHONE = { label: "+380 96 529 73 75", href: "tel:+380965297375" };
@@ -158,15 +156,6 @@ export default function Footer() {
                   {label}
                 </Link>
               ))}
-              <a
-                href={NEW_LIFE.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(linkCls, "group/ext inline-flex items-center gap-1")}
-              >
-                {NEW_LIFE.label}
-                <ArrowUpRight className="h-[13px] w-[13px] text-ink-3 transition-colors group-hover/ext:text-brand" />
-              </a>
             </Column>
 
             <Column title={t.footer.help}>

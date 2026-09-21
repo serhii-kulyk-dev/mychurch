@@ -16,7 +16,7 @@ const STEP_MS = 3000;
 /* a click parks the walk on that step — then it picks itself up and carries on */
 const IDLE_MS = 9000;
 /* Four people walk this road, one after another — each with their own face,
-   picked by name, so Сергій is never a woman in a photo. */
+   picked by name, so Сергій is never drawn as a woman. */
 /* Optional real footage of that change: drop files into public/journey/ and name them per stage id,
    e.g. { baptism: "/journey/baptism.mp4", leader: "/journey/leader.webp" }. A listed step shows the
    picture or clip in its card; .mp4/.webm autoplay muted on loop. */

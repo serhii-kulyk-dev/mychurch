@@ -69,7 +69,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Forms — MyChurch module",
+        seoTitle: "Forms — My Church module",
         seoDescription: "Sign-ups, surveys and newcomer cards instead of Google Forms: every answer lands in a person's profile, not in a spreadsheet you reconcile by hand.",
         title: "Forms that land straight in your database",
         lead: "The Forms module replaces Google Forms and paper cards. Event sign-ups, newcomer cards, post-course surveys — every answer becomes a person's profile, not a row in someone else's spreadsheet.",
@@ -99,7 +99,7 @@ export const toolsModules: ModuleDetail[] = [
           { role: "visitor", text: "Leaves their contact from a phone in half a minute — and won't get lost." },
         ],
         faq: [
-          { q: "We already use Google Forms. Why switch?", a: "A Google Form drops answers into a spreadsheet that someone later reconciles with the database by hand. In MyChurch an answer creates or updates a person's profile straight away — and you can act on it: call, add to a group, run a scenario." },
+          { q: "We already use Google Forms. Why switch?", a: "A Google Form drops answers into a spreadsheet that someone later reconciles with the database by hand. In My Church an answer creates or updates a person's profile straight away — and you can act on it: call, add to a group, run a scenario." },
           { q: "Can someone fill in a form without an account?", a: "Yes. Public forms open from a link or QR code and the person enters only what you asked. The system matches an existing profile by phone or email, so no duplicates are created." },
           { q: "Are file uploads and payments supported?", a: "Files, yes: certificates, photos, camp documents. Payments are handled by the Event organiser and Camps modules — the form passes the participant's details across." },
           { q: "What about the paper cards we already have?", a: "Reception enters them through the same form on a tablet — same fields, and the profile appears in the database straight away." },
@@ -214,7 +214,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Requests — MyChurch module",
+        seoTitle: "Requests — My Church module",
         seoDescription: "Prayer, a meeting with the pastor, baptism, help, wanting to serve — every request from people via forms, bot and website on one kanban board with an owner and a deadline.",
         title: "No request is left hanging without a reply",
         lead: "The Requests module gathers everything people ask of the church — prayer, a meeting, baptism, help, wanting to serve — from forms, the Telegram bot, the website and Instagram into one kanban board. Every card has an owner, a stage and a deadline, and the person gets a reply straight from the card.",
@@ -365,7 +365,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Links — MyChurch module",
+        seoTitle: "Links — My Church module",
         seoDescription: "Short links and QR codes for events, forms and sign-ups instead of Bitly: your church's addresses, click statistics and a QR you can redirect after printing.",
         title: "Short links that bring people into your database",
         lead: "The Links module replaces Bitly and QR generators. A short church address on the screen, in an announcement or on a flyer — and you see how many people followed it, from where, and what they did next.",
@@ -500,7 +500,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Automations — MyChurch module",
+        seoTitle: "Automations — My Church module",
         seoDescription: "If-this-then-that scenarios for your church: greet a newcomer, remind a leader, change a status, assign a task — done by the system, no Zapier and no chats.",
         title: "Scenarios so nobody slips through the cracks",
         lead: "The Automations module is if-this-then-that rules on your church's data. A newcomer submits a card → a Telegram greeting and a task for the leader. Someone misses three Sundays → the pastor sees them on a list. No Zapier, no notes to self.",
@@ -618,7 +618,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Campaigns — MyChurch module",
+        seoTitle: "Campaigns — My Church module",
         seoDescription: "Church messaging in Telegram, Viber, SMS and email by group and filter: personalised messages, delivery statistics and replies — instead of five chats.",
         title: "A message that reaches every person",
         lead: "The Campaigns module sends messages to the people they're actually for: the Obolon group, youth volunteers, those absent for three weeks. In the channel where each person reads — and you see who received it.",
@@ -725,7 +725,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Knowledge base — MyChurch module",
+        seoTitle: "Knowledge base — My Church module",
         seoDescription: "Church documents, guides, policies and materials in one place instead of Google Drive and Notion: role-based access, version history and full-text search.",
         title: "Knowledge that stays when people move on",
         lead: "The Knowledge base keeps everything the team already knows but holds in heads and chats: how to run a service, where the sound room key is, how to welcome guests. Instead of Google Drive, Notion and \"ask Andrii\".",
@@ -756,7 +756,7 @@ export const toolsModules: ModuleDetail[] = [
         ],
         faq: [
           { q: "Everything is in Google Drive. Why move it?", a: "Drive stores files, but it doesn't know a document belongs to the sound ministry and won't show it to a new volunteer on its own. In the knowledge base a document is tied to a role, ministry or event — and opens where it's needed." },
-          { q: "Can we keep documents in Notion and see them here?", a: "Yes. The Notion integration syncs the pages you choose, and they open in MyChurch with the same access rights." },
+          { q: "Can we keep documents in Notion and see them here?", a: "Yes. The Notion integration syncs the pages you choose, and they open in My Church with the same access rights." },
           { q: "Who can edit?", a: "You appoint editors for each section. Everyone else reads, and changes are shown with who made them and when." },
           { q: "Does search look inside attached files?", a: "Yes — PDF, Word and presentations. Search goes through the text of a document, not just its title." },
         ],
@@ -832,7 +832,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Tables — MyChurch module",
+        seoTitle: "Tables — My Church module",
         seoDescription: "Flexible tables for any church record instead of Excel: your own columns, links to people and events, filters, formulas and shared editing, no file versions.",
         title: "Any record you need, without Excel",
         lead: "The Tables module is for everything that doesn't have a module of its own: Christmas gifts for kids, a key register, a cleaning rota, a trip budget. The columns are yours; the people, groups and events come from the database, not retyped.",
@@ -967,7 +967,7 @@ export const toolsModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Projects — MyChurch module",
+        seoTitle: "Projects — My Church module",
         seoDescription: "Tasks, boards and deadlines for church teams instead of Trello: step-by-step event prep, owners from the database, Telegram reminders and visible progress.",
         title: "Every task has an owner and a deadline",
         lead: "The Projects module replaces Trello and to-do lists in chats. Conference prep, a camp, a hall renovation, a new course — tasks on a board, owners from the database, deadlines with reminders and progress the pastor sees without a meeting.",

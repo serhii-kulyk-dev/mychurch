@@ -3,22 +3,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowRight, ArrowUpRight, Check, ChevronRight, LayoutGrid, MapPin, Minus, Play } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Clock, LayoutGrid, MapPin, Play, Quote } from "lucide-react";
+import AmbassadorCard from "@/components/shared/ambassador-card";
 import FadeIn from "@/components/shared/fade-in";
-import SectionHeading from "@/components/shared/section-heading";
-import { MODULE_ICONS } from "@/components/shared/module-icons";
+import { MODULE_ACCENTS, MODULE_ICONS } from "@/components/shared/module-icons";
 import { getAmbassador } from "@/content/ambassadors";
 import { getModuleVideo, getModuleVideoPoster } from "@/content/modules/videos";
 import type { AmbassadorCopy, AmbassadorDetail } from "@/content/ambassadors";
-import { useDemoModal } from "@/context/demo-modal-context";
 import { useLang, useT } from "@/lib/lang";
+import { cn } from "@/lib/utils";
 
 /* ────────────────────────────────────────────────────────────────
-   One page per ambassador church, kept to five blocks: who they are,
-   the church in photos, what changed, what they run, how the rollout
-   went. All copy comes from src/content/ambassadors. We publish no
-   counts of the church's people, accounts or groups — that is the
-   church's own data, not our proof.
+   Сторінка церкви-амбасадора — чотири екрани:
+
+     хто це            — заголовок, факти і кадр із життя церкви;
+     цитата            — рядок із їхнього сайту над фотографією;
+     було і стало      — чотири пари й запис із їхньої системи;
+     як вмикали        — чотири кроки, кожен називає свої модулі.
+
+   Каталог модулів окремим блоком прибрано: він повторював /modules.
+   Уся копія — у src/content/ambassadors.ts, тут лише розкрій.
    ──────────────────────────────────────────────────────────────── */
 
 interface Ctx {
@@ -28,17 +32,17 @@ interface Ctx {
 }
 
 function Logo({ church, accent }: { church: AmbassadorDetail; accent: string }) {
-  const box = "w-16 h-16 md:w-20 md:h-20 rounded-[22px] flex items-center justify-center shrink-0 overflow-hidden border border-hairline";
+  const box = "w-14 h-14 rounded-[18px] flex items-center justify-center shrink-0 overflow-hidden border border-hairline";
   if (church.logo) {
     return (
       <span className={box} style={{ background: `color-mix(in oklab, ${accent} 12%, var(--surface))` }}>
-        <Image src={church.logo} alt={church.name} width={56} height={45} className="w-11 md:w-12 h-auto" />
+        <Image src={church.logo} alt={church.name} width={48} height={39} className="w-10 h-auto" />
       </span>
     );
   }
   return (
     <span
-      className={`${box} font-semibold text-[22px] tracking-[-0.5px]`}
+      className={`${box} font-semibold text-[19px] tracking-[-0.5px]`}
       style={{ background: `color-mix(in oklab, ${accent} 14%, var(--surface))`, color: accent }}
     >
       {church.initials}
@@ -46,76 +50,10 @@ function Logo({ church, accent }: { church: AmbassadorDetail; accent: string }) 
   );
 }
 
-/* ── The church's own screen recording ──────────────────────────── */
-/* Nothing loads until the visitor presses play — until then it is a poster. */
-function Clip({ id, accent }: { id: string; accent: string }) {
-  const c = useT().ambassadorPage;
-  const t = useT();
-  const [playing, setPlaying] = useState(false);
-
-  const name = useMemo(() => {
-    for (const group of t.modules.groups) for (const item of group.items) if (item.id === id) return item.name;
-    return undefined;
-  }, [t, id]);
-
-  const file = getModuleVideo(id);
-  const poster = getModuleVideoPoster(id);
-  if (!file || !poster || !name) return null;
-
-  return (
-    <figure className="overflow-hidden rounded-[20px] md:rounded-[24px] border border-hairline bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-      <div className="relative w-full aspect-video bg-ink">
-        {playing ? (
-          <iframe
-            src={`https://drive.google.com/file/d/${file}/preview?autoplay=1`}
-            title={name}
-            className="absolute inset-0 w-full h-full"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setPlaying(true)}
-            aria-label={`${c.clipPlay}: ${name}`}
-            className="group absolute inset-0 w-full h-full cursor-pointer"
-          >
-            <Image src={poster} alt="" fill sizes="(max-width: 1024px) 100vw, 460px" className="object-cover" />
-            <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/25" />
-            <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11.5px] font-medium text-white leading-none backdrop-blur">
-              {c.clipBadge}
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span
-                className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] transition-transform duration-200 group-hover:scale-105"
-                style={{ background: accent }}
-              >
-                <Play className="w-6 h-6 fill-current translate-x-[1px]" strokeWidth={0} />
-              </span>
-            </span>
-          </button>
-        )}
-      </div>
-
-      <figcaption className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 md:px-5 py-3">
-        <span className="font-semibold text-ink text-[15.5px] leading-[1.3] tracking-[-0.2px]">{name}</span>
-        <Link
-          href={`/modules/${id}`}
-          className="link-underline inline-flex items-center gap-1 text-[14px] font-medium text-ink-2 hover:text-ink transition-colors"
-        >
-          {c.clipOpen}
-          <ArrowUpRight className="w-4 h-4" />
-        </Link>
-      </figcaption>
-    </figure>
-  );
-}
-
-/* ── Hero ───────────────────────────────────────────────────────── */
+/* ── Хто це ─────────────────────────────────────────────────────── */
 function Hero({ ctx, parentLabel }: { ctx: Ctx; parentLabel: string }) {
   const { church, copy, accent } = ctx;
-  const { open } = useDemoModal();
-  const t = useT();
+
 
   return (
     <section className="relative w-full overflow-hidden bg-surface flex flex-col items-center pt-8 md:pt-12 pb-14 md:pb-20">
@@ -135,17 +73,15 @@ function Hero({ ctx, parentLabel }: { ctx: Ctx; parentLabel: string }) {
           </nav>
         </FadeIn>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] gap-10 lg:gap-14 items-center">
-          <FadeIn className="flex flex-col gap-5 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] gap-10 lg:gap-14 items-center">
+          <FadeIn className="flex flex-col gap-6">
             <div className="flex items-center gap-4">
               <Logo church={church} accent={accent} />
               <div className="flex flex-col gap-1.5">
                 <span className="text-[12.5px] font-semibold uppercase tracking-[0.14em]" style={{ color: accent }}>
                   {copy.eyebrow}
                 </span>
-                <span className="text-[17px] md:text-[19px] font-semibold text-ink leading-none tracking-[-0.3px]">
-                  {church.name}
-                </span>
+                <span className="text-[17px] font-semibold text-ink leading-none tracking-[-0.3px]">{church.name}</span>
                 <span className="flex items-center gap-1.5 text-[13.5px] text-ink-3 leading-none">
                   <MapPin className="w-3.5 h-3.5" strokeWidth={2} />
                   {church.city}
@@ -153,245 +89,353 @@ function Hero({ ctx, parentLabel }: { ctx: Ctx; parentLabel: string }) {
               </div>
             </div>
 
-            <h1 className="font-semibold text-ink leading-[1.08] tracking-[-1.2px] md:tracking-[-1.8px] text-[34px] sm:text-[42px] md:text-[52px] max-w-[660px]">
+            <span
+              className="inline-flex items-center gap-2 self-start rounded-full px-3.5 py-1.5 text-[13.5px] font-medium leading-none"
+              style={{ background: `color-mix(in oklab, ${accent} 12%, var(--surface))`, color: accent }}
+            >
+              <Clock className="w-4 h-4" strokeWidth={2.2} />
+              {copy.badge}
+            </span>
+
+            <h1 className="font-semibold text-ink leading-[1.04] tracking-[-1.2px] md:tracking-[-2px] text-[36px] sm:text-[46px] md:text-[58px] max-w-[660px]">
               {copy.title}
             </h1>
-            <p className="text-[17px] md:text-[19px] text-ink-2 leading-[1.55] max-w-[580px]">{copy.lead}</p>
+            <p className="text-[17px] md:text-[19px] text-ink-2 leading-[1.55] max-w-[560px]">{copy.lead}</p>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-1">
-              <button
-                onClick={open}
-                className="btn-primary btn-brand group relative flex items-center justify-center gap-2 h-12 px-7 rounded-full overflow-hidden"
-              >
-                <span className="relative text-white font-semibold text-[15.5px] tracking-[-0.3px] whitespace-nowrap">
-                  {t.ambassadorsPage.becomeCta}
-                </span>
-                <ArrowRight className="relative w-4 h-4 text-white transition-transform duration-200 group-hover:translate-x-0.5" />
-              </button>
+            {/* Головна дія тут — сайт самої церкви: сторінка доводить, що
+                громада справжня, а «Замовити демо» стоїть тихим лінком і
+                ще раз великою кнопкою в закривашці. */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-1">
               <Link
                 href={church.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary group relative flex items-center justify-center gap-2 h-12 px-7 rounded-full overflow-hidden border border-hairline-strong"
+                className="group flex items-center justify-center gap-2 h-12 px-7 rounded-full text-white font-semibold text-[15.5px] tracking-[-0.3px] whitespace-nowrap transition-opacity hover:opacity-90"
+                style={{ background: accent }}
               >
-                <span className="btn-secondary-bg absolute inset-0 bg-surface rounded-full transition-colors duration-150" />
-                <span className="relative text-ink font-medium text-[15.5px] tracking-[-0.3px] whitespace-nowrap">{copy.siteCta}</span>
-                <ArrowUpRight className="relative w-4 h-4 text-ink-2 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                {copy.siteCta}
+                <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
+              {/* «Замовити демо» в шапці прибрано 2026-09-21: сторінка про
+                  церкву, а не про нас — заявка чекає в закривашці й у меню. */}
             </div>
           </FadeIn>
 
+          {/* Один кадр церкви — і на ньому рядок із їхнього ж сайту.
+              Окремий блок із цитатою був другим блоком «про них», а його
+              має бути рівно один. */}
           <FadeIn delay={2} variant="scale" className="w-full">
-            <Clip id="people" accent={accent} />
+            <figure className="relative w-full aspect-[4/5] overflow-hidden rounded-[24px] border border-hairline">
+              <Image
+                src={copy.heroPhoto.src}
+                alt={copy.heroPhoto.alt}
+                fill
+                sizes="(max-width: 1024px) 100vw, 440px"
+                className="object-cover"
+                priority
+              />
+              <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+              <figcaption className="absolute inset-x-0 bottom-0 p-5 md:p-7 flex flex-col gap-2">
+                <blockquote className="font-semibold text-white text-[20px] md:text-[24px] leading-[1.25] tracking-[-0.5px]">
+                  «{copy.quote.text}»
+                </blockquote>
+                <Link
+                  href={copy.quote.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 self-start text-[12.5px] text-white/70 hover:text-white transition-colors"
+                >
+                  {copy.quote.source}
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </figcaption>
+            </figure>
           </FadeIn>
         </div>
 
-        <FadeIn delay={3}>
-          <dl className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5 border-t border-hairline pt-6">
-            {copy.facts.map((f) => (
-              <div key={f.label} className="flex flex-col gap-1">
-                <dt className="text-[13px] text-ink-3 leading-[1.35]">{f.label}</dt>
-                <dd className="text-[15px] font-medium text-ink leading-[1.35]">{f.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </FadeIn>
+        {/* Рядок фактів (адреса, час служінь, «понад рік») прибрано
+            2026-09-21 як шум: адреса й розклад є на сайті самої церкви,
+            а «скільки вже в системі» стоїть плашкою над заголовком. Самі
+            факти лишаються в контенті — їх бере блок на головній і /about. */}
       </div>
     </section>
   );
 }
 
-/* ── Photos and one line the church wrote about itself ──────────── */
-function Photos({ ctx }: { ctx: Ctx }) {
-  const { copy, accent, church } = ctx;
-  if (!copy.photos.length) return null;
+/* ── Записи з системи церкви ────────────────────────────────────── */
+/* Один запис — один рядок: кадр з одного боку, назва модуля й що він
+   робить — з іншого. Боки чергуються, щоб вісім записів не читались
+   як стос однакових плиток. Нічого не вантажиться, доки не натиснули. */
+function Clip({
+  id,
+  accent,
+  name,
+  speaker,
+  quote,
+  flip,
+}: {
+  id: string;
+  accent: string;
+  name: string;
+  speaker?: { name: string; role: string };
+  quote?: string;
+  flip?: boolean;
+}) {
+  const c = useT().ambassadorPage;
+  const [playing, setPlaying] = useState(false);
+
+  const Icon = MODULE_ICONS[id] ?? LayoutGrid;
+  const tone = MODULE_ACCENTS[id] ?? accent;
+  const file = getModuleVideo(id);
+  const poster = getModuleVideoPoster(id);
+  if (!file || !poster) return null;
 
   return (
-    <section className="w-full flex flex-col items-center py-14 md:py-20">
+    <figure className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 md:gap-12 items-center py-9 md:py-14 border-b border-hairline">
+      <div
+        className={cn(
+          "relative w-full aspect-video overflow-hidden rounded-[20px] md:rounded-[26px] border border-hairline bg-ink",
+          flip && "md:order-2"
+        )}
+      >
+        {playing ? (
+          <iframe
+            src={`https://drive.google.com/file/d/${file}/preview?autoplay=1`}
+            title={name}
+            className="absolute inset-0 w-full h-full"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            aria-label={`${c.clipPlay}: ${name}`}
+            className="group absolute inset-0 w-full h-full cursor-pointer"
+          >
+            <Image src={poster} alt="" fill sizes="(max-width: 768px) 100vw, 600px" className="object-cover" />
+            <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span
+                className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)] transition-transform duration-200 group-hover:scale-105"
+                style={{ background: accent }}
+              >
+                <Play className="w-6 h-6 fill-current translate-x-[1px]" strokeWidth={0} />
+              </span>
+            </span>
+          </button>
+        )}
+      </div>
+
+      <figcaption className={cn("flex flex-col gap-3", flip && "md:order-1")}>
+        {/* Великим — назва модуля; хто говорить, стоїть акуратним рядком
+            під нею. Ім'я заголовком робило з блоку візитівку, а не відгук
+            про модуль. */}
+        <span
+          className="w-10 h-10 rounded-[12px] flex items-center justify-center"
+          style={{ background: `color-mix(in oklab, ${tone} 13%, var(--surface))`, color: tone }}
+        >
+          <Icon className="w-[19px] h-[19px]" strokeWidth={2} />
+        </span>
+
+        <h3 className="font-semibold text-ink text-[28px] md:text-[40px] leading-[1.1] tracking-[-1px]">{name}</h3>
+
+        {/* Слова людини — в оболонці цитати: тихий колір модуля, лапка
+            згори, підпис курсивом. Голий абзац серед іншого тексту
+            не читався як чиясь пряма мова. */}
+        {quote ? (
+          <figure
+            className="flex flex-col gap-3 rounded-[18px] px-5 py-4 md:px-6 md:py-5"
+            style={{ background: `color-mix(in oklab, ${tone} 7%, var(--surface))` }}
+          >
+            <Quote className="w-5 h-5 shrink-0 fill-current" style={{ color: tone }} strokeWidth={0} />
+            <blockquote className="text-[17px] md:text-[19px] text-ink leading-[1.5] tracking-[-0.3px]">
+              {quote}
+            </blockquote>
+            {speaker && (
+              <figcaption className="text-[13.5px] italic text-ink-3 leading-[1.35]">
+                {speaker.name} · {speaker.role}
+              </figcaption>
+            )}
+          </figure>
+        ) : (
+          speaker && (
+            <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="text-[15px] font-medium text-ink leading-[1.35]">{speaker.name}</span>
+              <span className="text-[13.5px] italic text-ink-3 leading-[1.35]">{speaker.role}</span>
+            </span>
+          )
+        )}
+
+        <Link
+          href={`/modules/${id}`}
+          className="link-underline inline-flex items-center gap-1 self-start text-[14.5px] font-medium text-ink-3 hover:text-ink transition-colors"
+        >
+          {c.clipOpen}
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </Link>
+      </figcaption>
+    </figure>
+  );
+}
+
+function Clips({ ctx }: { ctx: Ctx }) {
+  const { copy, accent } = ctx;
+  const t = useT();
+
+  /* Назви модулів беруться зі словника — на сторінці немає жодного
+     рядка, який би розходився з каталогом. */
+  const names = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const group of t.modules.groups) for (const item of group.items) map.set(item.id, item.name);
+    return map;
+  }, [t]);
+
+  const clips = copy.clips.filter((c) => getModuleVideo(c.id));
+  if (!clips.length) return null;
+
+  return (
+    <section id="clips" className="w-full flex flex-col items-center py-16 md:py-24 bg-surface border-y border-hairline scroll-mt-[128px]">
       <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-8 md:gap-10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {copy.photos.map((photo, i) => (
-            <FadeIn key={photo.src} delay={i} variant="scale">
-              <figure className="relative overflow-hidden rounded-[20px] md:rounded-[24px] border border-hairline aspect-[4/3]">
-                <Image src={photo.src} alt={photo.alt} fill sizes="(max-width: 640px) 100vw, 360px" className="object-cover" />
-                <span aria-hidden className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
-                <figcaption className="absolute inset-x-0 bottom-0 p-4 text-[14px] text-white leading-[1.4] drop-shadow">
-                  {photo.caption}
+        <FadeIn className="flex flex-col gap-4 max-w-[760px]">
+          <h2 className="font-semibold text-ink text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
+            {copy.clipsTitle}
+          </h2>
+          <p className="text-[16.5px] md:text-[18px] text-ink-2 leading-[1.5]">{copy.clipsText}</p>
+        </FadeIn>
+
+        <div className="flex flex-col border-t border-hairline">
+          {clips.map((clip, i) => (
+            <FadeIn key={clip.id}>
+              <Clip
+                id={clip.id}
+                accent={accent}
+                name={names.get(clip.id) ?? clip.id}
+                speaker={clip.speaker}
+                quote={clip.quote}
+                flip={i % 2 === 1}
+              />
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Стрічка кадрів ─────────────────────────────────────────────── */
+/* Фото їдуть самі зліва направо і зупиняються, щойно на них навели.
+   Список подвоєний — інакше в кінці був би розрив. */
+function Gallery({ ctx }: { ctx: Ctx }) {
+  const { copy, church } = ctx;
+  if (!copy.gallery.length) return null;
+  const row = [...copy.gallery, ...copy.gallery];
+
+  return (
+    <section className="w-full flex flex-col items-center py-10 md:py-14">
+      <div className="marquee">
+        <div className="marquee-track photo-track">
+          {row.map((photo, i) => (
+            <figure
+              key={`${photo.src}-${i}`}
+              className="relative w-[240px] md:w-[340px] aspect-[4/3] shrink-0 overflow-hidden rounded-[18px] border border-hairline"
+            >
+              <Image
+                src={photo.src}
+                /* Друга половина стрічки — та сама, тож для читача вона мовчить. */
+                alt={i < copy.gallery.length ? photo.alt : ""}
+                fill
+                sizes="340px"
+                className="object-cover"
+              />
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      {/* Один тихий кредит на всю сторінку: знімки — церкви. */}
+      <div className="w-full max-w-[1120px] px-5 md:px-8 mt-3">
+        <span className="flex flex-wrap items-center gap-1.5 text-[12.5px] text-ink-3">
+          <span>{copy.photoCredit}</span>
+          <span aria-hidden>·</span>
+          <Link
+            href={church.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-underline inline-flex items-center gap-1 text-ink-2 hover:text-ink transition-colors"
+          >
+            {copy.photoCreditCta}
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </span>
+      </div>
+    </section>
+  );
+}
+
+/* ── Відгуки ────────────────────────────────────────────────────── */
+/* Друкуємо тільки те, що церква справді сказала: немає тексту — немає
+   блоку. Свої слова за неї ми не пишемо. */
+function Reviews({ ctx }: { ctx: Ctx }) {
+  const { copy, accent } = ctx;
+  const list = (copy.reviews ?? []).filter((r) => r.text);
+  if (!list.length) return null;
+
+  return (
+    <section id="reviews" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-[128px]">
+      <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-12">
+        <FadeIn>
+          <h2 className="font-semibold text-ink text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
+            {copy.reviewsTitle}
+          </h2>
+        </FadeIn>
+
+        <div className="flex flex-col">
+          {list.map((r, i) => (
+            <FadeIn key={r.text} delay={i}>
+              <figure className="flex flex-col gap-4 py-7 md:py-9 border-b border-hairline first:border-t first:border-hairline">
+                <blockquote className="font-medium text-ink text-[20px] md:text-[26px] leading-[1.35] tracking-[-0.5px] max-w-[860px]">
+                  «{r.text}»
+                </blockquote>
+                <figcaption className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span className="text-[15px] font-semibold text-ink leading-none">{r.author}</span>
+                  <span className="text-[13.5px] text-ink-3 leading-none">{r.role}</span>
+                  {r.source && (
+                    <>
+                      <span aria-hidden className="text-ink-3">·</span>
+                      <span className="text-[13.5px] leading-none" style={{ color: accent }}>
+                        {r.source}
+                      </span>
+                    </>
+                  )}
                 </figcaption>
               </figure>
             </FadeIn>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
 
-        <FadeIn delay={1} className="flex flex-col gap-3 max-w-[760px]">
-          <blockquote className="flex flex-col gap-2.5">
-            <p className="font-semibold text-ink text-[22px] md:text-[28px] leading-[1.3] tracking-[-0.6px]">
-              «{copy.quote.text}»
-            </p>
-            <Link
-              href={copy.quote.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-underline inline-flex items-center gap-1 self-start text-[13.5px] text-ink-3 hover:text-ink transition-colors"
-            >
-              {copy.quote.source}
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </blockquote>
-
-          <span className="flex flex-wrap items-center gap-1.5 text-[13px] text-ink-3">
-            <span className="text-[12.5px] font-semibold uppercase tracking-[0.12em]" style={{ color: accent }}>
-              {copy.photosEyebrow}
-            </span>
-            <span aria-hidden>·</span>
-            <span>{copy.photoCredit}</span>
-            <Link
-              href={church.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-underline inline-flex items-center gap-1 text-ink-2 hover:text-ink transition-colors"
-            >
-              {copy.photoCreditCta}
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </span>
+/* ── Про церкву ─────────────────────────────────────────────────── */
+/* Та сама картка, що й у блоці «Наш амбасадор» на /about. */
+function About({ ctx }: { ctx: Ctx }) {
+  return (
+    <section className="w-full flex flex-col items-center py-16 md:py-24">
+      <div className="w-full max-w-[1120px] px-5 md:px-8">
+        <FadeIn variant="scale">
+          <AmbassadorCard id={ctx.church.id} />
         </FadeIn>
       </div>
     </section>
   );
 }
 
-/* ── Before / after ─────────────────────────────────────────────── */
-function Change({ ctx }: { ctx: Ctx }) {
-  const { copy, accent } = ctx;
-  return (
-    <section id="change" className="w-full flex flex-col items-center py-16 md:py-24 bg-surface border-y border-hairline scroll-mt-[128px]">
-      <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-8 md:gap-10">
-        <SectionHeading align="left" eyebrow={copy.changeEyebrow} title={copy.changeTitle} />
-
-        <div className="flex flex-col">
-          <div className="hidden md:grid grid-cols-2 gap-6 pb-3 border-b border-hairline">
-            <span className="text-[12.5px] font-semibold uppercase tracking-[0.12em] text-ink-3">{copy.beforeLabel}</span>
-            <span className="text-[12.5px] font-semibold uppercase tracking-[0.12em]" style={{ color: accent }}>{copy.afterLabel}</span>
-          </div>
-
-          {copy.change.map((row, i) => (
-            <FadeIn key={row.after} delay={i}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 py-5 border-b border-hairline">
-                <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-surface-3 border border-hairline flex items-center justify-center shrink-0 mt-[1px] text-ink-3">
-                    <Minus className="w-[13px] h-[13px]" strokeWidth={3} />
-                  </span>
-                  <p className="text-[15.5px] text-ink-3 leading-[1.5]">
-                    <span className="md:hidden font-medium text-ink-2">{copy.beforeLabel}: </span>
-                    {row.before}
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-[1px]"
-                    style={{ background: `color-mix(in oklab, ${accent} 16%, var(--surface))`, color: accent }}
-                  >
-                    <Check className="w-[13px] h-[13px]" strokeWidth={3} />
-                  </span>
-                  <p className="text-[15.5px] text-ink leading-[1.5]">
-                    <span className="md:hidden font-medium text-ink-2">{copy.afterLabel}: </span>
-                    {row.after}
-                  </p>
-                </div>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ── Modules in use ─────────────────────────────────────────────── */
-function Modules({ ctx }: { ctx: Ctx }) {
-  const { copy, accent } = ctx;
-
-  return (
-    <section id="modules" className="w-full flex flex-col items-center py-16 md:py-24 scroll-mt-[128px]">
-      <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-8 md:gap-10">
-        <SectionHeading align="left" eyebrow={copy.modulesEyebrow} title={copy.modulesTitle} text={copy.modulesText} />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-10 border-t border-hairline">
-          {copy.modules.map((m) => {
-            const Icon = MODULE_ICONS[m.id] ?? LayoutGrid;
-            return (
-              <FadeIn key={m.id}>
-                <Link href={`/modules/${m.id}`} className="group flex gap-4 py-5 border-b border-hairline">
-                  <span
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: `color-mix(in oklab, ${accent} 12%, var(--surface))`, color: accent }}
-                  >
-                    <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
-                  </span>
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <h3 className="font-semibold text-ink text-[16.5px] leading-[1.3] tracking-[-0.2px]">{m.name}</h3>
-                    <p className="text-[14.5px] text-ink-2 leading-[1.5]">{m.text}</p>
-                  </div>
-                  <ArrowUpRight className="ml-auto w-4 h-4 text-ink-3 shrink-0 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
-                </Link>
-              </FadeIn>
-            );
-          })}
-        </div>
-
-        <FadeIn>
-          <Link href="/modules" className="link-underline text-[15px] font-medium text-ink-2 hover:text-ink transition-colors">
-            {copy.modulesCta} →
-          </Link>
-        </FadeIn>
-      </div>
-    </section>
-  );
-}
-
-/* ── Rollout timeline ───────────────────────────────────────────── */
-function Timeline({ ctx }: { ctx: Ctx }) {
-  const { copy, accent } = ctx;
-  return (
-    <section id="rollout" className="w-full flex flex-col items-center py-16 md:py-24 bg-surface border-y border-hairline scroll-mt-[128px]">
-      <div className="w-full max-w-[1120px] px-5 md:px-8 flex flex-col gap-10 md:gap-12">
-        <SectionHeading align="left" eyebrow={copy.timelineEyebrow} title={copy.timelineTitle} text={copy.timelineText} />
-
-        <div className="relative flex flex-col gap-4">
-          <span
-            aria-hidden
-            className="absolute left-[19px] top-8 bottom-8 w-[2px]"
-            style={{ backgroundImage: "repeating-linear-gradient(to bottom, var(--hairline-strong) 0 6px, transparent 6px 12px)" }}
-          />
-          {copy.timeline.map((step, i) => (
-            <FadeIn key={step.title} delay={i}>
-              <article className="flex items-start gap-4">
-                <span
-                  className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-[15px] shrink-0 border-4 border-surface"
-                  style={{ background: accent }}
-                >
-                  {i + 1}
-                </span>
-                <div className="flex flex-col gap-1.5 pt-1.5">
-                  <span className="text-[12.5px] font-semibold uppercase tracking-[0.1em] text-ink-3">{step.when}</span>
-                  <h3 className="font-semibold text-ink text-[17px] leading-[1.3] tracking-[-0.25px]">{step.title}</h3>
-                  <p className="text-[15px] text-ink-2 leading-[1.5] max-w-[620px]">{step.text}</p>
-                </div>
-              </article>
-            </FadeIn>
-          ))}
-        </div>
-
-        <FadeIn>
-          <Link href="/about" className="link-underline text-[15px] font-medium text-ink-2 hover:text-ink transition-colors">
-            ← {copy.backLabel}
-          </Link>
-        </FadeIn>
-      </div>
-    </section>
-  );
-}
+/* «Було і стало» знято зі сторінки 2026-09-21 («повністю прибери»):
+   після восьми записів із системи список був переказом того самого.
+   Копія цілим шматком лишається в src/content/ambassadors.ts — якщо
+   блок повернеться, писати його заново не доведеться. */
 
 export default function AmbassadorPage({ id }: { id: string }) {
   const { lang } = useLang();
@@ -405,10 +449,10 @@ export default function AmbassadorPage({ id }: { id: string }) {
   return (
     <>
       <Hero ctx={ctx} parentLabel={t.nav.about} />
-      <Photos ctx={ctx} />
-      <Change ctx={ctx} />
-      <Modules ctx={ctx} />
-      <Timeline ctx={ctx} />
+      <Gallery ctx={ctx} />
+      <Clips ctx={ctx} />
+      <Reviews ctx={ctx} />
+      <About ctx={ctx} />
     </>
   );
 }

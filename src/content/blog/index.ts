@@ -54,22 +54,6 @@ export function getRelated(post: BlogPost, limit = 3): BlogPost[] {
   return picked.slice(0, limit);
 }
 
-/** Запити, за якими люди шукають ці теми: беремо з самих статей. */
-export function searchQueries(lang: Lang, limit = 24): { query: string; slug: string }[] {
-  const seen = new Set<string>();
-  const out: { query: string; slug: string }[] = [];
-  for (const post of BLOG_POSTS) {
-    for (const query of post.copy[lang].keywords.slice(0, 2)) {
-      const key = query.toLowerCase();
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push({ query, slug: post.slug });
-      if (out.length >= limit) return out;
-    }
-  }
-  return out;
-}
-
 /* ────────────────────────────────────────────────────────────────
    «З чого почати» — сім статей, які закривають те, з чим церкви
    приходять найчастіше. Це не найновіше і не найпопулярніше, а
@@ -148,8 +132,6 @@ export interface BlogChrome {
   stats: { posts: string; topics: string };
   starterTitle: string;
   starterText: string;
-  queriesTitle: string;
-  queriesText: string;
   readLabel: string;
   minutes: string;
   post: {
@@ -167,6 +149,11 @@ export interface BlogChrome {
     faqTitle: string;
     relatedTitle: string;
     demoLabel: string;
+    /** Підпис над екраном продукту в тілі статті. */
+    solutionLabel: string;
+    /** Смуга посеред статті: заголовок і одне речення. */
+    midTitle: string;
+    midText: string;
     shareText: string;
   };
 }
@@ -187,13 +174,11 @@ export const BLOG_COPY: Record<Lang, BlogChrome> = {
     hero: {
       eyebrow: "Блог",
       title: "Як організувати церковні процеси",
-      lead: "Пишемо про те, з чим церкви стикаються щотижня: як не втрачати людей, як вести групи й служіння, що вимірювати і як звести дані в одне місце.",
+      lead: "Про те, з чим церкви стикаються щотижня: люди, групи, служіння, дані.",
     },
     stats: { posts: "статей", topics: "тем" },
     starterTitle: "З чого почати",
-    starterText: "Сім статей, які закривають те, що болить найчастіше, — у порядку, в якому їх варто читати.",
-    queriesTitle: "Що шукають найчастіше",
-    queriesText: "Реальні запити, з якими до нас приходять. Натисніть — відкриється стаття по темі.",
+    starterText: "У порядку, в якому їх варто читати.",
     readLabel: "Читати",
     minutes: "хв",
     post: {
@@ -211,12 +196,15 @@ export const BLOG_COPY: Record<Lang, BlogChrome> = {
       faqTitle: "Питання та відповіді",
       relatedTitle: "Читати далі",
       demoLabel: "Замовити демо",
+      solutionLabel: "У «Моїй Церкві»",
+      midTitle: "Побачити це на своїх даних",
+      midText: "Тридцять хвилин на ваших процесах: показуємо живий простір, а не презентацію.",
       shareText: "Маєте таку саму ситуацію? Покажемо, як це влаштовано у вашій церкві — на ваших даних, а не на прикладах.",
     },
   },
   en: {
     navLabel: "Blog",
-    seoTitle: "Blog on running church processes — MyChurch",
+    seoTitle: "Blog on running church processes — My Church",
     seoDescription:
       "Practical articles for pastors, leaders and administrators: people records, small groups, attendance, ministries, analytics, data and choosing church software.",
     seoKeywords: [
@@ -229,20 +217,18 @@ export const BLOG_COPY: Record<Lang, BlogChrome> = {
     hero: {
       eyebrow: "Blog",
       title: "How to run church processes",
-      lead: "About what churches face every week: not losing people, running groups and ministries, what to measure, and how to bring data into one place.",
+      lead: "What churches face every week: people, groups, ministries, data.",
     },
     stats: { posts: "articles", topics: "topics" },
     starterTitle: "Start here",
-    starterText: "Seven articles covering what hurts most often, in the order worth reading them.",
-    queriesTitle: "What people search for",
-    queriesText: "Real questions churches bring us. Tap one to open the article.",
+    starterText: "In the order worth reading them.",
     readLabel: "Read",
     minutes: "min",
     post: {
       breadcrumbHome: "Home",
       breadcrumbBlog: "Blog",
       back: "All articles",
-      author: "The MyChurch team",
+      author: "The My Church team",
       published: "Published",
       updated: "Updated",
       contents: "In this article",
@@ -253,6 +239,9 @@ export const BLOG_COPY: Record<Lang, BlogChrome> = {
       faqTitle: "Questions and answers",
       relatedTitle: "Read next",
       demoLabel: "Book a demo",
+      solutionLabel: "In My Church",
+      midTitle: "See this on your own data",
+      midText: "Thirty minutes on your processes: a live workspace rather than a slide deck.",
       shareText: "Sound familiar? We will show how this works in your church, on your data rather than examples.",
     },
   },
@@ -281,6 +270,9 @@ export function postWordCount(post: BlogPost, lang: Lang): number {
           break;
         case "table":
           parts.push(...block.columns, ...block.rows.flat());
+          break;
+        case "visual":
+          parts.push(block.visual.type === "screen" ? block.visual.spec.title : block.visual.title, block.caption ?? "");
           break;
       }
     }

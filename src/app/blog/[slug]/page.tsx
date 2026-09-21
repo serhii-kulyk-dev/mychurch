@@ -18,10 +18,12 @@ export function generateStaticParams() {
 type Params = Promise<{ slug: string }>;
 
 /* Обкладинка статті — src/app/blog/[slug]/opengraph-image.tsx.
-   Ту саму адресу віддаємо і в Open Graph, і в розмітку BlogPosting. */
+   Ту саму адресу віддаємо і в Open Graph, і в розмітку BlogPosting.
+   «.png» на кінці — копія, яку кладе `scripts/og-png.mjs`: без
+   розширення месенджери картинку не показують (див. src/lib/seo.ts). */
 function postImage(slug: string, title: string) {
   return {
-    url: `/blog/${slug}/opengraph-image`,
+    url: `/blog/${slug}/opengraph-image.png`,
     width: 1200,
     height: 630,
     alt: `${title} — блог «Моєї Церкви»`,

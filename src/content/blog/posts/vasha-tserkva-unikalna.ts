@@ -106,6 +106,26 @@ export const post: BlogPost = {
               ],
             },
             {
+              kind: "solution",
+              title: "Ваші назви, ваші етапи",
+              text:
+                "Той самий екран у двох церквах виглядає по-різному: словник і етапи заповнює громада, а не шаблон. Міняється підпис — міняється всюди, без програміста.",
+              spec: {
+                kind: "form",
+                title: "Налаштування громади",
+                subtitle: "Словник і етапи — ваші",
+                fields: [
+                  { label: "Як ви називаєте малі групи", value: "Домашні групи", type: "text" },
+                  { label: "Як ви називаєте гостя", value: "Новий друг", type: "text" },
+                  { label: "Етапи шляху людини", value: "Гість → Домашня група → Хрещення → Служіння", type: "select" },
+                  { label: "Структура", value: "Дві локації, спільні служіння", type: "select" },
+                  { label: "Членство ведемо окремо", value: "Так", type: "check" },
+                ],
+                submit: "Зберегти",
+              },
+              link: { label: "Модуль «Налаштування»", href: "/modules/customization" },
+            },
+            {
               kind: "text",
               text: "Мета одна: щоб лідер, відкривши систему, бачив свою церкву, а не чужу схему.",
             },
@@ -226,7 +246,7 @@ export const post: BlogPost = {
           ],
         },
         {
-          heading: "How MyChurch handles it",
+          heading: "How My Church handles it",
           blocks: [
             {
               kind: "list",
@@ -236,6 +256,26 @@ export const post: BlogPost = {
                 "You describe the stages of the path, not a template.",
                 "Roles and access match your structure, from one church to a network of campuses.",
               ],
+            },
+            {
+              kind: "solution",
+              title: "Your labels, your stages",
+              text:
+                "The same screen looks different in two churches: the vocabulary and the stages are filled in by the church, not by a template. Change a label and it changes everywhere, with no developer.",
+              spec: {
+                kind: "form",
+                title: "Church setup",
+                subtitle: "Your vocabulary, your stages",
+                fields: [
+                  { label: "What you call small groups", value: "Home groups", type: "text" },
+                  { label: "What you call a guest", value: "New friend", type: "text" },
+                  { label: "Stages of the path", value: "Guest → Home group → Baptism → Ministry", type: "select" },
+                  { label: "Structure", value: "Two locations, shared ministries", type: "select" },
+                  { label: "Membership tracked separately", value: "Yes", type: "check" },
+                ],
+                submit: "Save",
+              },
+              link: { label: "The customisation module", href: "/modules/customization" },
             },
             {
               kind: "text",

@@ -60,10 +60,10 @@ export const aiModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "AI assistants — MyChurch module",
-        seoDescription: "The MyChurch AI assistant answers questions from your church's own data, notices who has stopped coming, prepares the weekly digest and suggests the next step.",
+        seoTitle: "AI assistants — My Church module",
+        seoDescription: "The My Church AI assistant answers questions from your church's own data, notices who has stopped coming, prepares the weekly digest and suggests the next step.",
         title: "Answers about your church, no spreadsheets or filters",
-        lead: "The AI assistant runs on the data already in MyChurch: people, attendance, groups, ministries. Ask in plain language — and get an answer and a next step, not a report.",
+        lead: "The AI assistant runs on the data already in My Church: people, attendance, groups, ministries. Ask in plain language — and get an answer and a next step, not a report.",
         highlights: [
           "Answers questions from your own data",
           "Notices who has stopped coming on its own",
@@ -92,7 +92,7 @@ export const aiModules: ModuleDetail[] = [
         ],
         faq: [
           { q: "Can the assistant see data I don't have access to?", a: "No. It answers within your role. A group leader gets answers only about their own people, the pastor about the whole church." },
-          { q: "Where does the church's data go?", a: "The assistant works inside MyChurch on your own database. Your data isn't used to train models and isn't passed to third parties." },
+          { q: "Where does the church's data go?", a: "The assistant works inside My Church on your own database. Your data isn't used to train models and isn't passed to third parties." },
           { q: "Can the assistant get it wrong?", a: "It answers only from the records in the system and shows where each number came from. If attendance wasn't marked, it says so." },
           { q: "Does it replace analytics?", a: "No, it complements it: dashboards show the picture, the assistant answers a specific question and suggests the next step." },
         ],

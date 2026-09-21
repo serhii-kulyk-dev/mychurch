@@ -59,7 +59,7 @@ export const campusesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Campuses — MyChurch module",
+        seoTitle: "Campuses — My Church module",
         seoDescription: "Several locations of one church in one database: each campus has its own people, ministries and schedule, and the senior pastor sees the whole church.",
         title: "Several locations, one church, one database",
         lead: "The Campuses module gives every location its own space: people, ministries, schedule and team. The senior pastor sees the whole church together — no merging spreadsheets from three districts.",

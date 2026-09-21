@@ -331,7 +331,7 @@ const ua: ImportCopy = {
     ],
     quote: {
       text: "Уся база церкви з Google Таблиць за три дні. Дублікати система показала ще до імпорту.",
-      author: "Церква «Нове Життя», Черкаси",
+      author: "Перенесення бази — церква «Нове Життя», Черкаси",
       link: "Історія церкви",
     },
   },
@@ -354,7 +354,7 @@ const ua: ImportCopy = {
 
 const en: ImportCopy = {
   navLabel: "Import",
-  seoTitle: "Smart import — MyChurch",
+  seoTitle: "Smart import — My Church",
   seoDescription:
     "Drop in your spreadsheets, exports and lists as they are. The system reads the columns, creates people, families, groups and ministries, finds duplicates and relations — you just confirm.",
 
@@ -558,7 +558,7 @@ const en: ImportCopy = {
     ],
     quote: {
       text: "A whole church database out of Google Sheets in three days. Duplicates were flagged before the import ran.",
-      author: "New Life church, Cherkasy",
+      author: "Database migration — New Life church, Cherkasy",
       link: "Their story",
     },
   },

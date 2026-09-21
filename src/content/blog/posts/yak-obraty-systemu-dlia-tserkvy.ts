@@ -118,8 +118,27 @@ export const post: BlogPost = {
                 "Перший запуск: тиждень-два до першої реальної відмітки явки.",
                 "Перенос даних: дні, не місяці.",
                 "Навчання лідера: 15 хвилин на щотижневі дії.",
-                "Повне впровадження всіх модулів: сезон — і це нормально.",
+                "Повне впровадження всіх модулів: місяць. Модулі вмикаються один за одним, а не всі разом.",
               ],
+            },
+            {
+              kind: "solution",
+              title: "Розклад перших двох тижнів",
+              text:
+                "Так виглядає розклад, який ще тримає ентузіазм команди: реальна відмітка явки на другому тижні, а не «повне впровадження» через квартал. Якщо система не вміщається в цей розклад — питання не до вас.",
+              spec: {
+                kind: "timeline",
+                title: "Від демо до першої відмітки",
+                subtitle: "Дні від першої розмови",
+                items: [
+                  { time: "1-й", title: "Демо на своїх даних", who: "Пастор і адміністратор", done: true },
+                  { time: "3-й", title: "Перенесли список людей", who: "Адміністратор", done: true },
+                  { time: "5-й", title: "Лідери отримали доступ", who: "12 лідерів", done: true },
+                  { time: "9-й", title: "Перша відмітка явки в групі", who: "Одна мала група" },
+                  { time: "14-й", title: "Тиждень без паралельної таблиці" },
+                ],
+              },
+              link: { label: "Як ми впроваджуємо", href: "/consulting" },
             },
             {
               kind: "text",
@@ -266,8 +285,27 @@ export const post: BlogPost = {
                 "Launch: a week or two until the first real attendance mark.",
                 "Data migration: days, not months.",
                 "Training a leader: fifteen minutes for the weekly actions.",
-                "Full rollout of every module: a season, and that is fine.",
+                "Full rollout of every module: a month. Modules switch on one after another, not all at once.",
               ],
+            },
+            {
+              kind: "solution",
+              title: "The first two weeks",
+              text:
+                "This is the schedule that still holds the team's enthusiasm: a real attendance mark in week two, not a full rollout a quarter from now. If a system cannot fit this schedule, the problem is not on your side.",
+              spec: {
+                kind: "timeline",
+                title: "From demo to the first mark",
+                subtitle: "Days from the first conversation",
+                items: [
+                  { time: "Day 1", title: "Demo on your own data", who: "Pastor and administrator", done: true },
+                  { time: "Day 3", title: "People list migrated", who: "Administrator", done: true },
+                  { time: "Day 5", title: "Leaders have access", who: "12 leaders", done: true },
+                  { time: "Day 9", title: "First attendance mark in a group", who: "One small group" },
+                  { time: "Day 14", title: "A week with no parallel spreadsheet" },
+                ],
+              },
+              link: { label: "How we roll out", href: "/consulting" },
             },
             {
               kind: "text",

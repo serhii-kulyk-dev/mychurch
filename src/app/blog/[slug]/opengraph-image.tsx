@@ -2,7 +2,6 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { BLOG_CATEGORIES, BLOG_SLUGS, getPost } from "@/content/blog";
-import { SITE_URL } from "@/lib/seo";
 
 /* Статичний експорт: файл генерується під час збірки, не на запит. */
 export const dynamic = "force-static";
@@ -12,6 +11,10 @@ export const dynamic = "force-static";
    Одна картинка на весь сайт погано працює для блогу: у стрічці
    двадцять одна стаття виглядає як двадцять одне однакове посилання.
    Тут на картці — заголовок самої статті, рубрика й дата.
+
+   Поверхня й шрифти — ті самі, що в спільній картці (../../opengraph-image.tsx):
+   синя закривна панель сайту, знака немає, бренд тримає словесна частина
+   в Manrope 800, заголовок — Inter, як на сторінці самої статті.
 
    Ця ж адреса йде в розмітку BlogPosting як `image`: Google хоче
    обкладинку від 1200px завширшки, а логотип на 256px їй не був. */
@@ -24,6 +27,16 @@ export const contentType = "image/png";
 export function generateStaticParams() {
   return BLOG_SLUGS.map((slug) => ({ slug }));
 }
+
+/* Кольори закривної панелі (`sections/cta.tsx`) — див. спільну картку. */
+const PANEL = "linear-gradient(115deg, #0a1f3d 0%, #06356e 52%, #0b4f9e 100%)";
+const GLOW = "radial-gradient(circle 620px at 240px 0px, rgba(0,122,255,0.55) 0%, rgba(0,122,255,0) 100%)";
+const INK = "#ffffff";
+const INK_2 = "rgba(255,255,255,0.70)";
+const INK_3 = "rgba(255,255,255,0.55)";
+const ACCENT = "#8cc2ff";
+const BADGE_BG = "rgba(255,255,255,0.10)";
+const HAIRLINE = "rgba(255,255,255,0.20)";
 
 const MONTHS = [
   "січня", "лютого", "березня", "квітня", "травня", "червня",
@@ -48,11 +61,11 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
   const copy = post?.copy.ua;
   const category = BLOG_CATEGORIES.ua.find((c) => c.id === post?.category);
 
-  const [font, logo] = await Promise.all([
-    readFile(join(process.cwd(), "src/assets/fonts/Geist-Regular.ttf")),
-    readFile(join(process.cwd(), "public/logo.png")),
+  const [manrope, semibold, regular] = await Promise.all([
+    readFile(join(process.cwd(), "src/assets/fonts/Manrope-ExtraBold.ttf")),
+    readFile(join(process.cwd(), "src/assets/fonts/Inter-SemiBold.ttf")),
+    readFile(join(process.cwd(), "src/assets/fonts/Inter-Regular.ttf")),
   ]);
-  const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
 
   const title = copy?.title ?? "Блог «Моєї Церкви»";
   const lead = copy?.lead ?? "";
@@ -67,27 +80,18 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "56px 64px",
-          background: "linear-gradient(150deg, #0a1f3d 0%, #06356e 48%, #0b4f9e 100%)",
-          fontFamily: "Geist",
+          background: PANEL,
+          fontFamily: "Inter",
+          position: "relative",
         }}
       >
-        {/* Бренд і рубрика */}
+        <div style={{ position: "absolute", inset: 0, background: GLOW }} />
+
+        {/* Хедер: словесна частина й рубрика. */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <div
-              style={{
-                width: 58,
-                height: 58,
-                borderRadius: 16,
-                background: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img src={logoSrc} width={40} height={40} alt="" />
-            </div>
-            <span style={{ fontSize: 32, color: "#ffffff", letterSpacing: -0.8 }}>MyChurch</span>
+          <div style={{ display: "flex", fontFamily: "Manrope", fontSize: 36, fontWeight: 800, letterSpacing: -1.44 }}>
+            <span style={{ color: ACCENT }}>Моя</span>
+            <span style={{ color: INK }}>&nbsp;Церква</span>
           </div>
 
           {category ? (
@@ -95,9 +99,9 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
               style={{
                 display: "flex",
                 fontSize: 20,
-                color: "rgba(255,255,255,0.82)",
-                background: "rgba(255,255,255,0.12)",
-                border: "1px solid rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.85)",
+                background: BADGE_BG,
+                border: `1px solid ${HAIRLINE}`,
                 borderRadius: 999,
                 padding: "10px 22px",
               }}
@@ -113,7 +117,8 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
             style={{
               display: "flex",
               fontSize: titleSize(title),
-              color: "#ffffff",
+              fontWeight: 600,
+              color: INK,
               letterSpacing: -2,
               lineHeight: 1.1,
             }}
@@ -125,7 +130,7 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
               style={{
                 display: "flex",
                 fontSize: 26,
-                color: "rgba(255,255,255,0.6)",
+                color: INK_2,
                 letterSpacing: -0.5,
                 lineHeight: 1.35,
               }}
@@ -137,9 +142,9 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
 
         {/* Підвал */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 22, color: "#8cc2ff" }}>{new URL(SITE_URL).host}/blog</span>
+          <span style={{ fontSize: 22, color: ACCENT, letterSpacing: -0.3 }}>Блог</span>
           {post ? (
-            <span style={{ display: "flex", fontSize: 19, color: "rgba(255,255,255,0.55)" }}>
+            <span style={{ display: "flex", fontSize: 19, color: INK_3 }}>
               {formatDate(post.updated ?? post.date)}
             </span>
           ) : null}
@@ -148,7 +153,11 @@ export default async function BlogOpengraphImage({ params }: { params: Promise<{
     ),
     {
       ...size,
-      fonts: [{ name: "Geist", data: font, style: "normal", weight: 400 }],
+      fonts: [
+        { name: "Inter", data: semibold, style: "normal", weight: 600 },
+        { name: "Inter", data: regular, style: "normal", weight: 400 },
+        { name: "Manrope", data: manrope, style: "normal", weight: 800 },
+      ],
     }
   );
 }

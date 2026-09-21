@@ -93,6 +93,23 @@ export const post: BlogPost = {
           heading: "Що показує результат",
           blocks: [
             {
+              kind: "visual",
+              caption:
+                "Так виглядає найчастіший результат: облік живе у двох служіннях із п'яти. Це не погана церква — це церква, у якій домовились не про все. Порахуйте свої: важлива не оцінка, а те, які саме питання лишились сірими.",
+              visual: {
+                type: "score",
+                title: "На скільки питань відповідь уже є в системі",
+                totalLabel: "з п'яти",
+                items: [
+                  { label: "Хто зник на три тижні", ok: false },
+                  { label: "Скільки людей у молодіжці", ok: true },
+                  { label: "Хто служить цієї неділі", ok: true },
+                  { label: "Хто закрив прохання", ok: false },
+                  { label: "Що лишиться, коли лідер піде", ok: false },
+                ],
+              },
+            },
+            {
               kind: "list",
               items: [
                 "Чотири-п'ять відповідей за хвилину — у вас справді є система, і питання лише в тому, щоб нею користувалися всі.",
@@ -116,6 +133,25 @@ export const post: BlogPost = {
             {
               kind: "quote",
               text: "Поки система в чиїйсь голові — вона зникає разом з людиною.",
+            },
+            {
+              kind: "solution",
+              title: "Групи — не в голові, а в списку",
+              text:
+                "Той самий перелік, який зазвичай тримає лідер: коли була зустріч, скільки людей прийшло і де явка падає другий місяць.",
+              spec: {
+                kind: "table",
+                title: "Малі групи",
+                subtitle: "Осінній сезон",
+                columns: ["Група", "Лідер", "Остання зустріч", "Було"],
+                rows: [
+                  { cells: ["Витоки", "Олена Ковальчук", "Чт, 19:00", "9 з 12"] },
+                  { cells: ["Молодіжна", "Тарас Микитюк", "Пт, 18:30", "14 з 16"] },
+                  { cells: ["Сімейна", "Ігор Дідух", "Сб, 17:00", "6 з 10"], badge: { label: "Явка падає", tone: "amber" } },
+                  { cells: ["Нові люди", "Ніна Панчук", "Нд, 12:00", "5 з 5"] },
+                ],
+              },
+              link: { label: "Модуль «Малі групи»", href: "/modules/groups" },
             },
             {
               kind: "callout",
@@ -286,6 +322,23 @@ export const post: BlogPost = {
           heading: "What the result tells you",
           blocks: [
             {
+              kind: "visual",
+              caption:
+                "This is the most common result: records live in two ministries out of five. That is not a bad church — it is a church that has agreed on some things and not others. Count yours: the score matters less than which questions stayed grey.",
+              visual: {
+                type: "score",
+                title: "How many questions the system already answers",
+                totalLabel: "out of five",
+                items: [
+                  { label: "Who has been missing three weeks", ok: false },
+                  { label: "How many came to youth night", ok: true },
+                  { label: "Who serves this Sunday", ok: true },
+                  { label: "Who closed each request", ok: false },
+                  { label: "What stays when a leader leaves", ok: false },
+                ],
+              },
+            },
+            {
               kind: "list",
               items: [
                 "Four or five answers in a minute — you do have a system, and the only question is whether everyone uses it.",
@@ -309,6 +362,25 @@ export const post: BlogPost = {
             {
               kind: "quote",
               text: "While the system lives in someone's head, it leaves when they do.",
+            },
+            {
+              kind: "solution",
+              title: "Groups in a list, not in a head",
+              text:
+                "The same overview a leader usually carries: when the group last met, how many came, and where attendance has been sliding for a second month.",
+              spec: {
+                kind: "table",
+                title: "Small groups",
+                subtitle: "Autumn season",
+                columns: ["Group", "Leader", "Last meeting", "Present"],
+                rows: [
+                  { cells: ["Roots", "Olena Kovalchuk", "Thu, 19:00", "9 of 12"] },
+                  { cells: ["Youth", "Taras Mykytiuk", "Fri, 18:30", "14 of 16"] },
+                  { cells: ["Families", "Ihor Didukh", "Sat, 17:00", "6 of 10"], badge: { label: "Attendance down", tone: "amber" } },
+                  { cells: ["Newcomers", "Nina Panchuk", "Sun, 12:00", "5 of 5"] },
+                ],
+              },
+              link: { label: "The Small groups module", href: "/modules/groups" },
             },
             {
               kind: "callout",

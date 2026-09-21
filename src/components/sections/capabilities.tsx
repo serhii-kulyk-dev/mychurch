@@ -75,7 +75,7 @@ export default function Capabilities() {
   const rowB = chips.filter((_, i) => i % 2 === 1);
 
   return (
-    <section className="w-full flex flex-col items-center pt-4 pb-16 md:pb-24 bg-page overflow-hidden">
+    <section className="w-full flex flex-col items-center py-16 md:py-24 bg-page overflow-hidden">
       <FadeIn className="text-center mb-8 md:mb-10 px-5">
         <p className="text-[13px] font-medium uppercase tracking-[0.14em] text-ink-3">
           {t.capabilities.caption}

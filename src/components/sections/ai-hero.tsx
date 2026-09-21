@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import EvaChat from "@/components/shared/eva-chat";
 import { useDemoModal } from "@/context/demo-modal-context";
@@ -74,16 +74,8 @@ export default function AiHero() {
             </a>
           </div>
 
-          <ul className="flex flex-col gap-2.5 pt-2">
-            {ai.hero.proof.map((p) => (
-              <li key={p} className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-brand-soft flex items-center justify-center shrink-0">
-                  <Check className="w-3 h-3 text-brand" strokeWidth={3} />
-                </span>
-                <span className="text-[15px] text-ink-2 leading-[1.4]">{p}</span>
-              </li>
-            ))}
-          </ul>
+          {/* Три галочки під кнопками прибрані 2026-09-21: вони переказували
+              те саме речення вище. Довіру доводить блок «Межі» нижче. */}
         </FadeIn>
 
         <FadeIn delay={2} variant="scale" className="w-full">

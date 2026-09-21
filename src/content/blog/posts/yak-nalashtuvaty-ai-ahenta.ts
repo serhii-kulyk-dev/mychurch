@@ -73,6 +73,25 @@ export const post: BlogPost = {
               ],
             },
             {
+              kind: "solution",
+              title: "Запит словами — дії в системі",
+              text:
+                "Запит звичайними словами, відповідь зі списком і чернетки, які надсилає людина. Помічник знаходить і готує — натискає завжди лідер.",
+              spec: {
+                kind: "chat",
+                title: "Помічник",
+                subtitle: "Права лідера групи",
+                messages: [
+                  { from: "user", text: "Хто з моєї групи не був уже місяць?", time: "10:12" },
+                  { from: "bot", text: "Троє: Ігор, Таня і Марина. Остання відмітка — 17 серпня.", time: "10:12" },
+                  { from: "user", text: "Підготуй кожному коротке повідомлення від мене.", time: "10:13" },
+                  { from: "bot", text: "Три чернетки готові. Надсилаєте ви — я не пишу людям сам.", time: "10:13" },
+                ],
+                input: "Напишіть помічнику…",
+              },
+              link: { label: "Сторінка помічника", href: "/ai" },
+            },
+            {
               kind: "callout",
               title: "Помічник працює в межах ваших прав",
               text: "Лідер групи бачить через помічника лише свою групу, адміністратор — свою зону. Помічник не може показати більше, ніж людині дозволено бачити самій.",
@@ -200,6 +219,25 @@ export const post: BlogPost = {
                 "Name the period: a month, four meetings, since the season started.",
                 "If the result is off, correct it in words rather than starting over.",
               ],
+            },
+            {
+              kind: "solution",
+              title: "A request in words, actions in the system",
+              text:
+                "A request in plain words, an answer with names, and drafts a person sends. The assistant finds and prepares; the leader is the one who presses send.",
+              spec: {
+                kind: "chat",
+                title: "Assistant",
+                subtitle: "Group leader permissions",
+                messages: [
+                  { from: "user", text: "Who in my group has been away for a month?", time: "10:12" },
+                  { from: "bot", text: "Three: Ihor, Tania and Maryna. Last mark was 17 August.", time: "10:12" },
+                  { from: "user", text: "Draft a short message from me to each of them.", time: "10:13" },
+                  { from: "bot", text: "Three drafts ready. You send them — I do not message people myself.", time: "10:13" },
+                ],
+                input: "Message the assistant…",
+              },
+              link: { label: "The assistant page", href: "/ai" },
             },
             {
               kind: "callout",

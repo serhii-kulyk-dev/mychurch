@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/og-png.mjs",
     "start": "python3 -m http.server 3000 --directory .static",
     "lint": "eslint"
   },

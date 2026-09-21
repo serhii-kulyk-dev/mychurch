@@ -173,3 +173,56 @@ export function blogSchema(posts: { title: string; path: string }[]): Json {
 export function graph(...nodes: Json[]) {
   return { "@context": "https://schema.org", "@graph": nodes };
 }
+
+/** Канал зв'язку для ContactPage — рівно той, що видно в блоці «Куди писати». */
+export interface SupportContactPoint {
+  contactType: string;
+  email?: string;
+  telephone?: string;
+  url?: string;
+  /** Дні й години — тільки там, де канал справді обмежений розкладом. */
+  hours?: { days: string[]; opens: string; closes: string };
+}
+
+/** Сторінка підтримки: канали, години і мови — те саме, що й на екрані. */
+export function contactPageSchema(a: {
+  name: string;
+  description: string;
+  path: string;
+  points: SupportContactPoint[];
+}): Json {
+  const url = absoluteUrl(a.path);
+  return {
+    "@type": "ContactPage",
+    "@id": `${url}#contact`,
+    name: a.name,
+    description: a.description,
+    url,
+    inLanguage: "uk",
+    isPartOf: { "@id": SITE_ID },
+    about: { "@id": ORG_ID },
+    mainEntity: {
+      "@type": "Organization",
+      "@id": ORG_ID,
+      contactPoint: a.points.map((p) => ({
+        "@type": "ContactPoint",
+        contactType: p.contactType,
+        availableLanguage: ["uk", "en"],
+        areaServed: "UA",
+        ...(p.email ? { email: p.email } : null),
+        ...(p.telephone ? { telephone: p.telephone } : null),
+        ...(p.url ? { url: p.url } : null),
+        ...(p.hours
+          ? {
+              hoursAvailable: {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: p.hours.days,
+                opens: p.hours.opens,
+                closes: p.hours.closes,
+              },
+            }
+          : null),
+      })),
+    },
+  };
+}

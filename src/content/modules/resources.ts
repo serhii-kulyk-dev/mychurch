@@ -60,7 +60,7 @@ export const resourcesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Rooms — MyChurch module",
+        seoTitle: "Rooms — My Church module",
         seoDescription: "Book church halls and rooms without double-booking: a weekly schedule of every space, requests from leaders on their phones, confirmations and reminders.",
         title: "Every room on schedule, never double-booked",
         lead: "The Rooms module shows who is using each hall, room or kids' space, and when. A leader books from their phone, reception confirms, and two groups never turn up at the same door again.",
@@ -179,7 +179,7 @@ export const resourcesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Inventory — MyChurch module",
+        seoTitle: "Inventory — My Church module",
         seoDescription: "Keep track of church property: microphones, projectors, materials. Who has it, where it is and when it's due back — with QR codes, history and reminders.",
         title: "Always know who has what and where",
         lead: "The Inventory module keeps a record of everything the church owns, from microphones and projectors to chairs and camp tents. Check an item out by QR code and the system knows who has it and when it's due back.",
@@ -295,7 +295,7 @@ export const resourcesModules: ModuleDetail[] = [
         },
       },
       en: {
-        seoTitle: "Infrastructure — MyChurch module",
+        seoTitle: "Infrastructure — My Church module",
         seoDescription: "Asset records for every church building and system: boiler, wiring, ventilation, roof. Maintenance schedule, repair requests, contractors and costs together.",
         title: "No more surprise breakdowns in your building",
         lead: "The Infrastructure module keeps a record for every building and system: when the boiler was last serviced, who looks after the wiring, what the roof repair cost. Repair requests come in from phones, and planned maintenance reminds you about itself.",

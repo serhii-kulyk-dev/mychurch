@@ -96,7 +96,7 @@ const privacyUa: LegalCopy = {
       list: [
         "Хостинг і бази даних — сервери в Європейському Союзі.",
         "Telegram — щоб бот церкви надсилав повідомлення тим, хто на нього підписався.",
-        "Viber, Twilio, Turbo SMS — доставка SMS і повідомлень, якщо церква ввімкнула ці канали.",
+        "Viber, Turbo SMS — доставка SMS і повідомлень, якщо церква ввімкнула ці канали.",
         "Google (Таблиці, Календар) — лише коли церква сама під'єднала інтеграцію та надала доступ.",
         "Google Analytics — знеособлена статистика відвідувань цього сайту (без даних із системи церкви).",
       ],
@@ -162,9 +162,9 @@ const privacyUa: LegalCopy = {
 };
 
 const privacyEn: LegalCopy = {
-  seoTitle: "Privacy policy — MyChurch",
+  seoTitle: "Privacy policy — My Church",
   seoDescription:
-    "How MyChurch handles personal data: what we collect, where it is stored, who we share it with, how long we keep it, and the rights a church and its members have.",
+    "How My Church handles personal data: what we collect, where it is stored, who we share it with, how long we keep it, and the rights a church and its members have.",
   eyebrow: "Legal",
   title: "Privacy policy",
   updatedLabel: "Updated",
@@ -174,7 +174,7 @@ const privacyEn: LegalCopy = {
     {
       heading: "1. Who is responsible for what",
       body: [
-        `The service is provided by ${ENTITY_EN} (“we”, “MyChurch”).`,
+        `The service is provided by ${ENTITY_EN} (“we”, “My Church”).`,
         "For data about congregation members, the church is the controller, not us. The church decides who goes into the system, which fields are filled in, and who on the team has access. We act as a processor: we handle that data only on the church's instructions and only to make the system work.",
         "For the data you leave on this website (demo form, brief, support requests), we are the controller.",
       ],
@@ -210,7 +210,7 @@ const privacyEn: LegalCopy = {
       list: [
         "Hosting and databases — servers in the European Union.",
         "Telegram — so the church's bot can message people who subscribed to it.",
-        "Viber, Twilio, Turbo SMS — delivery of SMS and messages, if the church switched those channels on.",
+        "Viber, Turbo SMS — delivery of SMS and messages, if the church switched those channels on.",
         "Google (Sheets, Calendar) — only where the church connected the integration itself and granted access.",
         "Google Analytics — anonymous visit statistics for this website (no data from the church's system).",
       ],
@@ -364,9 +364,9 @@ const termsUa: LegalCopy = {
 };
 
 const termsEn: LegalCopy = {
-  seoTitle: "Terms of use — MyChurch",
+  seoTitle: "Terms of use — My Church",
   seoDescription:
-    "Terms for using MyChurch: what the service covers, the church's obligations and ours, payment, data ownership, export and termination.",
+    "Terms for using My Church: what the service covers, the church's obligations and ours, payment, data ownership, export and termination.",
   eyebrow: "Legal",
   title: "Terms of use",
   updatedLabel: "Updated",
@@ -376,11 +376,11 @@ const termsEn: LegalCopy = {
     {
       heading: "1. Who provides the service",
       body: [
-        `MyChurch is provided by ${ENTITY_EN}. By using the system or submitting a form on this site, you agree to these terms.`,
+        `My Church is provided by ${ENTITY_EN}. By using the system or submitting a form on this site, you agree to these terms.`,
       ],
     },
     {
-      heading: "2. What MyChurch is",
+      heading: "2. What My Church is",
       body: [
         "A web system for running church processes: people, families, small groups, ministries, events, attendance, requests and analytics. Which modules a given church gets is agreed separately during rollout.",
         "The system is built to work from a phone through the browser. A dedicated iOS and Android app is in development; its availability is not part of these terms until we announce the launch.",
