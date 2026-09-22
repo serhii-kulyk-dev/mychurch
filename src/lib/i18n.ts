@@ -321,7 +321,9 @@ const ua = {
   proof: {
     /* Заголовок одразу називає церкву: самі «Наші амбасадори» нічого не
        казали тому, хто гортає. */
-    title: "Наші амбасадори — церква «Нове Життя»",
+    title: "Наші амбасадори — церква",
+    /* Ім'я церкви — синім: воно і є доказом, решта рядка лише підводить. */
+    titleAccent: "«Нове Життя»",
     videoBadge: "Відео",
     videoPlay: "Подивитись",
     cta: "Як це влаштовано в «Новому Житті»",
@@ -355,7 +357,8 @@ const ua = {
   modal: {
     title: "Покажемо, як це працює у вас",
     subtitle: "Менеджер зв'яжеться з вами протягом дня",
-    namePlaceholder: "ПІБ",
+    namePlaceholder: "Ваше ім'я",
+    churchPlaceholder: "Назва церкви",
     phonePlaceholder: "Номер телефону",
     submit: "Замовити демо",
     close: "Закрити",
@@ -371,14 +374,8 @@ const ua = {
     retry: "Спробувати ще раз",
     goalsLabel: "Хочете покращити",
     errors: {
-      nameRequired: "Введіть ваше ім'я",
-      nameLetters: "Ім'я може містити лише літери",
-      nameShort: "Введіть повне ім'я",
       phoneRequired: "Введіть номер телефону",
-      phoneShortNoCode: "Номер занадто короткий та не містить код країни. Перевірте і спробуйте ще раз",
-      phoneNoCode: "Вкажіть код країни на початку номера, наприклад +380",
       phoneShort: "Номер занадто короткий. Перевірте і спробуйте ще раз",
-      phoneInvalid: "Схоже, номер введено некоректно. Перевірте і спробуйте ще раз",
     },
   },
 
@@ -447,13 +444,10 @@ const ua = {
       eyebrow: "Про нас",
       title: "Ми будуємо простір для тих, хто будує церкву",
       text: "Наша місія — допомагати церквам досягати людей через організацію церковних процесів.",
-    },
-    /* Hero visual: one person slips away, the system flags it, the leader
-       reaches out, the person comes back. These label the three beats. */
-    reach: {
-      action: "Написати",
-      sent: "Лідер написав",
-      back: "Знову в групі",
+      /* Печатка під шапкою: напис їде по кільцю, тож фраза стоїть двічі
+         і закінчується роздільником — кільце замикається саме на ньому. */
+      seal: "Створено зсередини церкви · Створено зсередини церкви · ",
+      insider: "Систему будують члени церкви — люди, які самі живуть у служінні.",
     },
     mission: {
       eyebrow: "Місія",
@@ -475,12 +469,6 @@ const ua = {
       eyebrow: "Історія",
       title: "Як це починалось",
       text: "Ми не вивчали церкву ззовні — ми в ній служимо.",
-      /* Who is behind the product — the answer to «а ви взагалі в церкві?».
-         Rendered as one line: title in bold, then the sentence. */
-      insider: {
-        title: "Створено зсередини церкви",
-        text: "Систему будує член церкви — людина, яка сама живе в служінні.",
-      },
       /* Two beats, one line each. Longer than a line and the block stops
          being readable at a glance. */
       cards: [
@@ -528,7 +516,7 @@ const ua = {
       profileCta: "Сторінка церкви",
       siteCta: "Сайт церкви",
       items: [
-        { id: "nove-zhyttia", name: "Нове Життя", description: "Церква з Черкас: два недільні служіння, малі групи, дитяче містечко і два підліткові служіння. Півтора року будуємо процеси разом — і вона користується всіма модулями системи.", websiteLabel: "Перейти до сайту «Нове життя»", logoInitials: "НЖ" },
+        { id: "newlife", name: "Нове Життя", description: "Церква з Черкас: два недільні служіння, малі групи, дитяче містечко і два підліткові служіння. Півтора року будуємо процеси разом — і вона користується всіма модулями системи.", websiteLabel: "Перейти до сайту «Нове життя»", logoInitials: "НЖ" },
       ],
     },
   },
@@ -1041,7 +1029,9 @@ const ua = {
       pickedLabel: "Обрали",
       pickedPlaceholder: "Напишіть або позначте, що хочете покращити",
       dropHint: "прибрати",
-      namePlaceholder: "ПІБ",
+      /* Четвертий крок: єдине обов'язкове поле всієї форми — номер. */
+      contactLabel: "Куди зателефонувати?",
+      namePlaceholder: "Ваше ім'я",
       phonePlaceholder: "Номер телефону",
       submit: "Познайомитись",
       consentPrefix: "Натискаючи кнопку, ви погоджуєтесь з",
@@ -1052,10 +1042,6 @@ const ua = {
       failedText: "Напишіть нам напряму — відповімо так само швидко.",
       retry: "Спробувати ще раз",
       again: "Надіслати ще одну",
-      errors: {
-        aboutRequired: "Розкажіть хоча б кілька слів про свою церкву",
-        aboutShort: "Трохи детальніше — хоча б одне речення",
-      },
     },
   },
 
@@ -2608,7 +2594,8 @@ const en: Dict = {
   },
 
   proof: {
-    title: "Our ambassadors — New Life church",
+    title: "Our ambassadors —",
+    titleAccent: "New Life church",
     videoBadge: "Video",
     videoPlay: "Watch",
     cta: "See how it works at New Life",
@@ -2640,7 +2627,8 @@ const en: Dict = {
   modal: {
     title: "We'll show how this works for you",
     subtitle: "A manager will call you within the day",
-    namePlaceholder: "Full name",
+    namePlaceholder: "Your name",
+    churchPlaceholder: "Church name",
     phonePlaceholder: "Phone number",
     submit: "Book a demo",
     close: "Close",
@@ -2656,14 +2644,8 @@ const en: Dict = {
     retry: "Try again",
     goalsLabel: "You want to fix",
     errors: {
-      nameRequired: "Enter your name",
-      nameLetters: "Name can contain letters only",
-      nameShort: "Enter your full name",
       phoneRequired: "Enter your phone number",
-      phoneShortNoCode: "The number is too short and has no country code. Please check and try again",
-      phoneNoCode: "Add the country code at the start, for example +380",
       phoneShort: "The number is too short. Please check and try again",
-      phoneInvalid: "That number doesn't look right. Please check and try again",
     },
   },
 
@@ -2732,11 +2714,8 @@ const en: Dict = {
       eyebrow: "About us",
       title: "We build a space for the people who build the church",
       text: "Our mission is to help churches reach people by putting church processes in order.",
-    },
-    reach: {
-      action: "Reach out",
-      sent: "Leader reached out",
-      back: "Back in the group",
+      seal: "Built from inside the church · Built from inside the church · ",
+      insider: "The system is built by church members — people who live in ministry themselves.",
     },
     mission: {
       eyebrow: "Mission",
@@ -2757,10 +2736,6 @@ const en: Dict = {
       eyebrow: "Story",
       title: "How it started",
       text: "We didn’t study the church from the outside — we serve in one.",
-      insider: {
-        title: "Built from inside the church",
-        text: "The system is built by a church member — someone who serves in one.",
-      },
       cards: [
         {
           title: "We saw it from inside",
@@ -2804,7 +2779,7 @@ const en: Dict = {
       profileCta: "Church profile",
       siteCta: "Church website",
       items: [
-        { id: "nove-zhyttia", name: "New Life", description: "A church from Cherkasy: two Sunday services, small groups, a kids’ town and two teen ministries. A year and a half building processes together — and it uses every module in the system.", websiteLabel: "Go to the “New Life” website", logoInitials: "NL" },
+        { id: "newlife", name: "New Life", description: "A church from Cherkasy: two Sunday services, small groups, a kids’ town and two teen ministries. A year and a half building processes together — and it uses every module in the system.", websiteLabel: "Go to the “New Life” website", logoInitials: "NL" },
       ],
     },
   },
@@ -3309,7 +3284,8 @@ const en: Dict = {
       pickedLabel: "Picked",
       pickedPlaceholder: "Write it or pick below",
       dropHint: "remove",
-      namePlaceholder: "Full name",
+      contactLabel: "Where should we call you?",
+      namePlaceholder: "Your name",
       phonePlaceholder: "Phone number",
       submit: "Let's get acquainted",
       consentPrefix: "By clicking the button you agree to the",
@@ -3320,10 +3296,6 @@ const en: Dict = {
       failedText: "Write to us directly — we answer just as fast.",
       retry: "Try again",
       again: "Send another",
-      errors: {
-        aboutRequired: "Tell us a few words about your church",
-        aboutShort: "A little more, please — at least a sentence",
-      },
     },
   },
 

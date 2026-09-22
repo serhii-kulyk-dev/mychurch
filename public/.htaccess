@@ -29,7 +29,12 @@ ErrorDocument 404 /404.html
   # Список амбасадорів окремою сторінкою не потрібен — він один.
   # Раніше це робив redirects() у next.config, але статичний експорт
   # редиректів не вміє, тож правило живе на хостингу.
-  RewriteRule ^ambassadors/?$ https://%{HTTP_HOST}/ambassadors/nove-zhyttia/ [R=301,L]
+  RewriteRule ^ambassadors/?$ https://%{HTTP_HOST}/ambassadors/newlife/ [R=301,L]
+
+  # Сторінка амбасадора переїхала з /nove-zhyttia на /newlife — так само,
+  # як зветься сайт церкви. Старе посилання вже розійшлось, тож ведемо його
+  # на нову адресу, а не в 404.
+  RewriteRule ^ambassadors/nove-zhyttia/?$ https://%{HTTP_HOST}/ambassadors/newlife/ [R=301,L]
 
   # Коса риска в кінці. Експорт кладе кожну сторінку текою з index.html,
   # тож /modules без риски — це запит теки, який інакше дописав би mod_dir.
@@ -42,8 +47,21 @@ ErrorDocument 404 /404.html
 
 # Якщо mod_rewrite на хостингу вимкнуть — хоч /ambassadors лишиться живим.
 # Саме RedirectMatch із ^...$: звичайний Redirect збігається за префіксом,
-# і під нього потрапила б сама /ambassadors/nove-zhyttia/, отримавши
+# і під нього потрапила б сама /ambassadors/newlife/, отримавши
 # нескінченний редирект на себе.
 <IfModule !mod_rewrite.c>
-  RedirectMatch 301 ^/ambassadors/?$ https://mychurch.com.ua/ambassadors/nove-zhyttia/
+  RedirectMatch 301 ^/ambassadors/?$ https://mychurch.com.ua/ambassadors/newlife/
+  RedirectMatch 301 ^/ambassadors/nove-zhyttia/?$ https://mychurch.com.ua/ambassadors/newlife/
+</IfModule>
+
+# --- Демо-записи ---
+#
+# Файли в /clips/ важать по 8–12 МБ і ніколи не міняються без нової
+# назви, тож нехай браузер тримає їх місяць і не тягне вдруге.
+# Без `immutable`: якщо перезаллємо той самий файл, кеш підхопить
+# оновлення на наступному заході, а не через рік.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(mp4|webm)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
 </IfModule>

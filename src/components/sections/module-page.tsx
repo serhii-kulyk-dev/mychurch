@@ -15,7 +15,7 @@ import {
   FEATURE_ICONS, MODULE_ICONS, moduleAccent, AUDIENCE_ROLE_ICONS, AUDIENCE_ROLE_ACCENTS,
 } from "@/components/shared/module-icons";
 import { getModule, hasModulePage } from "@/content/modules";
-import { getModuleVideo, getModuleVideoPoster } from "@/content/modules/videos";
+import { getModuleClip, getModuleVideoPoster } from "@/content/modules/videos";
 import type { ModuleCopy, Tone } from "@/content/modules/types";
 import { useDemoModal } from "@/context/demo-modal-context";
 import { useWorkspace } from "@/context/workspace-context";
@@ -152,7 +152,7 @@ function Hero({ ctx, groupId, groupTitle, soon }: { ctx: Ctx; groupId: string; g
 }
 
 /* ── Video ──────────────────────────────────────────────────────── */
-function Video({ ctx, videoId }: { ctx: Ctx; videoId: string }) {
+function Video({ ctx, clip }: { ctx: Ctx; clip: string }) {
   const { id, name, accent, t } = ctx;
   const title = t.modulePage.videoTitle.replace("{name}", name);
   return (
@@ -165,7 +165,7 @@ function Video({ ctx, videoId }: { ctx: Ctx; videoId: string }) {
         />
         <FadeIn variant="scale" className="w-full">
           <ClipPlayer
-            videoId={videoId}
+            src={clip}
             poster={getModuleVideoPoster(id)}
             title={title}
             accent={accent}
@@ -597,7 +597,7 @@ export default function ModulePage({ id }: { id: string }) {
   const accent = moduleAccent(id, groupId);
   const copy = detail.copy[lang];
   const ctx: Ctx = { id, name, accent, copy, t };
-  const videoId = getModuleVideo(id);
+  const clip = getModuleClip(id);
   /* Набір команди на подію показуємо там, де про нього й питають — у плануванні служіння. */
   const needs = id === "service-planning";
   /* Демо, які раніше стояли на головній: там вони ставали черговим макетом
@@ -608,7 +608,7 @@ export default function ModulePage({ id }: { id: string }) {
   /* Only the sections this module actually has. */
   const rail = [
     { id: "inside", label: t.modulePage.insideEyebrow },
-    ...(videoId ? [{ id: "video", label: t.modulePage.videoEyebrow }] : []),
+    ...(clip ? [{ id: "video", label: t.modulePage.videoEyebrow }] : []),
     { id: "how", label: t.modulePage.howEyebrow },
     ...(needs ? [{ id: "needs", label: t.servicePlanning.needs.eyebrow }] : []),
     ...(copy.pipeline ? [{ id: "flow", label: t.modulePage.pipelineEyebrow }] : []),
@@ -622,7 +622,7 @@ export default function ModulePage({ id }: { id: string }) {
       <Hero ctx={ctx} groupId={groupId} groupTitle={groupTitle} soon={found?.item.soon} />
       <Rail items={rail} accent={accent} />
       <Features ctx={ctx} />
-      {videoId && <Video ctx={ctx} videoId={videoId} />}
+      {clip && <Video ctx={ctx} clip={clip} />}
       <Steps ctx={ctx} />
       {needs && <ServicePlanning onModulePage />}
       {ministriesDemo && <Ministries onModulePage />}

@@ -24,6 +24,8 @@ export const LEAD_ENDPOINT = process.env.NEXT_PUBLIC_LEAD_ENDPOINT ?? "";
 
 export interface LeadInput {
   name: string;
+  /** Назва церкви, якщо людина її вказала: з неї починається картка в CRM. */
+  church?: string;
   phone: string;
   source: "demo" | "brief";
   about?: string;

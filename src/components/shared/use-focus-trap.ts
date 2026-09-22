@@ -42,7 +42,11 @@ export function useFocusTrap(
     const raf = requestAnimationFrame(() => {
       target.focus({ preventScroll: true });
       if (!root.contains(document.activeElement)) {
-        retry = setTimeout(() => target.focus({ preventScroll: true }), 220);
+        /* Тільки якщо фокус так і не зайшов усередину: інакше повтор через
+           чверть секунди забирав його з поля, у яке людина вже клацнула. */
+        retry = setTimeout(() => {
+          if (!root.contains(document.activeElement)) target.focus({ preventScroll: true });
+        }, 220);
       }
     });
 

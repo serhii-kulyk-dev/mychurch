@@ -31,6 +31,7 @@
        'crm_key'        => '',  // X-API-KEY з налаштувань CRM
        'crm_business'   => '',  // businessId
        'crm_funnel'     => '',  // funnelId — воронка, куди падають ліди
+       'crm_source'     => '',  // id джерела ліда (CRM → Джерела), напр. «Сайт»
        'crm_url'        => '',  // порожньо = https://api.my-community.pp.ua/api/api-lead/create
 
        // Пошта: з ключем Resend лист іде через їхній API, без нього — mail().
@@ -91,6 +92,7 @@ function config(): array
         'crm_key' => 'CRM_API_KEY',
         'crm_business' => 'CRM_BUSINESS_ID',
         'crm_funnel' => 'CRM_FUNNEL_ID',
+        'crm_source' => 'CRM_SOURCE_ID',
         'crm_url' => 'CRM_LEAD_URL',
         'resend_key' => 'RESEND_API_KEY',
     ];
@@ -436,9 +438,29 @@ function send_telegram(string $html): bool
 
 const CRM_BLOCK_INSTRUCTION = 'a095a1f4-a4ba-4acd-b16d-280ccdecda2e';   // lead_info
 const CRM_SECTION_INSTRUCTION = '1ca9a8aa-a91b-44c1-9c9c-6a76c0b13463'; // basic_info
+/* Поле «Коментар» у CRM більше не заповнюємо (усе розкладено по полях), але id
+   лишаємо: воно знадобиться, якщо колись доведеться писати туди знову. */
 const CRM_FIELD_COMMENT = '6c2375ed-b132-47da-9e31-6de620a17f18';
 const CRM_FIELD_PHONE = '52d3e7c3-8aab-4fed-814d-5b976d9766ce';
 const CRM_FIELD_SOURCE = '42defd61-1472-4b5d-86e6-b9158f302ef9';
+
+/* Другий блок картки — «Більше». Раніше все, крім імені й телефону, їхало одним
+   текстовим коментарем: у CRM це сіра простиня, по якій не працюють ні фільтри,
+   ні автоматизації, ні звіти. Тепер ті самі значення додатково лягають окремими
+   полями. Ключ — ПІДПИС рядка з $rows: підписи задаються тут же, у цьому файлі,
+   тож мапа не роз'їдеться непомітно. «Мова» свідомо не мапиться: окремим полем
+   картки вона не потрібна, у коментарі й листі рядок лишається. */
+const CRM_BLOCK_MORE = 'fab1e0f3-3cf3-4a0f-96f1-3907dfe1df06';    // more_info
+const CRM_SECTION_MORE = '88273938-aec0-4e9e-96ce-4bfbf16d287a';  // site_request
+const CRM_MORE_FIELDS = [
+    'Церква'           => ['church_name',   'text',     '8ce30c00-46d5-47e0-a88d-f4c8300a7f20'],
+    'Розмір'           => ['church_size',   'text',     'c6a56210-3f1a-4816-af03-b705e904358b'],
+    'Інструменти'      => ['current_tools', 'text',     'd8e87bf6-ff58-4158-bad7-ba7daf7448a3'],
+    'Хочуть покращити' => ['improve_goals', 'textarea', 'ec5c9f17-5dda-431e-acf3-617f1d94883a'],
+    'Побажання'        => ['wishes',        'textarea', 'c9d0cba1-4101-4b44-9359-47c3bcfca1e2'],
+    'Сторінка'         => ['landing_page',  'text',     'f37ac46e-fc84-48be-ab37-413f6b5bc51b'],
+    'Кампанія'         => ['utm_campaign',  'text',     '7a063372-2b57-4ff5-b27b-69037484c744'],
+];
 
 /** Випадковий id для значення поля — CRM чекає його від того, хто створює. */
 function crm_id(): string
@@ -487,7 +509,7 @@ function crm_phone(string $phone): string
     return strpos($phone, '+') === 0 ? '+' . $digits : $digits;
 }
 
-function send_crm(string $title, string $name, string $church, string $phone, array $lines): bool
+function send_crm(string $title, string $name, string $church, string $phone, array $rows): bool
 {
     $key = setting('crm_key');
     $business = setting('crm_business');
@@ -500,30 +522,34 @@ function send_crm(string $title, string $name, string $church, string $phone, ar
         $url = 'https://api.my-community.pp.ua/api/api-lead/create';
     }
 
-    /* У коментар іде те саме, що бачить Telegram, — крім імені й телефону:
-       вони вже окремими полями картки. */
-    $comment = implode("\n", array_merge([$title], array_slice($lines, 2)));
+    /* Коментар у CRM більше не збираємо. Склеєний текст — це рядок, по якому не
+       працюють ні фільтри, ні автоматизації, ні звіти; усе, що з нього читали,
+       тепер лежить окремими полями блоку «Більше». Telegram і лист отримують
+       свій текст незалежно (з $lines), тож там нічого не змінюється. */
+    $who = $name !== '' ? $name : ($church !== '' ? $church : $phone);
     $phone = crm_phone($phone);
 
-    $fields = [crm_field('comment', 'textarea', CRM_FIELD_COMMENT, $comment, 'Коментар')];
+    $fields = [];
     if ($phone !== '') {
         $fields[] = crm_field('phone', 'phone', CRM_FIELD_PHONE, $phone, 'Номер телефону');
     }
-    $fields[] = crm_field('lead_source', 'text', CRM_FIELD_SOURCE, 'mychurch.com.ua', 'Джерело Ліда');
+    /* «Джерело Ліда» зберігає id джерела, а не його назву, — і проставляє його
+       сама CRM, коли в запиті є sourceId (api-lead.service.ts). Тому текст сюди
+       не пишемо: інакше в картці був би рядок, який ніде не шукається
+       фільтрами й не бачать автоматизації «за джерелом ліда». */
 
     /* Назва картки в CRM: церква попереду — у списку воронки менеджер бачить,
-       від кого заявка, не відкриваючи її. Без назви церкви лишається ім'я. */
-    $cardTitle = $church !== ''
+       від кого заявка, не відкриваючи її. Без назви церкви лишається ім'я,
+       а коли людина не назвалась — сам номер. */
+    $cardTitle = ($church !== '' && $name !== '')
         ? $title . ' — ' . $church . ' · ' . $name
-        : $title . ' — ' . $name;
+        : $title . ' — ' . $who;
 
-    return post_json($url, [
-        'title' => $cardTitle,
-        'businessId' => $business,
-        'funnelId' => $funnel,
-        'sourceType' => 'website',
-        'clientPhone' => $phone,
-        'blocks' => [[
+    /* Без коментаря в «ПРО ЛІД» лишається тільки телефон — а коли людина його не
+       лишила, блок порожній, і слати його нема сенсу. */
+    $blocks = [];
+    if ($fields) {
+        $blocks[] = [
             'blockId' => crm_id(),
             'blockInstructionId' => CRM_BLOCK_INSTRUCTION,
             'blockSlug' => 'lead_info',
@@ -534,8 +560,57 @@ function send_crm(string $title, string $name, string $church, string $phone, ar
                 'label' => 'ПРО ЛІД',
                 'fields' => $fields,
             ]],
-        ]],
-    ], ['X-API-KEY: ' . $key]);
+        ];
+    }
+
+    /* Блок «Більше» додаємо ЛИШЕ коли є що покласти: порожній блок у картці —
+       це сім німих рядків на кожну заявку. Підписи, яких немає в мапі (ім'я,
+       телефон, мова, час), сюди не потрапляють — вони або вже окремі поля, або
+       дублювали б createdAt, або не потрібні в картці. */
+    $more = [];
+    foreach ($rows as $row) {
+        $label = isset($row['label']) ? $row['label'] : '';
+        $value = isset($row['value']) ? trim((string) $row['value']) : '';
+        if ($value === '' || !isset(CRM_MORE_FIELDS[$label])) {
+            continue;
+        }
+        list($slug, $type, $instruction) = CRM_MORE_FIELDS[$label];
+        $more[] = crm_field($slug, $type, $instruction, $value, $label);
+    }
+    if ($more) {
+        $blocks[] = [
+            'blockId' => crm_id(),
+            'blockInstructionId' => CRM_BLOCK_MORE,
+            'blockSlug' => 'more_info',
+            'sections' => [[
+                'sectionId' => crm_id(),
+                'sectionInstructionId' => CRM_SECTION_MORE,
+                'sectionSlug' => 'site_request',
+                'label' => 'Більше',
+                'fields' => $more,
+            ]],
+        ];
+    }
+
+    $payload = [
+        'title' => $cardTitle,
+        'businessId' => $business,
+        'funnelId' => $funnel,
+        'sourceType' => 'website',
+        'clientPhone' => $phone,
+        'blocks' => $blocks,
+    ];
+
+    /* Джерело задане — CRM сама привʼяже до нього лід (api-lead.service.ts
+       перезапише поле «Джерело Ліда» його ідентифікатором). Ключ додаємо лише
+       непорожнім: порожній рядок CRM відкине як неіснуюче джерело, і заявка
+       загубиться цілком. */
+    $source = setting('crm_source');
+    if ($source !== '') {
+        $payload['sourceId'] = $source;
+    }
+
+    return post_json($url, $payload, ['X-API-KEY: ' . $key]);
 }
 
 /* Другий канал, якщо хостинг уміє слати пошту і в налаштуваннях є адреса.
@@ -543,7 +618,7 @@ function send_crm(string $title, string $name, string $church, string $phone, ar
 /* Пошта через Resend — хостингова mail() на шаредах часто мовчки не доходить
    (лист або в спамі, або нікуди). Ключ лежить там само, де решта секретів;
    без нього все працює як раніше, через mail(). */
-function send_resend(string $subject, string $text): bool
+function send_resend(string $subject, string $text, string $html): bool
 {
     $key = setting('resend_key');
     $to = setting('email_to');
@@ -559,12 +634,51 @@ function send_resend(string $subject, string $text): bool
         'to' => array_map('trim', explode(',', $to)),
         'subject' => $subject,
         'text' => $text,
+        'html' => $html,
     ], ['Authorization: Bearer ' . $key]);
 }
 
-function send_email(string $subject, string $text): bool
+/* Тема українською — це не ASCII, тож у заголовок вона йде закодованою.
+   mb_encode_mimeheader ще й розбиває задовгий рядок на дозволені шматки;
+   без mbstring лишається запасний варіант одним куснем, як було. */
+function encode_subject(string $subject): string
 {
-    if (send_resend($subject, $text)) {
+    if (function_exists('mb_encode_mimeheader')) {
+        $prev = mb_internal_encoding();
+        mb_internal_encoding('UTF-8');
+        $encoded = mb_encode_mimeheader($subject, 'UTF-8', 'B', "\r\n");
+        mb_internal_encoding($prev);
+        return $encoded;
+    }
+    return '=?UTF-8?B?' . base64_encode($subject) . '?=';
+}
+
+/* «Сайт «Моя Церква» <site@...>» у заголовку From — теж не ASCII, і без
+   кодування частина поштовиків показує замість назви кракозябри. Кодуємо
+   лише підпис: адреса в кутових дужках має лишитися як є. */
+function encode_from(string $from): string
+{
+    if (preg_match('/^[\x20-\x7e]*$/', $from)) {
+        return $from;
+    }
+    if (preg_match('/^(.*?)\s*<([^>]+)>$/u', $from, $parts)) {
+        return encode_subject(trim($parts[1])) . ' <' . $parts[2] . '>';
+    }
+    return $from;
+}
+
+/* Частина multipart-листа. Тіло йде base64: так UTF-8 і переноси рядків
+   переживуть будь-який sendmail, який любить «виправляти» CRLF. */
+function mime_part(string $type, string $content): string
+{
+    return 'Content-Type: ' . $type . "; charset=utf-8\r\n"
+        . "Content-Transfer-Encoding: base64\r\n\r\n"
+        . chunk_split(base64_encode($content), 76, "\r\n");
+}
+
+function send_email(string $subject, string $text, string $html): bool
+{
+    if (send_resend($subject, $text, $html)) {
         return true;
     }
     $to = setting('email_to');
@@ -576,11 +690,120 @@ function send_email(string $subject, string $text): bool
         $host = isset($_SERVER['HTTP_HOST']) ? preg_replace('/[^a-z0-9.\-]/i', '', (string) $_SERVER['HTTP_HOST']) : 'localhost';
         $from = 'site@' . $host;
     }
-    $headers = "From: " . $from . "\r\n"
-        . "Content-Type: text/plain; charset=utf-8\r\n"
-        . "MIME-Version: 1.0\r\n";
-    $encoded = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-    return @mail($to, $encoded, $text, $headers);
+    /* multipart/alternative: поштовик показує верстку, а текстова частина
+       лишається для клієнтів без HTML і для пошуку в скриньці. */
+    $boundary = 'lead-' . md5(uniqid('', true));
+    $headers = 'From: ' . encode_from($from) . "\r\n"
+        . "MIME-Version: 1.0\r\n"
+        . 'Content-Type: multipart/alternative; boundary="' . $boundary . "\"\r\n";
+    $message = '--' . $boundary . "\r\n" . mime_part('text/plain', $text)
+        . "\r\n--" . $boundary . "\r\n" . mime_part('text/html', $html)
+        . "\r\n--" . $boundary . "--\r\n";
+    return @mail($to, encode_subject($subject), $message, $headers);
+}
+
+/* ── Верстка листа ─────────────────────────────────────────────────────── */
+
+/* В атрибут (href) лапки теж мають бути екрановані — escape_html лишає їх
+   як є, бо для Telegram цього досить. */
+function escape_attr(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+/* Поле заявки: підпис і значення окремо — у листі підпис іде колонкою
+   ліворуч. `kind` вирішує, як значення показати (телефон посиланням,
+   побажання — в кілька рядків), `display` дає листу власний варіант
+   значення там, де машинний рядок людині незручний (час). */
+function field(string $label, string $value, string $kind = 'text', string $display = ''): array
+{
+    return [
+        'label' => $label,
+        'value' => $value,
+        'kind' => $kind,
+        'display' => $display === '' ? $value : $display,
+    ];
+}
+
+/* Час заявки по-київськи: «21.09.2026, 22:00». У CRM і Telegram лишається
+   машинний ISO, а в пошті людина читає звичну дату. */
+function local_time(): string
+{
+    if (class_exists('DateTimeImmutable')) {
+        foreach (['Europe/Kyiv', 'Europe/Kiev'] as $zone) {
+            try {
+                $now = new DateTimeImmutable('now', new DateTimeZone($zone));
+                return $now->format('d.m.Y, H:i') . ' (Київ)';
+            } catch (Exception $e) {
+                /* Стара база поясів не знає нової назви — пробуємо другу. */
+            }
+        }
+    }
+    return gmdate('d.m.Y, H:i') . ' UTC';
+}
+
+/* Таблиці й інлайнові стилі — єдине, що однаково показують Gmail, Outlook
+   і пошта на телефоні. Головне вгорі: імʼя великим і телефон посиланням,
+   щоб подзвонити можна було просто з листа, не переписуючи номер. */
+function email_html(string $title, array $rows): string
+{
+    $head = '';
+    $table = '';
+    foreach ($rows as $row) {
+        $value = $row['display'];
+        if ($row['kind'] === 'name') {
+            $head .= '<div style="font-size:22px;font-weight:700;line-height:1.3;color:#10182f;">'
+                . escape_html($value) . '</div>';
+            continue;
+        }
+        if ($row['kind'] === 'phone') {
+            $digits = preg_replace('/[^0-9+]/', '', $value);
+            $head .= '<div style="margin-top:6px;font-size:18px;line-height:1.4;">'
+                . '<a href="tel:' . escape_attr((string) $digits) . '" style="color:#1b6ef3;font-weight:600;text-decoration:none;">'
+                . escape_html($value) . '</a></div>';
+            continue;
+        }
+        $shown = escape_html($value);
+        if ($row['kind'] === 'url' && preg_match('#^https?://#i', $value)) {
+            $shown = '<a href="' . escape_attr($value) . '" style="color:#1b6ef3;">' . $shown . '</a>';
+        }
+        if ($row['kind'] === 'long') {
+            $shown = nl2br($shown, false);
+        }
+        $table .= '<tr>'
+            . '<td class="lbl" style="padding:7px 16px 7px 0;vertical-align:top;width:148px;font-size:13px;line-height:1.5;color:#6b7684;">'
+            . escape_html($row['label']) . '</td>'
+            . '<td class="val" style="padding:7px 0;vertical-align:top;font-size:15px;line-height:1.5;color:#1f2933;word-break:break-word;">'
+            . $shown . '</td>'
+            . '</tr>';
+    }
+
+    /* На телефоні колонка з підписами зʼїдає половину ширини, тож там
+       підпис стає рядком над значенням. Клієнти, які викидають <style>
+       (старі Outlook), лишаються на двох колонках — теж читабельно. */
+    $style = '<style>@media only screen and (max-width:520px){'
+        . '.lbl{display:block!important;width:auto!important;padding:12px 0 0 0!important;}'
+        . '.val{display:block!important;width:auto!important;padding:1px 0 0 0!important;}'
+        . '}</style>';
+
+    return '<!doctype html><html lang="uk"><head><meta charset="utf-8">'
+        . '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        . '<title>' . escape_html($title) . '</title>' . $style . '</head>'
+        . '<body style="margin:0;padding:24px 12px;background:#f1f3f6;'
+        . 'font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">'
+        . '<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0"'
+        . ' style="width:100%;max-width:560px;background:#ffffff;border:1px solid #e1e6ed;border-radius:12px;">'
+        . '<tr><td style="padding:15px 24px;background:#16233f;border-radius:11px 11px 0 0;'
+        . 'color:#ffffff;font-size:15px;font-weight:600;">' . escape_html($title) . '</td></tr>'
+        . '<tr><td style="padding:22px 24px 4px 24px;">' . $head . '</td></tr>'
+        . '<tr><td style="padding:12px 24px 22px 24px;">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' . $table . '</table>'
+        . '</td></tr>'
+        . '<tr><td style="padding:13px 24px;background:#f7f9fb;border-top:1px solid #edf0f4;'
+        . 'border-radius:0 0 11px 11px;font-size:12px;line-height:1.5;color:#7a8596;">'
+        . 'Автоматичний лист із форми заявки на сайті.</td></tr>'
+        . '</table></td></tr></table></body></html>';
 }
 
 /* ── Розбір заявки ─────────────────────────────────────────────────────── */
@@ -608,8 +831,9 @@ if (clean(isset($body['company']) ? $body['company'] : '', 100) !== '') {
 $name = line_value(isset($body['name']) ? $body['name'] : '', 80);
 $phone = line_value(isset($body['phone']) ? $body['phone'] : '', 32);
 $digits = preg_replace('/\D/u', '', $phone);
-$nameLength = function_exists('mb_strlen') ? mb_strlen($name, 'UTF-8') : strlen($name);
-if ($nameLength < 2 || strlen((string) $digits) < 9) {
+/* Обов'язковий лише номер — рівно те, що вимагає форма. Ім'я, церква й
+   розповідь про себе приходять як є: менеджер спитає решту дзвінком. */
+if (strlen((string) $digits) < 9) {
     respond(422, ['ok' => false, 'error' => 'invalid']);
 }
 
@@ -650,50 +874,67 @@ if (isset($body['tools']) && is_array($body['tools'])) {
 
 $church = line_value(isset($body['church']) ? $body['church'] : '', 120);
 
-$lines = ["Ім'я: " . $name, 'Телефон: ' . $phone];
+/* Ім'я необов'язкове, тож картку, лист і тему підписує те, що є: саме
+   ім'я, інакше назва церкви, а без неї — номер. */
+$who = $name !== '' ? $name : ($church !== '' ? $church : $phone);
+$rows = [field("Ім'я", $name, 'name', $who), field('Телефон', $phone, 'phone')];
 if ($church !== '') {
-    $lines[] = 'Церква: ' . $church;
+    $rows[] = field('Церква', $church);
 }
 if ($size !== '') {
-    $lines[] = 'Розмір: ' . $size;
+    $rows[] = field('Розмір', $size);
 }
 if ($tools) {
-    $lines[] = 'Інструменти: ' . implode(', ', $tools);
+    $rows[] = field('Інструменти', implode(', ', $tools));
 }
 if ($goals) {
-    $lines[] = 'Хочуть покращити: ' . implode(', ', $goals);
+    $rows[] = field('Хочуть покращити', implode(', ', $goals));
 }
 if ($about !== '') {
-    $lines[] = 'Побажання: ' . $about;
+    $rows[] = field('Побажання', $about, 'long');
 }
 if ($page !== '') {
-    $lines[] = 'Сторінка: ' . $page;
+    $rows[] = field('Сторінка', $page, 'url');
 }
 if ($utm !== '') {
     /* Мітки кампанії: по них видно, яка реклама привела заявку. */
-    $lines[] = 'Кампанія: ' . $utm;
+    $rows[] = field('Кампанія', $utm);
 }
-$lines[] = 'Мова: ' . ((isset($body['lang']) && $body['lang'] === 'en') ? 'en' : 'ua');
-$lines[] = 'Час: ' . gmdate('c');
+$rows[] = field('Мова', (isset($body['lang']) && $body['lang'] === 'en') ? 'en' : 'ua');
+/* CRM і Telegram далі отримують машинний час, лист — київський. */
+$rows[] = field('Час', gmdate('c'), 'text', local_time());
 
-/* Один набір рядків — два представлення: чистий текст у пошту,
-   екранований і з жирним заголовком у Telegram. */
+/* Один набір полів — три представлення: рядки «підпис: значення» для CRM,
+   Telegram і текстової частини листа, і окремо верстка для пошти. */
+$lines = [];
+foreach ($rows as $row) {
+    if ($row['value'] === '') {
+        continue;
+    }
+    $lines[] = $row['label'] . ': ' . $row['value'];
+}
 $text = implode("\n", array_merge([$title], $lines));
 $html = implode("\n", array_merge(
     ['<b>' . escape_html($title) . '</b>'],
     array_map('escape_html', $lines)
 ));
+$letter = email_html($title, $rows);
 
 /* Канали незалежні: CRM — головний (там картка й воронка), Telegram —
    щоб менеджер побачив заявку одразу. Помилка одного не скасовує інший. */
 $delivered = [];
-if (send_crm($title, $name, $church, $phone, $lines)) {
+if (send_crm($title, $name, $church, $phone, $rows)) {
     $delivered[] = 'crm';
 }
 if (send_telegram($html)) {
     $delivered[] = 'telegram';
 }
-if (send_email($source === 'brief' ? 'Бриф з сайту — ' . $name : 'Заявка на демо — ' . $name, $text)) {
+/* Тема з телефоном: у списку листів видно, кому дзвонити, не відкриваючи. */
+$subject = ($source === 'brief' ? 'Бриф з сайту' : 'Заявка на демо') . ' — ' . $who;
+if ($phone !== '' && $who !== $phone) {
+    $subject .= ', ' . $phone;
+}
+if (send_email($subject, $text, $letter)) {
     $delivered[] = 'email';
 }
 

@@ -125,13 +125,6 @@ export default function AboutStory() {
             </FadeIn>
           ))}
         </div>
-
-        {/* Хто за цим стоїть — рядок з лінією, а не третя картка з іконкою. */}
-        <FadeIn delay={2} className="border-l-2 border-brand pl-4 md:pl-5">
-          <p className="text-[15.5px] md:text-[16.5px] text-ink-2 leading-[1.55]">
-            <strong className="font-semibold text-ink">{t.insider.title}.</strong> {t.insider.text}
-          </p>
-        </FadeIn>
       </div>
     </section>
   );

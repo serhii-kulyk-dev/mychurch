@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/lib/lang";
 import { Field } from "@/components/shared/form-field";
 import { useFocusTrap } from "@/components/shared/use-focus-trap";
-import { validateName, validatePhone } from "@/lib/validate";
+import { validatePhone } from "@/lib/validate";
 import { sendLead, type LeadState } from "@/lib/lead";
 import { track } from "@/lib/analytics/client";
 import LeadFallback from "@/components/shared/lead-fallback";
@@ -17,16 +17,19 @@ import LeadFallback from "@/components/shared/lead-fallback";
 export default function DemoModal() {
   const dict = useT();
   const t = dict.modal;
-  const { isOpen, goals, context, close } = useDemoModal();
+  const { isOpen, goals, close } = useDemoModal();
   /* Що відвідувач позначив у фінальному блоці — показуємо, щоб він бачив,
      з чим саме надсилає заявку. */
   const goalLabels = dict.builder.goals as Record<string, { label: string }>;
 
   const [name, setName] = useState("");
+  /* Назва церкви — необов'язкова: людина, яка просто дивиться, не має
+     впертися в ще одне обов'язкове поле. Якщо заповнила — саме вона стоїть
+     у назві картки в CRM, і менеджер бачить, хто написав, ще зі списку. */
+  const [church, setChurch] = useState("");
   const [phone, setPhone] = useState("");
   /* Пастка для ботів: поле приховане від людей, але не від скриптів. */
   const [company, setCompany] = useState("");
-  const [nameError, setNameError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [state, setState] = useState<LeadState>("idle");
 
@@ -70,9 +73,9 @@ export default function DemoModal() {
       const t = setTimeout(() => {
         sendingRef.current = false;
         setName("");
+        setChurch("");
         setPhone("");
         setCompany("");
-        setNameError(null);
         setPhoneError(null);
         setState("idle");
       }, 200);
@@ -111,16 +114,14 @@ export default function DemoModal() {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (sendingRef.current || state === "sending") return;
-      const ne = validateName(name, t.errors);
+      /* Питаємо три речі, вимагаємо одну: без номера нема куди
+         передзвонити, а ім'я й назву церкви менеджер спитає сам. */
       const pe = validatePhone(phone, t.errors);
-      setNameError(ne);
       setPhoneError(pe);
-      /* Фокус — на перше поле з помилкою, інакше клавіатурний користувач
-         не дізнається, що саме не так. */
-      if (ne || pe) {
-        track("form_error", { source: "demo", field: ne ? "ім'я" : "телефон", error: (ne ?? pe) ?? "" });
+      if (pe) {
+        track("form_error", { source: "demo", field: "телефон", error: pe });
         const form = (e.currentTarget as HTMLFormElement);
-        form.querySelector<HTMLInputElement>(ne ? 'input[type="text"]' : 'input[type="tel"]')?.focus();
+        form.querySelector<HTMLInputElement>('input[type="tel"]')?.focus();
         return;
       }
       sendingRef.current = true;
@@ -129,13 +130,11 @@ export default function DemoModal() {
       try {
         const ok = await sendLead({
           name,
+          church,
           phone,
           company,
           goals,
-          /* Форма знайомства віддає модалці те, що людина вже розказала. */
-          about: context.about,
-          size: context.size,
-          source: context.about || context.size ? "brief" : "demo",
+          source: "demo",
         });
         track(ok ? "lead" : "lead_failed", { source: "demo", goals: goals.join(",") });
         setState(ok ? "sent" : "failed");
@@ -144,7 +143,7 @@ export default function DemoModal() {
         sendingRef.current = false;
       }
     },
-    [name, phone, company, goals, context, state, t.errors]
+    [name, church, phone, company, goals, state, t.errors]
   );
 
   const handleBackdropClick = useCallback(
@@ -261,11 +260,20 @@ export default function DemoModal() {
                   kind="name"
                   placeholder={t.namePlaceholder}
                   value={name}
-                  error={nameError}
+                  error={null}
                   onChange={(v) => {
                     setName(v);
                     markStart("ім'я");
-                    if (nameError) setNameError(validateName(v, t.errors));
+                  }}
+                />
+                <Field
+                  kind="church"
+                  placeholder={t.churchPlaceholder}
+                  value={church}
+                  error={null}
+                  onChange={(v) => {
+                    setChurch(v);
+                    markStart("церква");
                   }}
                 />
                 <Field

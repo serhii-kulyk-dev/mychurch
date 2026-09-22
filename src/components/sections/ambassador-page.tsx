@@ -8,7 +8,7 @@ import AmbassadorCard from "@/components/shared/ambassador-card";
 import FadeIn from "@/components/shared/fade-in";
 import { MODULE_ACCENTS, MODULE_ICONS } from "@/components/shared/module-icons";
 import { getAmbassador } from "@/content/ambassadors";
-import { getModuleVideo, getModuleVideoPoster } from "@/content/modules/videos";
+import { getModuleClip, getModuleVideoPoster } from "@/content/modules/videos";
 import ClipPlayer from "@/components/shared/clip-player";
 import type { AmbassadorCopy, AmbassadorDetail } from "@/content/ambassadors";
 import { useLang, useT } from "@/lib/lang";
@@ -186,14 +186,14 @@ function Clip({
 
   const Icon = MODULE_ICONS[id] ?? LayoutGrid;
   const tone = MODULE_ACCENTS[id] ?? accent;
-  const file = getModuleVideo(id);
+  const file = getModuleClip(id);
   const poster = getModuleVideoPoster(id);
   if (!file || !poster) return null;
 
   return (
     <figure className="grid grid-cols-1 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 md:gap-12 items-center py-9 md:py-14 border-b border-hairline">
       <ClipPlayer
-        videoId={file}
+        src={file}
         poster={poster}
         title={name}
         label={`${c.clipPlay}: ${name}`}
@@ -266,7 +266,7 @@ function Clips({ ctx }: { ctx: Ctx }) {
     return map;
   }, [t]);
 
-  const clips = copy.clips.filter((c) => getModuleVideo(c.id));
+  const clips = copy.clips.filter((c) => getModuleClip(c.id));
   if (!clips.length) return null;
 
   return (

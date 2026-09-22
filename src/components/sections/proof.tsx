@@ -26,7 +26,7 @@ export default function Proof() {
   const accent = church.accent;
   /* Поки ролик не перезалили на YouTube, блок просто без відео — як і
      сторінки модулів. Чужий плеєр у рамці сюди більше не повертаємо. */
-  const promo = church.promo?.videoId ? church.promo : undefined;
+  const promo = church.promo?.src ? church.promo : undefined;
   /* "Разом — 1,5 року будуємо процеси" is the last of the hero facts. */
   const since = copy.facts[copy.facts.length - 1];
 
@@ -36,7 +36,7 @@ export default function Proof() {
         <SectionHeading
           title={
             <span className="block uppercase text-[34px] sm:text-[48px] md:text-[64px] leading-[1.0] tracking-[-1px] md:tracking-[-2.2px]">
-              {t.title}
+              {t.title} <span className="text-brand">{t.titleAccent}</span>
             </span>
           }
         />
@@ -52,7 +52,7 @@ export default function Proof() {
           <article className="rounded-[24px] border border-hairline bg-surface overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
             {promo && (
               <ClipPlayer
-                videoId={promo.videoId}
+                src={promo.src}
                 poster={promo.poster}
                 title={church.name}
                 label={`${t.videoPlay}: ${church.name}`}

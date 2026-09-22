@@ -324,16 +324,21 @@ export default function Navbar() {
 
         {/* Desktop: preferences + CTA */}
         <div className="hidden min-[1260px]:flex flex-1 items-center gap-2 min-[1320px]:gap-3 justify-end">
-          {/* За комп'ютером набирати номер нічим — там швидша дія написати. */}
+          {/* За комп'ютером набирати номер нічим — там швидша дія написати.
+             Кружечок той самий, що в перемикача теми і в контактів футера:
+             36 px, тонкий обідок, bg-surface-2. Був на 4 px більший і з
+             сильнішим обідком — у ряду з перемикачами одразу випирав.
+             Літачок Send важчий за місяць на тому ж розмірі й тягне масу
+             вгору-праворуч, тож 15 px і півпікселя вниз-ліворуч. */}
           <a
             href={SITE_TELEGRAM}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t.common.telegram}
             title={t.common.telegram}
-            className="flex w-10 h-10 items-center justify-center rounded-full border border-hairline-strong bg-surface text-ink-2 hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
+            className="flex w-9 h-9 items-center justify-center rounded-full border border-hairline bg-surface-2 text-ink-2 hover:text-ink hover:bg-surface-3 transition-colors duration-200 shrink-0"
           >
-            <Send className="w-[17px] h-[17px]" strokeWidth={2} />
+            <Send className="w-[15px] h-[15px] -translate-x-[0.5px] translate-y-[0.5px]" strokeWidth={2} />
           </a>
           <PreferenceToggles />
           <button
@@ -354,16 +359,17 @@ export default function Navbar() {
              Telegram. Дзвінок тут стояв до 2026-09-21 — церкви пишуть, а не
              набирають; номер лишився в розмітці сайту й у запасному екрані
              форми (lead-fallback), у футері його немає. Вужче за 360 px ховаємо:
-             там кожні 44 px виштовхують бургер за край екрана. */}
+             там кожні 44 px виштовхують бургер за край екрана. Розмір — як у
+             компактних перемикачів поруч (32 px), не як у бургера. */}
           <a
             href={SITE_TELEGRAM}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t.common.telegram}
             title={t.common.telegram}
-            className="hidden min-[360px]:flex w-9 h-9 items-center justify-center rounded-full border border-hairline-strong bg-surface text-ink-2 hover:text-ink hover:bg-surface-2 transition-colors shrink-0"
+            className="hidden min-[360px]:flex w-8 h-8 items-center justify-center rounded-full border border-hairline bg-surface-2 text-ink-2 hover:text-ink hover:bg-surface-3 transition-colors duration-200 shrink-0"
           >
-            <Send className="w-[16px] h-[16px]" strokeWidth={2} />
+            <Send className="w-[14px] h-[14px] -translate-x-[0.5px] translate-y-[0.5px]" strokeWidth={2} />
           </a>
           <PreferenceToggles size="sm" />
           {/* Між телефоном і повним меню (≈640–1260) головна дія лишається на

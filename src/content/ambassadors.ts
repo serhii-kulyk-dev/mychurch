@@ -97,26 +97,24 @@ export interface AmbassadorDetail {
   logo?: string;
   initials: string;
   website: string;
-  /** Промо-ролик для головної: id ролика на YouTube (те, що в посиланні
-      після `v=` або `youtu.be/`) і локальний постер, щоб до натискання
-      нічого не вантажилось. Порожній id = блок просто без відео. */
-  promo?: { videoId: string; poster: string };
+  /** Промо-ролик для головної: файл у нас на хостингу (public/clips)
+      і кадр із нього, щоб до натискання нічого не вантажилось.
+      Порожньо = блок просто без відео. */
+  promo?: { src: string; poster: string };
   copy: Record<Lang, AmbassadorCopy>;
 }
 
 export const AMBASSADORS: AmbassadorDetail[] = [
   {
-    id: "nove-zhyttia",
+    id: "newlife",
     name: "Нове Життя",
     city: "Черкаси",
     accent: "#0f766e",
     logo: "/new-life-logo.png",
     initials: "НЖ",
     website: "https://newlife.ck.ua/",
-    /* TODO: сюди — id запису на YouTube. Раніше тут лежав файл Drive
-       (1Lch0m1YFJVIltcaR2DaGk5Z2VGhuy9HB) — справжній запис «Люди і
-       сім'ї» з системи церкви; його треба перезалити. */
-    promo: { videoId: "", poster: "/ambassadors/video/people.webp" },
+    /* Справжній запис «Люди і сім'ї» з системи церкви. */
+    promo: { src: "/clips/people.mp4", poster: "/ambassadors/video/people.webp" },
     copy: {
       ua: {
         seoTitle: "Церква «Нове Життя», Черкаси — амбасадор «Моєї Церкви»",
@@ -135,18 +133,18 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         backLabel: "Про нас",
 
         heroPhoto: {
-          src: "/ambassadors/nove-zhyttia/khreshchennia.webp",
+          src: "/ambassadors/newlife/khreshchennia.webp",
           alt: "Хрещення у відкритому басейні на подвір'ї церкви «Нове Життя»",
         },
         gallery: [
-          { src: "/ambassadors/nove-zhyttia/propovid.webp", alt: "Проповідь на недільному служінні" },
-          { src: "/ambassadors/nove-zhyttia/spilnota.webp", alt: "Спілкування в холі після служіння" },
-          { src: "/ambassadors/nove-zhyttia/mala-grupa.webp", alt: "Зустріч малої групи" },
-          { src: "/ambassadors/nove-zhyttia/kids-town.webp", alt: "Дитяче містечко" },
-          { src: "/ambassadors/nove-zhyttia/sluzhinnia.webp", alt: "Команда на служінні" },
-          { src: "/ambassadors/nove-zhyttia/cliff.webp", alt: "Підліткове служіння — спільне фото після зустрічі" },
-          { src: "/ambassadors/nove-zhyttia/kids-town-zal.webp", alt: "Зал дитячого містечка" },
-          { src: "/ambassadors/nove-zhyttia/mala-grupa-2.webp", alt: "Мала група за столом" },
+          { src: "/ambassadors/newlife/propovid.webp", alt: "Проповідь на недільному служінні" },
+          { src: "/ambassadors/newlife/spilnota.webp", alt: "Спілкування в холі після служіння" },
+          { src: "/ambassadors/newlife/mala-grupa.webp", alt: "Зустріч малої групи" },
+          { src: "/ambassadors/newlife/kids-town.webp", alt: "Дитяче містечко" },
+          { src: "/ambassadors/newlife/sluzhinnia.webp", alt: "Команда на служінні" },
+          { src: "/ambassadors/newlife/cliff.webp", alt: "Підліткове служіння — спільне фото після зустрічі" },
+          { src: "/ambassadors/newlife/kids-town-zal.webp", alt: "Зал дитячого містечка" },
+          { src: "/ambassadors/newlife/mala-grupa-2.webp", alt: "Мала група за столом" },
         ],
         photoCredit: "Фото — церкви «Нове Життя»",
         photoCreditCta: "newlife.ck.ua",
@@ -161,7 +159,7 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         aboutText:
           "«Нове Життя» збирається в Черкасах на два недільні служіння. При церкві працюють малі групи, дитяче містечко, спортивний клуб і два підліткові служіння.",
         aboutPhoto: {
-          src: "/ambassadors/nove-zhyttia/foye.webp",
+          src: "/ambassadors/newlife/foye.webp",
           alt: "Люди спілкуються в залі церкви після служіння",
         },
 
@@ -267,18 +265,18 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         backLabel: "About us",
 
         heroPhoto: {
-          src: "/ambassadors/nove-zhyttia/khreshchennia.webp",
+          src: "/ambassadors/newlife/khreshchennia.webp",
           alt: "A baptism in an outdoor pool at New Life church",
         },
         gallery: [
-          { src: "/ambassadors/nove-zhyttia/propovid.webp", alt: "A sermon at a Sunday service" },
-          { src: "/ambassadors/nove-zhyttia/spilnota.webp", alt: "People talking in the hall after a service" },
-          { src: "/ambassadors/nove-zhyttia/mala-grupa.webp", alt: "A small group meeting" },
-          { src: "/ambassadors/nove-zhyttia/kids-town.webp", alt: "The kids' town" },
-          { src: "/ambassadors/nove-zhyttia/sluzhinnia.webp", alt: "A team serving on Sunday" },
-          { src: "/ambassadors/nove-zhyttia/cliff.webp", alt: "The teen ministry after a meeting" },
-          { src: "/ambassadors/nove-zhyttia/kids-town-zal.webp", alt: "The kids' town hall" },
-          { src: "/ambassadors/nove-zhyttia/mala-grupa-2.webp", alt: "A small group around the table" },
+          { src: "/ambassadors/newlife/propovid.webp", alt: "A sermon at a Sunday service" },
+          { src: "/ambassadors/newlife/spilnota.webp", alt: "People talking in the hall after a service" },
+          { src: "/ambassadors/newlife/mala-grupa.webp", alt: "A small group meeting" },
+          { src: "/ambassadors/newlife/kids-town.webp", alt: "The kids' town" },
+          { src: "/ambassadors/newlife/sluzhinnia.webp", alt: "A team serving on Sunday" },
+          { src: "/ambassadors/newlife/cliff.webp", alt: "The teen ministry after a meeting" },
+          { src: "/ambassadors/newlife/kids-town-zal.webp", alt: "The kids' town hall" },
+          { src: "/ambassadors/newlife/mala-grupa-2.webp", alt: "A small group around the table" },
         ],
         photoCredit: "Photos by New Life church",
         photoCreditCta: "newlife.ck.ua",
@@ -293,7 +291,7 @@ export const AMBASSADORS: AmbassadorDetail[] = [
         aboutText:
           "New Life meets in Cherkasy for two Sunday services. The church runs small groups, a kids' town, a sports club and two teen ministries.",
         aboutPhoto: {
-          src: "/ambassadors/nove-zhyttia/foye.webp",
+          src: "/ambassadors/newlife/foye.webp",
           alt: "People talking in the church hall after a service",
         },
 

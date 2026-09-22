@@ -1,17 +1,24 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { ArrowRight, Check, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import FadeIn from "@/components/shared/fade-in";
 import { track } from "@/lib/analytics/client";
-import { useDemoModal } from "@/context/demo-modal-context";
 import { ALL_GOALS, findGoal } from "@/content/builder";
 import { useT } from "@/lib/lang";
+import { useCaret } from "@/components/shared/use-caret";
+import { sentenceCase } from "@/lib/input-format";
+import { Field } from "@/components/shared/form-field";
+import { validatePhone } from "@/lib/validate";
+import { sendLead, type LeadState } from "@/lib/lead";
+import LeadFallback from "@/components/shared/lead-fallback";
 import { cn } from "@/lib/utils";
 
-/* Знайомство: людина каже, яка в неї церква і що хоче спростити, а ім'я
-   й телефон лишає вже в модалці — одна форма контактів на весь сайт. */
+/* Знайомство одним заходом: людина каже, яка в неї церква, що хоче
+   спростити, і лишає номер — тут-таки, без модалки поверх. Обов'язковий
+   тільки номер: без нього нема куди передзвонити, решта — як напишеться. */
 
 /* ── Toggle chip ─────────────────────────────────────────────────── */
 function Chip({
@@ -105,7 +112,6 @@ export default function ChurchBrief() {
   const t = useT();
   const b = t.brief;
   const f = b.form;
-  const { openWith } = useDemoModal();
   /* Ярлик бажання зі словника: ключі збігаються з id у конструкторі. */
   const labels = t.builder.goals as Record<string, { label: string; short?: string }>;
   /* Своє бажання: людина вписала його сама — id несе сам текст. */
@@ -117,9 +123,21 @@ export default function ChurchBrief() {
   const [about, setAbout] = useState("");
   const [goals, setGoals] = useState<string[]>([]);
   const [own, setOwn] = useState("");
-  const [aboutError, setAboutError] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  /* Пастка для ботів: поле приховане від людей, але не від скриптів. */
+  const [company, setCompany] = useState("");
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [state, setState] = useState<LeadState>("idle");
+
+  /* Велика літера переписує набране, тож каретку повертаємо самі. */
+  const { ref: aboutRef, at: aboutCaretRef } = useCaret<HTMLTextAreaElement>();
   /* Для аналітики: чи людина вже почала заповнювати бриф. */
   const startedRef = useRef(false);
+  /* Засув від подвійної відправки: подвійний клік встигає двічі до
+     перемальовки, і в обох обробників `state` ще "idle". */
+  const sendingRef = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   /* Видно лише кілька бажань: обране їде вниз пінами, звільняючи місце. */
   const pool = BRIEF_GOALS.filter((g) => !goals.includes(g.id)).slice(0, POOL);
@@ -132,17 +150,6 @@ export default function ChurchBrief() {
           "."
         : "",
     [goals, t, labels]
-  );
-
-  /* Досить або описати церкву, або позначити бажання чипами. */
-  const validateAbout = useCallback(
-    (v: string, other: string) => {
-      const s = v.trim();
-      if (!s) return other.trim() ? null : f.errors.aboutRequired;
-      if (s.length < 10) return f.errors.aboutShort;
-      return null;
-    },
-    [f.errors]
   );
 
   /* Перший дотик до брифу — окремий крок у аналітиці. */
@@ -158,30 +165,59 @@ export default function ChurchBrief() {
     setGoals((prev) => (prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]));
   };
 
-  /* Кнопка не надсилає лід, а відкриває модалку: ПІБ і телефон людина
-     лишає там, разом із тим, що вже розказала тут. */
-  const handleSubmit = (ev: React.FormEvent) => {
+  /* Заявка йде звідси, без модалки поверх форми. Перевіряємо одне — чи є
+     куди дзвонити; усе інше людина розказує стільки, скільки схоче. */
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    const ae = validateAbout(about, wishes);
-    setAboutError(ae);
-    if (ae) {
-      track("form_error", { source: "brief", field: "про церкву" });
-      (ev.currentTarget as HTMLFormElement).querySelector("textarea")?.focus();
+    if (sendingRef.current || state === "sending") return;
+    const pe = validatePhone(phone, t.modal.errors);
+    setPhoneError(pe);
+    if (pe) {
+      track("form_error", { source: "brief", field: "телефон", error: pe });
+      formRef.current?.querySelector<HTMLInputElement>('input[type="tel"]')?.focus();
       return;
     }
+    sendingRef.current = true;
+    setState("sending");
     track("brief_submit", { size: size === null ? "" : f.sizes[size], goals: goals.length });
-    openWith(goals, {
-      about: [about.trim(), wishes].filter(Boolean).join("\n") || undefined,
-      size: size === null ? undefined : f.sizes[size],
-    });
+    track("form_submit", { source: "brief" });
+    try {
+      const ok = await sendLead({
+        name,
+        phone,
+        company,
+        goals,
+        about: [about.trim(), wishes].filter(Boolean).join("\n") || undefined,
+        size: size === null ? undefined : f.sizes[size],
+        source: "brief",
+      });
+      track(ok ? "lead" : "lead_failed", { source: "brief", goals: goals.join(",") });
+      setState(ok ? "sent" : "failed");
+    } finally {
+      /* Засув знімаємо і після невдачі — повторити спробу має бути можна. */
+      sendingRef.current = false;
+    }
+  };
+
+  /* «Надіслати ще одну»: форма повертається чистою. */
+  const reset = () => {
+    setState("idle");
+    setSize(null);
+    setAbout("");
+    setGoals([]);
+    setOwn("");
+    setName("");
+    setPhone("");
+    setPhoneError(null);
+    startedRef.current = false;
   };
 
   return (
     <section id="brief" className="w-full flex flex-col items-center pt-12 md:pt-16 pb-16 md:pb-24 scroll-mt-24">
       <div className="w-full max-w-[1120px] px-5 md:px-8">
         <FadeIn variant="scale">
-          {/* Дві половини: ліворуч заголовок, праворуч — розмір, бажання
-              й кілька слів про церкву. Контакти питає модалка. */}
+          {/* Дві половини: ліворуч заголовок, праворуч — розмір, бажання,
+              кілька слів про церкву і номер. Одна форма, одна кнопка. */}
           <div className="overflow-hidden rounded-[24px] md:rounded-[32px] border border-hairline bg-surface grid grid-cols-1 lg:grid-cols-[1fr_1.08fr] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
             <div
               className="relative flex items-center p-7 md:p-10 border-b lg:border-b-0 lg:border-r border-hairline overflow-hidden"
@@ -200,29 +236,48 @@ export default function ChurchBrief() {
             {/* min-w-0: рядок пінів не переносить слова, тож без цього він
                 розсуває колонку і з'їдає половину із заголовком. */}
             <div className="min-w-0 p-7 md:p-10 flex flex-col justify-center">
-              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+              {state === "sent" ? (
+                /* Заявка поїхала — форма поступається місцем подяці. */
+                <div className="flex flex-col items-center gap-6 py-6 text-center">
+                  <div className="w-[72px] h-[72px] rounded-full bg-[#0063d1] flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
+                      <path d="M7 16.5L13 22.5L25 10" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-semibold text-ink text-[28px] sm:text-[34px] leading-[1.2] tracking-[-0.84px] sm:tracking-[-1.02px]">
+                      {f.successTitle}
+                    </h3>
+                    <p className="text-base text-ink-2 leading-[1.5]">{f.successText}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={reset}
+                    className="btn-secondary relative flex items-center justify-center h-11 px-7 rounded-full overflow-hidden border border-hairline-strong"
+                  >
+                    <span className="btn-secondary-bg absolute inset-0 bg-surface rounded-full transition-colors duration-150" />
+                    <span className="relative font-semibold text-[15px] text-ink-2">{f.again}</span>
+                  </button>
+                </div>
+              ) : (
+              <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
                 <Step n={1} label={f.aboutLabel}>
-                <div className="flex flex-col gap-2">
                   <label className={FIELD_SHELL}>
                     <textarea
+                      ref={aboutRef}
                       rows={2}
                       placeholder={f.aboutPlaceholder}
                       value={about}
+                      /* Перша літера — велика, далі як речення. Нічого не
+                         вимагаємо: хоч два слова, хоч порожньо. */
                       onChange={(e) => {
                         markStart("про церкву");
-                        setAbout(e.target.value);
-                        if (aboutError) setAboutError(validateAbout(e.target.value, wishes));
+                        aboutCaretRef.current = e.target.selectionStart;
+                        setAbout(sentenceCase(e.target.value));
                       }}
                       className="w-full resize-none text-[16px] text-ink/[0.88] placeholder:text-[#818186] bg-transparent outline-none leading-[1.5]"
                     />
                   </label>
-                  {aboutError && (
-                    <p role="alert" className="text-[13px] font-medium text-[#c76a00] leading-[1.4]">
-                      {aboutError}
-                    </p>
-                  )}
-                </div>
-
                 </Step>
 
                 <Step n={2} label={f.sizeLabel}>
@@ -305,14 +360,82 @@ export default function ChurchBrief() {
                   </div>
                 </Step>
 
+                <Step n={4} label={f.contactLabel}>
+                  {/* Єдине, без чого заявка не має сенсу, — номер. Ім'я
+                      поруч, але необов'язкове. */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Field
+                      kind="name"
+                      placeholder={f.namePlaceholder}
+                      value={name}
+                      error={null}
+                      onChange={(v) => {
+                        markStart("ім'я");
+                        setName(v);
+                      }}
+                    />
+                    <Field
+                      kind="tel"
+                      placeholder={f.phonePlaceholder}
+                      value={phone}
+                      error={phoneError}
+                      onChange={(v) => {
+                        markStart("телефон");
+                        setPhone(v);
+                        if (phoneError) setPhoneError(validatePhone(v, t.modal.errors));
+                      }}
+                    />
+                  </div>
+                  {/* Honeypot: поза потоком і поза табом, людина його не бачить. */}
+                  <input
+                    type="text"
+                    name="company"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className="absolute w-px h-px -left-[9999px] opacity-0"
+                  />
+                </Step>
+
                 <button
                   type="submit"
-                  className="btn-primary btn-brand group relative flex items-center justify-center gap-2 h-12 w-full rounded-full overflow-hidden"
+                  disabled={state === "sending"}
+                  className={cn(
+                    "group relative flex items-center justify-center gap-2 h-12 w-full rounded-full overflow-hidden disabled:opacity-70",
+                    state === "failed" ? "btn-secondary border border-hairline-strong" : "btn-primary btn-brand"
+                  )}
                 >
-                  <span className="relative font-semibold text-base tracking-[-0.32px] leading-[1.4] text-white">{f.submit}</span>
-                  <ArrowRight className="relative w-[17px] h-[17px] text-white transition-transform duration-200 group-hover:translate-x-0.5" />
+                  {state === "failed" && (
+                    <span className="btn-secondary-bg absolute inset-0 bg-surface rounded-full transition-colors duration-150" />
+                  )}
+                  <span
+                    className={cn(
+                      "relative font-semibold text-base tracking-[-0.32px] leading-[1.4]",
+                      state === "failed" ? "text-ink-2" : "text-white"
+                    )}
+                  >
+                    {state === "sending" ? f.sending : state === "failed" ? f.retry : f.submit}
+                  </span>
+                  {state === "idle" && (
+                    <ArrowRight className="relative w-[17px] h-[17px] text-white transition-transform duration-200 group-hover:translate-x-0.5" />
+                  )}
                 </button>
+
+                {/* Нічого не доїхало — показуємо запасні канали, а не «дякуємо». */}
+                {state === "failed" && (
+                  <LeadFallback source="brief" title={f.failedTitle} text={f.failedText} name={name} phone={phone} />
+                )}
+
+                <p className="text-[12px] text-ink-2 leading-[1.5] text-center">
+                  {f.consentPrefix}{" "}
+                  <Link href="/terms" className="font-medium text-ink-2 hover:underline underline-offset-2">{t.modal.consentTerms}</Link>
+                  {" "}{t.modal.consentAnd}{" "}
+                  <Link href="/privacy" className="font-medium text-ink-2 hover:underline underline-offset-2">{t.modal.consentPrivacy}</Link>.
+                </p>
               </form>
+              )}
             </div>
           </div>
         </FadeIn>
